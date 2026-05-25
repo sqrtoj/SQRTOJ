@@ -1,0 +1,368 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@700&display=swap');
+
+*,
+html {
+    scroll-behavior: smooth !important;
+}
+
+body {
+    font-family: "Nimbus Sans", "Helvetica", "Arial", sans-serif;
+    background: black;
+    margin: 0px;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+}
+
+.screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.gap {
+    height: 10px;
+}
+
+.title {
+    color: white;
+    text-align: center;
+    font-size: 3rem;
+    margin: 0px;
+}
+
+.subtitle {
+    color: white;
+    text-align: center;
+    font-size: 1rem;
+    margin: 0px;
+    font-weight: initial;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    margin: 0px auto;
+    max-width: 500px;
+    width: 100%;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.input-container>* {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.form-component {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+label {
+    margin: 0px;
+    color: white;
+    font-size: 0.8rem;
+}
+
+a:link {
+    color: white;
+    text-decoration: none;
+}
+
+a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+a:active {
+    color: white;
+    text-decoration: underline;
+}
+
+select {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+textarea {
+    resize: none;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    height: 300px;
+}
+
+.input-file::-webkit-file-upload-button {
+    display: none;
+}
+
+.input-file {
+    font-weight: bold;
+    color: black;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: white;
+}
+
+.input-file:hover {
+    background: #ddd;
+}
+
+.input-file input {
+    display: none;
+}
+
+details {
+    color: white;
+}
+
+details > summary {
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.8rem;
+    list-style: none;
+    padding: 4px 0;
+}
+
+details > summary::-webkit-details-marker {
+    display: none;
+}
+
+details > summary::before {
+    content: "▸ ";
+}
+
+details[open] > summary::before {
+    content: "▾ ";
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding-top: 8px;
+}
+
+button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.header {
+    display: grid;
+    grid-template-columns: 38px 44px minmax(0, 1fr) 64px 82px;
+    position: fixed;
+    align-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: black;
+    color: white;
+    gap: 8px;
+    padding: 0px 10px;
+    z-index: 9999;
+    border-bottom: 1px solid white;
+    height: 36px;
+    font-size: 1rem;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.header-rank {
+    width: 38px;
+    text-align: center;
+    color: white;
+}
+
+.header-logo {
+    width: 44px;
+}
+
+.header-name {
+    min-width: 0;
+    color: white;
+}
+
+.header-score {
+    color: white;
+    width: 64px;
+    text-align: center;
+}
+
+.header-time {
+    color: white;
+    width: 82px;
+    text-align: center;
+}
+
+.standings {
+    position: relative;
+    margin-top: 36px;
+    overflow: hidden;
+    background: repeating-linear-gradient(
+        to bottom,
+        #3c3c3c 0px,
+        #3c3c3c 60px,
+        #000000 60px,
+        #000000 120px
+    );
+}
+
+.rank-box {
+    position: absolute;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 38px 44px minmax(0, 1fr) 64px 82px;
+    grid-template-rows: 24px 28px;
+    align-items: center;
+    height: 60px;
+    gap: 2px 8px;
+    padding: 4px 10px;
+    background: transparent;
+    box-sizing: border-box;
+}
+
+.rank-box:nth-child(odd) {
+    background: transparent;
+}
+
+.rank-box:nth-child(even) {
+    background: transparent;
+}
+.rank {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    font-size: 1.45rem;
+    width: 38px;
+    text-align: center;
+    color: white;
+}
+
+.logo {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.user-info {
+    display: contents;
+}
+
+.name {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 0;
+    font-size: 1.05rem;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.problem-points {
+    grid-column: 3 / 6;
+    grid-row: 2;
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.point-box {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-family: "Ubuntu Mono", monospace;
+    font-weight: 700;
+    background-color: #282828;
+    color: white;
+    padding: 0px;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    height: 26px;
+    line-height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-sizing: border-box;
+}
+
+.total-score {
+    grid-column: 4;
+    grid-row: 1;
+    font-size: 1.15rem;
+    color: white;
+    width: 64px;
+    text-align: center;
+}
+
+.total-time {
+    grid-column: 5;
+    grid-row: 1;
+    font-size: 1.15rem;
+    color: white;
+    width: 82px;
+    text-align: center;
+}

@@ -1,0 +1,37 @@
+<div class="blog-sidebox sidebox">
+    <h3>
+        <span>{{ _('Top users') }}</span>
+    </h3>
+    <div class="sidebox-content leaderboard-content">
+        <table class="users-table table leaderboard-table">
+            <thead>
+                <tr>
+                    <th class="header rank leaderboard-rank"> # </th>
+                    <th class="header username">{{ _('Username') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in top_rated_users %}
+                <tr id="user-{{ loop.index }}">
+                    <td>{{ loop.index }}</td>
+                    <td class="user-name">
+                        <div>
+                            {{ link_user(user) }}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="leaderboard-footer-wrap">
+            <table class="table bottom leaderboard-footer">
+                <tbody>
+                    <tr>
+                        <td class="left"><a href="{{ url('organization_list') }}">{{ _('Organizations') }}</a></td>
+                        <td class="right"><a href="{{ url('user_list') }}">{{ _('View all') }} >>></a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

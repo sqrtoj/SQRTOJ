@@ -1,0 +1,21 @@
+.main-martor:not(.martor-theme-dark) .martor-toolbar .ui.basic.icon.buttons .button,
+.main-martor:not(.martor-theme-dark) .martor-toolbar .ui.basic.icon.button {
+  color: #111 !important;
+}
+
+.main-martor:not(.martor-theme-dark) .martor-toolbar .ui.basic.icon.buttons .button > .icon,
+.main-martor:not(.martor-theme-dark) .martor-toolbar .ui.basic.icon.button > .icon {
+  color: #111 !important;
+  opacity: 1;
+}
+
+.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.buttons .button,
+.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.button {
+  color: #fff !important;
+}
+
+.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.buttons .button > .icon,
+.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.button > .icon {
+  color: #fff !important;
+  opacity: 1;
+}

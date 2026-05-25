@@ -1,0 +1,24 @@
+{
+  "name": "@vnoi-admin/oj",
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write websocket",
+    "format:check": "prettier --check websocket"
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "11.0.0",
+    "commander": "11.0.0",
+    "playwright": "^1.58.2",
+    "qu": "^0.1.0",
+    "simplesets": "^1.2.0",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "@types/ws": "8.5.5",
+    "autoprefixer": "10.4.15",
+    "postcss": "^8.5.5",
+    "postcss-cli": "10.1.0",
+    "prettier": "3.0.3",
+    "sass": "1.66.1"
+  }
+}

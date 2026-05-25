@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block media %}
+    {{ form.media.css }}
+    <link rel="stylesheet" type="text/css" href="{{ static('ui_form.css') }}">
+{% endblock %}
+
+{% block js_media %}
+    {{ form.media.js }}
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <div class="content-with-sidebar">
+        <div class="content-description">
+
+            <form method="post" class="form-area">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <p class="errornote">{{ _('Please correct the error below.') }}</p>
+                {% endif %}
+
+                <table class="django-as-table">{{ form.as_table() }}</table>
+
+                <div class="form-submit-group">
+                    <button type="submit" class="button">{{ _('Save translation') }}</button>
+                    <a class="button" href="{{ url('problem_detail', object.problem.code) }}">{{ _('Back to problem') }}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
