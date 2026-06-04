@@ -145,6 +145,27 @@ class JudgeHandler(ZlibPacketHandler):
     def _disconnected(self):
         Judge.objects.filter(id=self.judge.id).update(online=False)
         RuntimeVersion.objects.filter(judge=self.judge).delete()
+    def _post_contest_update(self, submission):
+        if hasattr(submission, 'contest'):
+            submission.update_contest()
+            participation = submission.contest.participation
+            participation.refresh_from_db()
+            event.post('contest_%d' % participation.contest_id, {
+                'type': 'update',
+                'user': submission.user.user.username,
+                'user_id': submission.user.user_id,
+                'problem': submission.problem.code,
+                'result': submission.result,
+                'points': submission.points,
+                'score': participation.score,
+            })
+
+    def _post_contest_update_by_id(self, submission_id):
+        try:
+            submission = Submission.objects.select_related('user__user', 'problem', 'contest__participation').get(id=submission_id)
+            self._post_contest_update(submission)
+        except Submission.DoesNotExist:
+            pass
 
     def _update_ping(self):
         try:
@@ -496,6 +517,7 @@ class JudgeHandler(ZlibPacketHandler):
         id = packet['submission-id']
         if Submission.objects.filter(id=id).update(status='IE', result='IE', error=packet['message']):
             event.post('sub_%s' % Submission.get_id_secret(id), {'type': 'internal-error'})
+            self._post_contest_update_by_id(id)
             self._post_update_submission(id, 'internal-error', done=True)
             json_log.info(self._make_json_log(packet, action='internal-error', message=packet['message'],
                                               finish=True, result='IE'))
@@ -510,6 +532,7 @@ class JudgeHandler(ZlibPacketHandler):
 
         if Submission.objects.filter(id=packet['submission-id']).update(status='AB', result='AB', points=0):
             event.post('sub_%s' % Submission.get_id_secret(packet['submission-id']), {'type': 'aborted'})
+            self._post_contest_update_by_id(packet['submission-id'])
             self._post_update_submission(packet['submission-id'], 'aborted', done=True)
             json_log.info(self._make_json_log(packet, action='aborted', finish=True, result='AB'))
         else:

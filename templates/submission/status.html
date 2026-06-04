@@ -1,53 +1,129 @@
 {% extends "submission/info-base.html" %}
+
+{% block media %}
+    <style>
+        #contest-toasts {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 99999;
+            pointer-events: none;
+        }
+        .contest-toast {
+            pointer-events: auto;
+            background: #ffffff;
+            color: #333333;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-left: 6px solid #888;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            min-width: 250px;
+            font-family: sans-serif;
+            animation: toastEnter 0.4s ease-out;
+            border-radius: 2px;
+        }
+        @keyframes toastEnter {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-title { font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .toast-title small { font-weight: normal; color: #777; font-size: 0.85em; }
+        .toast-body { line-height: 1.5; font-size: 0.95em; }
+        .contest-toast.success { border-left-color: #28a745; }
+        .contest-toast.error { border-left-color: #dc3545; }
+        .rank-up { color: #28a745; font-weight: bold; }
+        .rank-down { color: #dc3545; font-weight: bold; }
+    </style>
+{% endblock %}
+
 {% block js_media %}
-    {% if not submission.is_graded and EVENT_LAST_MSG %}
+    {% if EVENT_LAST_MSG %}
         <script type="text/javascript">
             $(function () {
                 var blocked = false, request = false;
                 var list = $('#test-cases');
+                var my_username = '{{ request.user.username }}';
+                var last_status = null;
+                var ranking_url = '{% if submission.contest_object %}{{ url('contest_ranking', submission.contest_object.key) }}{% elif submission.contest %}{{ url('contest_ranking', submission.contest.participation.contest.key) }}{% endif %}';
 
-                function update() {
-                    if (blocked) {
-                        request = true;
-                        return;
-                    }
+                function fetch_status(callback) {
+                    if (!my_username || !ranking_url) return;
+                    $.ajax({
+                        url: ranking_url + (ranking_url.indexOf('?') === -1 ? '?raw' : '&raw'),
+                        cache: false
+                    }).done(function(html) {
+                        var $my_row = $(html).find('tbody tr').filter(function() {
+                            return $(this).find('.user-name .rating').text().trim() === my_username;
+                        });
+                        if ($my_row.length) {
+                            var status = {
+                                rank: parseInt($my_row.find('td:first').text().split('(')[0].trim()),
+                                score: parseFloat($my_row.find('.total-points').text()) || 0
+                            };
+                            callback(status);
+                        }
+                    });
+                }
+
+                fetch_status(function(status) { last_status = status; });
+
+                function update_ui() {
+                    if (blocked) { request = true; return; }
                     request = false;
                     blocked = true;
                     $.ajax({
                         url: '{{ url('submission_testcases_query') }}',
                         data: {id: '{{ submission.id }}'}
                     }).done(function (data) {
-                        list.empty().html(data).find('.toggle').each(function () {
-                            register_toggle($(this));
-                        });
-                        setTimeout(function () {
-                            blocked = false;
-                            if (request)
-                                update();
-                        }, 500);
-                    }).fail(function (data) {
-                        console.log('Failed to update testcases!');
+                        list.empty().html(data).find('.toggle').each(function () { register_toggle($(this)); });
+                        setTimeout(function () { blocked = false; if (request) update_ui(); }, 500);
                     });
+                }
 
-                    if ($(window).scrollTop() + $(window).height() > $(document).height() - 100)
-                        $("html, body").animate({scrollTop: $(document).height()}, 0);
+                function show_report(data) {
+                    fetch_status(function(new_status) {
+                        var results = {
+                            'AC': { class: 'success', text: 'Accepted' },
+                            'WA': { class: 'error', text: 'Wrong Answer' },
+                            'TLE': { class: 'error', text: 'Time Limit' },
+                            'MLE': { class: 'error', text: 'Memory Limit' },
+                            'CE': { class: 'error', text: 'Compile Error' }
+                        };
+                        var res = results[data.result] || { class: 'info', text: data.result };
+                        var toast = $('<div class="contest-toast ' + res.class + '">');
+                        var title = $('<div class="toast-title">').append($('<span>').text(res.text)).append($('<small>').text('{{ submission.problem.code }}'));
+                        
+                        var rank_html = 'Rank: <b>#' + new_status.rank + '</b>';
+                        if (last_status && last_status.rank !== new_status.rank) {
+                            var diff = last_status.rank - new_status.rank;
+                            var cls = diff > 0 ? 'rank-up' : 'rank-down';
+                            var icon = diff > 0 ? '↑' : '↓';
+                            rank_html = 'Rank: #' + last_status.rank + ' → <span class="' + cls + '">#' + new_status.rank + ' ' + icon + Math.abs(diff) + '</span>';
+                        }
+                        
+                        var body = $('<div class="toast-body">').html('Points: <b>+' + data.points + '</b> (Total: ' + new_status.score + ')<br>' + rank_html);
+                        toast.append(title).append(body);
+                        $('#contest-toasts').append(toast);
+                        setTimeout(function() { toast.fadeOut(600, function() { $(this).remove(); }); }, 12000);
+                        last_status = new_status;
+                    });
                 }
 
                 event_dispatcher.on('sub_{{ submission.id_secret }}', function (message) {
-                        switch (message.type) {
-                            case 'aborted':
-                            case 'internal-error':
-                            case 'grading-end':
-                            case 'compile-error':
-                                $('#abort-button').remove();
-                                $('#grading-label').remove();
-                            case 'test-case':
-                            case 'grading-begin':
-                            case 'processing':
-                                update();
-                        }
+                    if (['aborted', 'internal-error', 'grading-end', 'compile-error'].indexOf(message.type) !== -1) {
+                        $('#abort-button, #grading-label').remove();
                     }
-                )
+                    update_ui();
+                });
+
+                var contest_id = '{% if submission.contest_object %}{{ submission.contest_object.id }}{% elif submission.contest %}{{ submission.contest.participation.contest.id }}{% endif %}';
+                if (contest_id) {
+                    event_dispatcher.on('contest_' + contest_id, function (data) {
+                        if (data.type === 'update' && data.user === my_username && data.problem === '{{ submission.problem.code }}') {
+                            show_report(data);
+                        }
+                    });
+                }
             });
         </script>
     {% endif %}
@@ -55,7 +131,6 @@
         <script type="text/javascript">
             $(function () {
                 $(document).keydown(function(e) {
-                    // Ctrl-Enter or Command-Enter
                     if ((e.metaKey || e.ctrlKey) && e.which == 13) {
                         $('#abort-button form').submit();
                     }
@@ -66,6 +141,7 @@
 {% endblock %}
 
 {% block body %}
+    <div id="contest-toasts"></div>
     <br>
     {% if not submission.language.file_only or request.user.is_superuser %}
         <div><a href="{{ url('submission_source', submission.id) }}">{{ _('View source') }}</a></div>
