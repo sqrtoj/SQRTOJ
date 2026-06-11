@@ -1,7 +1,7 @@
+import functools
 import json
 import os
 import time
-import functools
 from collections import namedtuple
 from itertools import groupby
 from operator import attrgetter

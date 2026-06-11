@@ -3,17 +3,18 @@ import logging
 import os
 import re
 import time
-from hashlib import sha256
 from datetime import timedelta
+from hashlib import sha256
 from operator import itemgetter
 from random import randrange
 
 from django import forms
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
 from django.db.models import BooleanField, Case, Prefetch, Q, When
 from django.db.utils import ProgrammingError
@@ -26,13 +27,11 @@ from django.utils.functional import cached_property
 from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _, gettext_lazy
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, FormView, ListView, UpdateView, View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 from reversion import revisions
-
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 
 from judge.comments import CommentedDetailView
 from judge.forms import LanguageLimitFormSet, ProblemCloneForm, ProblemEditForm, ProblemImportPolygonForm, \
@@ -1089,8 +1088,12 @@ class ProblemTranslationEdit(TitleMixin, UpdateView):
         language = self.kwargs.get('language')
         translation, created = ProblemTranslation.objects.get_or_create(
             problem=problem, language=language,
-            defaults={'name': problem.name, 'description': problem.description,
-                      'sample_input': problem.sample_input, 'sample_output': problem.sample_output}
+            defaults={
+                'name': problem.name,
+                'description': problem.description,
+                'sample_input': problem.sample_input,
+                'sample_output': problem.sample_output,
+            },
         )
         return translation
 
@@ -1109,7 +1112,7 @@ class ProblemTranslationEdit(TitleMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff and not request.user.is_superuser:
-            return generic_message(request, _("Permission denied"),
+            return generic_message(request, _('Permission denied'),
                                    _('Only staff members can translate problems.'), status=403)
         return super().dispatch(request, *args, **kwargs)
 
@@ -1404,7 +1407,7 @@ def basic_reformat_description(request, problem):
         problem_obj.save()
         return JsonResponse({'job': True})
     except Exception as e:
-        logger.error('Error in regex reformat for problem %s: %s', problem, str(e), exc_info=True)
+        logger.exception('Error in regex reformat for problem %s', problem)
         return JsonResponse({'error': _('Error during formatting: %s') % str(e)}, status=500)
 
 
@@ -1439,7 +1442,7 @@ def ai_reformat_description(request, problem):
             reformatted = regex_reformat_description(description)
             return JsonResponse({'description': reformatted})
         except Exception as e:
-            logger.error('Error in regex reformat for problem %s: %s', problem, str(e), exc_info=True)
+            logger.exception('Error in regex reformat for problem %s', problem)
             return JsonResponse({'error': _('Error during formatting: %s') % str(e)}, status=500)
 
     # AI mode: determine provider
@@ -1479,17 +1482,17 @@ def ai_reformat_description(request, problem):
             return JsonResponse({'description': cached_description})
 
     prompt = (
-        "You are a competitive programming problem formatter. "
-        "Reformat the following problem statement using clean Markdown. "
-        "Rules:\n"
-        "- Use proper Markdown headers (##, ###), bold, italic, lists, code blocks, and tables as needed.\n"
-        "- For mathematical formulas and expressions, wrap them with tilde characters: ~formula~. "
-        "For example: ~n \\le 10^5~, ~a_i~, ~1 \\le i \\le n~.\n"
-        "- Do NOT use $...$ or \\(...\\) for math. Always use ~...~ instead.\n"
-        "- Keep the content and meaning exactly the same, only improve formatting.\n"
-        "- Output ONLY the reformatted Markdown. Do not add any explanation or extra text.\n\n"
-        "Problem statement to reformat:\n\n"
-        f"{description}"
+        'You are a competitive programming problem formatter. '
+        'Reformat the following problem statement using clean Markdown. '
+        'Rules:\n'
+        '- Use proper Markdown headers (##, ###), bold, italic, lists, code blocks, and tables as needed.\n'
+        '- For mathematical formulas and expressions, wrap them with tilde characters: ~formula~. '
+        'For example: ~n \\le 10^5~, ~a_i~, ~1 \\le i \\le n~.\n'
+        '- Do NOT use $...$ or \\(...\\) for math. Always use ~...~ instead.\n'
+        '- Keep the content and meaning exactly the same, only improve formatting.\n'
+        '- Output ONLY the reformatted Markdown. Do not add any explanation or extra text.\n\n'
+        'Problem statement to reformat:\n\n'
+        f'{description}'
     )
 
     try:
@@ -1524,10 +1527,10 @@ def ai_reformat_description(request, problem):
                     'warning': _('AI is temporarily rate-limited. Used smart regex formatter instead.'),
                 })
             except Exception:
-                logger.error('Regex fallback failed for problem %s', problem, exc_info=True)
+                logger.exception('Regex fallback failed for problem %s', problem)
         return JsonResponse({'error': str(e)}, status=e.status_code)
     except http_requests.ConnectionError:
-        logger.error('Cannot connect to AI API for problem %s', problem, exc_info=True)
+        logger.exception('Cannot connect to AI API for problem %s', problem)
         return JsonResponse({
             'error': _('Cannot connect to AI API. Please check network configuration.'),
         }, status=502)
@@ -1535,7 +1538,7 @@ def ai_reformat_description(request, problem):
         logger.error('AI API request timed out for problem %s', problem)
         return JsonResponse({'error': _('AI API request timed out. Please try again.')}, status=504)
     except Exception as e:
-        logger.error('Unexpected error calling AI API for problem %s: %s', problem, str(e), exc_info=True)
+        logger.exception('Unexpected error calling AI API for problem %s', problem)
         return JsonResponse({'error': _('Error calling AI API: %s') % str(e)}, status=500)
 
 

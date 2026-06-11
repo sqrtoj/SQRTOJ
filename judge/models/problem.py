@@ -1,8 +1,8 @@
 import errno
 import json
 import os
-from urllib.parse import urlparse
 from operator import attrgetter
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation

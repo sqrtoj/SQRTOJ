@@ -24,12 +24,13 @@ try:
 except ImportError:
     uwsgi = None
 
+
 class MaintenanceModeMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        maintenance = os.path.exists("/tmp/maintenance_on")
+        maintenance = os.path.exists('/tmp/maintenance_on')
 
         allowed_paths = [
             settings.STATIC_URL,
@@ -50,15 +51,17 @@ class MaintenanceModeMiddleware:
                     </head>
                     <body style="font-family:sans-serif;text-align:center;padding-top:100px">
                         <h1>SQRTOJ hiện đang bảo trì</h1>
-                        <p>SQRTOJ hiện đang bảo trì để chuẩn bị cho SQRT CUP 2026. Vui lòng trở lại sau 1 tiếng, xin lỗi vì sự bất tiện này!</p>
+                        <p>SQRTOJ hiện đang bảo trì để chuẩn bị cho SQRT CUP 2026. \
+Vui lòng trở lại sau 1 tiếng, xin lỗi vì sự bất tiện này!</p>
                     </body>
                 </html>
                 """, status=503)
 
-                response["Cache-Control"] = "no-store"
+                response['Cache-Control'] = 'no-store'
                 return response
 
         return self.get_response(request)
+
 
 class ShortCircuitMiddleware:
     def __init__(self, get_response):

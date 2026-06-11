@@ -223,11 +223,11 @@ class UserAboutPage(UserPage):
                 for date_counts in submissions
             }
             min_year_dict = self.object.submission_set.annotate(
-                year_only=ExtractYear('date')
+                year_only=ExtractYear('date'),
             ).aggregate(min_year=Min('year_only'))
             submission_chart_data = {
                 'data': sub_data,
-                'min_year': min_year_dict['min_year']
+                'min_year': min_year_dict['min_year'],
             }
             cache.set(cache_key, submission_chart_data, 900)  # 15 minutes
 

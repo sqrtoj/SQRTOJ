@@ -145,6 +145,7 @@ class JudgeHandler(ZlibPacketHandler):
     def _disconnected(self):
         Judge.objects.filter(id=self.judge.id).update(online=False)
         RuntimeVersion.objects.filter(judge=self.judge).delete()
+
     def _post_contest_update(self, submission):
         if hasattr(submission, 'contest'):
             submission.update_contest()
@@ -162,7 +163,9 @@ class JudgeHandler(ZlibPacketHandler):
 
     def _post_contest_update_by_id(self, submission_id):
         try:
-            submission = Submission.objects.select_related('user__user', 'problem', 'contest__participation').get(id=submission_id)
+            submission = Submission.objects.select_related(
+                'user__user', 'problem', 'contest__participation',
+            ).get(id=submission_id)
             self._post_contest_update(submission)
         except Submission.DoesNotExist:
             pass
