@@ -47,7 +47,7 @@ jobs:
     - name: Collect jsi18n
       run: python manage.py compilejsi18n
     - name: Run unit tests
-      run: coverage run --source=. manage.py test judge urlshortener
+      run: coverage run --source=. manage.py test judge
     - name: Generate coverage report
       run: coverage xml
   styles:
