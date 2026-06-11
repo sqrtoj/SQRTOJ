@@ -61,7 +61,7 @@ class ContestProblemInlineForm(ModelForm):
     class Meta:
         widgets = {
             'problem': AdminHeavySelect2Widget(data_view='problem_select2'),
-            "hidden_subtasks": TextInput(attrs={"size": "3"}),
+            'hidden_subtasks': TextInput(attrs={'size': '3'}),
         }
 
 

@@ -703,8 +703,8 @@ class ContestProblem(models.Model):
                                           validators=[MinValueOrNoneValidator(1, _('Why include a problem you '
                                                                                    "can't submit to?"))])
     frozen_subtasks = models.CharField(
-        help_text=_("Only for format new IOI. Separated by commas, e.g: 2, 3"),
-        verbose_name=_("frozen subtasks"),
+        help_text=_('Only for format new IOI. Separated by commas, e.g: 2, 3'),
+        verbose_name=_('frozen subtasks'),
         null=True,
         blank=True,
         max_length=20,

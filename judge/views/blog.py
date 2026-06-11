@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
 from django.db.models import Count, FilteredRelation, Max, Q
 from django.db.models.expressions import F, Value
@@ -171,7 +171,7 @@ def _get_cached_top_rated_users():
             .filter(rating__isnull=False, is_unlisted=False)
             .only('user', 'performance_points', 'display_rank', 'display_badge', 'rating',
                   'username_display_override')
-            .select_related('user', 'display_badge')[:limit]
+            .select_related('user', 'display_badge')[:limit],
         ),
     )
 
@@ -193,7 +193,7 @@ def _get_cached_top_contributors():
             .filter(contribution_points__gt=0, is_unlisted=False)
             .only('user', 'contribution_points', 'display_rank', 'display_badge', 'rating',
                   'username_display_override')
-            .select_related('user', 'display_badge')[:limit]
+            .select_related('user', 'display_badge')[:limit],
         ),
     )
 

@@ -231,11 +231,11 @@ class ContestMixin(object):
         context['og_image'] = self.object.og_image or metadata[1]
         context['has_moss_api_key'] = settings.MOSS_API_KEY is not None
 
-        context["contest_has_hidden_subtasks"] = self.object.format.has_hidden_subtasks
+        context['contest_has_hidden_subtasks'] = self.object.format.has_hidden_subtasks
         context[
-            "show_final_ranking"
+            'show_final_ranking'
         ] = self.object.format.has_hidden_subtasks and self.object.is_editable_by(
-            self.request.user
+            self.request.user,
         )
 
         context['logo_override_image'] = self.object.logo_override_image
@@ -1070,7 +1070,7 @@ class ContestRanking(ContestRankingBase):
 
 
 class ContestFinalRanking(LoginRequiredMixin, ContestRanking):
-    page_type = "final_ranking"
+    page_type = 'final_ranking'
 
     def get_ranking_list(self):
         if not self.object.is_editable_by(self.request.user):

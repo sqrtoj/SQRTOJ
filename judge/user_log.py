@@ -1,6 +1,7 @@
-from django.utils.timezone import now
-import time
 import functools
+import time
+
+from django.utils.timezone import now
 
 
 from judge.models import Profile
