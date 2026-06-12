@@ -290,7 +290,7 @@ class Submission(models.Model):
 class SubmissionSource(models.Model):
     submission = models.OneToOneField(Submission, on_delete=models.CASCADE, verbose_name=_('associated submission'),
                                       related_name='source')
-    source = models.TextField(verbose_name=_('source code'), max_length=65536)
+    source = models.TextField(verbose_name=_('source code'), max_length=1048576)
 
     def __str__(self):
         return _('Source of %(submission)s') % {'submission': self.submission}
