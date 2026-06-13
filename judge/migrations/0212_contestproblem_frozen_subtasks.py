@@ -9,6 +9,7 @@ def add_field_if_missing(apps, schema_editor):
     columns = [column.name for column in description]
     if 'frozen_subtasks' not in columns:
         field = models.CharField(blank=True, help_text='Only for format new IOI. Separated by commas, e.g: 2, 3', max_length=20, null=True, verbose_name='frozen subtasks')
+        field.set_attributes_from_name('frozen_subtasks')
         schema_editor.add_field(ContestProblem, field)
 
 
@@ -41,5 +42,5 @@ class Migration(migrations.Migration):
                     field=models.CharField(blank=True, help_text='Only for format new IOI. Separated by commas, e.g: 2, 3', max_length=20, null=True, verbose_name='frozen subtasks'),
                 ),
             ],
-        )
+        ),
     ]
