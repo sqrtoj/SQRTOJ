@@ -41,5 +41,5 @@ class Migration(migrations.Migration):
                     field=models.CharField(blank=True, help_text='Only for format new IOI. Separated by commas, e.g: 2, 3', max_length=20, null=True, verbose_name='frozen subtasks'),
                 ),
             ],
-        )
+        ),
     ]

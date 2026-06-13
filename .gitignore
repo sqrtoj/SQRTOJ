@@ -41,3 +41,4 @@ fc_*
 local_urls.py
 *.zip
 problems/
+.DS_Store

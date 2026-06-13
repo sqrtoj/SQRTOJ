@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('judge', '0211_auto_20260322_1925'),
+        ('judge', '0212_contestproblem_frozen_subtasks'),
     ]
 
     operations = [
