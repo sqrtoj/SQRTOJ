@@ -6161,6 +6161,10 @@ msgstr "Thành viên"
 msgid "Entered scoreboard"
 msgstr "xem bảng điểm"
 
+#: templates/contest/ranking.html:260
+msgid "%(points)s points - submission #%(tries)s"
+msgstr "%(points)s điểm - lần nộp #%(tries)s"
+
 #: templates/contest/ranking.html:631
 msgid "Search organizations"
 msgstr "Tìm tổ chức"

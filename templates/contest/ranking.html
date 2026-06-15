@@ -222,6 +222,31 @@
                     return '';
                 }
 
+                function parseTotalTries(cell) {
+                    if (!cell || cell.length === 0) {
+                        return 0;
+                    }
+                    var cellClone = cell.clone();
+                    cellClone.find('div').remove();
+                    var text = cellClone.text().trim();
+                    var symMatch = text.match(/^([+-])(\d*)/);
+                    if (symMatch) {
+                        return symMatch[1] === '+' ? (symMatch[2] ? parseInt(symMatch[2], 10) + 1 : 1) : parseInt(symMatch[2], 10);
+                    }
+                    var triesMatch = text.match(/(\d+)\s+tr/);
+                    if (triesMatch) {
+                        return parseInt(triesMatch[1], 10);
+                    }
+                    var penaltyMatch = text.match(/\((\d+)\)/);
+                    if (penaltyMatch) {
+                        return cell.hasClass('full-score') ? parseInt(penaltyMatch[1], 10) + 1 : parseInt(penaltyMatch[1], 10);
+                    }
+                    if (text !== '' && !isNaN(parseFloat(text))) {
+                        return 1;
+                    }
+                    return cell.hasClass('full-score') || cell.hasClass('pending') || cell.hasClass('failed-score') ? 1 : 0;
+                }
+
                 function showRankingNotification(displayName, userUrl, problemLabel, problemPoints, oldRank, newRank, problemResult, maxPoints, problemIsSolved, problemIsFailed, problemIsPending, problemTries) {
                     if (localStorage.getItem('show-ranking-notifications') === 'false') {
                         return;
@@ -249,18 +274,20 @@
                     // Problem info
                     if (problemLabel) {
                         var scoreLabel = '';
-                        var ptsStr = problemPoints ? String(problemPoints) : '';
+                        var ptsStr = problemPoints ? String(problemPoints).replace(/\s*\(\d+\)\s*$/, '') : '';
                         if (isICPC || ptsStr) {
                             var displayScore = ptsStr;
                             if (isICPC) {
                                 displayScore = formatICPCScore(problemIsSolved, problemIsFailed, problemIsPending, problemTries);
                             } else {
+                                var ptsBase = ptsStr;
                                 if (maxPoints && !isNaN(ptsStr) && !isNaN(maxPoints)) {
-                                    displayScore = ptsStr + '/' + maxPoints;
+                                    ptsBase = ptsStr + '/' + maxPoints;
                                 }
-                                if (pointsSuffix) {
-                                    displayScore += ' ' + pointsSuffix;
-                                }
+                                var submissionNotifFormat = {{ _('%(points)s points - submission #%(tries)s')|htmltojs }};
+                                displayScore = submissionNotifFormat
+                                    .replace('%(points)s', ptsBase)
+                                    .replace('%(tries)s', problemTries);
                             }
                             if (problemResult) {
                                 var innerText = problemResult;
@@ -294,7 +321,7 @@
                         if (notification.parent().length) {
                             notification.remove();
                         }
-                    }, 7000);
+                    }, 10000);
                 }
                 function update_ranking() {
                     if ($('body').hasClass('window-hidden')) {
@@ -337,24 +364,7 @@
                                 isSolved: cell.length ? cell.hasClass('full-score') : false,
                                 isFailed: cell.length ? cell.hasClass('failed-score') : false,
                                 isPending: cell.length ? cell.hasClass('pending') : false,
-                                totalTries: cell.length ? (function() {
-                                    var cellClone = cell.clone();
-                                    cellClone.find('div').remove();
-                                    var text = cellClone.text().trim();
-                                    var symMatch = text.match(/^([+-])(\d*)/);
-                                    if (symMatch) {
-                                        return symMatch[1] === '+' ? (symMatch[2] ? parseInt(symMatch[2], 10) + 1 : 1) : parseInt(symMatch[2], 10);
-                                    }
-                                    var triesMatch = text.match(/(\d+)\s+tr/);
-                                    if (triesMatch) {
-                                        return parseInt(triesMatch[1], 10);
-                                    }
-                                    var penaltyMatch = text.match(/\((\d+)\)/);
-                                    if (penaltyMatch) {
-                                        return cell.hasClass('full-score') ? parseInt(penaltyMatch[1], 10) + 1 : parseInt(penaltyMatch[1], 10);
-                                    }
-                                    return cell.hasClass('full-score') ? 1 : 0;
-                                })() : 0
+                                totalTries: parseTotalTries(cell)
                             };
                         });
 
@@ -397,24 +407,7 @@
                                         isSolved: cell.length ? cell.hasClass('full-score') : false,
                                         isFailed: cell.length ? cell.hasClass('failed-score') : false,
                                         isPending: cell.length ? cell.hasClass('pending') : false,
-                                        totalTries: cell.length ? (function() {
-                                            var cellClone = cell.clone();
-                                            cellClone.find('div').remove();
-                                            var text = cellClone.text().trim();
-                                            var symMatch = text.match(/^([+-])(\d*)/);
-                                            if (symMatch) {
-                                                return symMatch[1] === '+' ? (symMatch[2] ? parseInt(symMatch[2], 10) + 1 : 1) : parseInt(symMatch[2], 10);
-                                            }
-                                            var triesMatch = text.match(/(\d+)\s+tr/);
-                                            if (triesMatch) {
-                                                return parseInt(triesMatch[1], 10);
-                                            }
-                                            var penaltyMatch = text.match(/\((\d+)\)/);
-                                            if (penaltyMatch) {
-                                                return cell.hasClass('full-score') ? parseInt(penaltyMatch[1], 10) + 1 : parseInt(penaltyMatch[1], 10);
-                                            }
-                                            return cell.hasClass('full-score') ? 1 : 0;
-                                        })() : 0
+                                        totalTries: parseTotalTries(cell)
                                     };
                                 });
 
@@ -481,15 +474,16 @@
                                     var changedIsPending = false;
                                     var changedTries = 0;
                                     for (var label in newVal.problemData) {
-                                        if (newVal.problemData[label].text !== '') {
+                                        var newCell = newVal.problemData[label];
+                                        if (newCell.text !== '' || newCell.totalTries > 0 || newCell.isPending) {
                                             changedProblem = label;
-                                            changedPoints = newVal.problemData[label].text;
-                                            changedResult = newVal.problemData[label].result;
-                                            changedMaxPoints = newVal.problemData[label].maxPoints;
-                                            changedIsSolved = newVal.problemData[label].isSolved;
-                                            changedIsFailed = newVal.problemData[label].isFailed;
-                                            changedIsPending = newVal.problemData[label].isPending;
-                                            changedTries = newVal.problemData[label].totalTries;
+                                            changedPoints = newCell.text;
+                                            changedResult = newCell.result;
+                                            changedMaxPoints = newCell.maxPoints;
+                                            changedIsSolved = newCell.isSolved;
+                                            changedIsFailed = newCell.isFailed;
+                                            changedIsPending = newCell.isPending;
+                                            changedTries = newCell.totalTries;
                                             break;
                                         }
                                     }
