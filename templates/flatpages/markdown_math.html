@@ -1,7 +1,11 @@
 {% extends "flatpages/markdown.html" %}
 
 {% block body %}
-    <div class="content-description">{{ flatpage.content|markdown('flatpage', MATH_ENGINE)|reference }}</div>
+    <div class="content-description">
+        {% cache 86400 'flatpage' flatpage.url %}
+            {{ flatpage.content|markdown('flatpage', MATH_ENGINE)|reference }}
+        {% endcache %}
+    </div>
 {% endblock %}
 
 {% block bodyend %}

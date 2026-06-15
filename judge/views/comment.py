@@ -177,8 +177,13 @@ class CommentVotesAjax(PermissionRequiredMixin, CommentMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CommentVotesAjax, self).get_context_data(**kwargs)
-        context['votes'] = (self.object.votes.select_related('voter__user')
-                            .only('id', 'voter__display_rank', 'voter__user__username', 'score'))
+        context['votes'] = (self.object.votes.select_related('voter__user', 'voter__display_badge')
+                            .only('id', 'voter__display_rank', 'voter__rating',
+                                  'voter__username_display_override',
+                                  'voter__user__username',
+                                  'voter__display_badge__mini',
+                                  'voter__display_badge__name',
+                                  'score'))
         return context
 
 
