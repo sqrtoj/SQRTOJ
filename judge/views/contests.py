@@ -960,8 +960,10 @@ def base_contest_ranking_list(
     contest, problems, queryset, frozen=False, result_hidden=False, can_see_submissions=False,
 ):
     participations = list(
-        queryset.select_related('user__user', 'rating')
-        .defer('user__about', 'user__organizations__about')
+        queryset.select_related('user__user', 'rating').defer(
+            'user__about',
+            'user__organizations__about',
+        )
     )
 
     from collections import defaultdict
