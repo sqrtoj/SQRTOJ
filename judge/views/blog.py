@@ -183,7 +183,11 @@ def _get_cached_new_problems():
     limit = settings.DMOJ_BLOG_NEW_PROBLEM_COUNT
     return _get_or_set_cache(
         f'homepage:new_problems:{limit}:v1',
-        lambda: list(Problem.get_public_problems().order_by('-date', 'code')[:limit]),
+        lambda: list(
+            Problem.get_public_problems()
+            .only('code', 'name', 'date')
+            .order_by('-date', 'code')[:limit],
+        ),
     )
 
 
@@ -248,6 +252,7 @@ class PostList(PostListBase):
         now = timezone.now()
 
         visible_contests = Contest.get_visible_contests(self.request.user).filter(is_visible=True) \
+                                  .only('key', 'name', 'start_time', 'end_time') \
                                   .order_by('start_time')
 
         context['current_contests'] = visible_contests.filter(start_time__lte=now, end_time__gt=now)
