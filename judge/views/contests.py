@@ -961,7 +961,7 @@ def base_contest_ranking_list(
 ):
     participations = list(
         queryset.select_related('user__user', 'rating')
-        .defer('user__about', 'user__organizations__about')
+        .defer('user__about', 'user__organizations__about',)
     )
 
     from collections import defaultdict
