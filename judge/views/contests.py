@@ -956,8 +956,13 @@ def make_contest_ranking_profile(contest, participation, contest_problems, first
     )
 
 
-def base_contest_ranking_list(contest, problems, queryset, frozen=False, result_hidden=False, can_see_submissions=False):
-    participations = list(queryset.select_related('user__user', 'rating').defer('user__about', 'user__organizations__about'))
+def base_contest_ranking_list(
+    contest, problems, queryset, frozen=False, result_hidden=False, can_see_submissions=False,
+):
+    participations = list(
+        queryset.select_related('user__user', 'rating')
+        .defer('user__about', 'user__organizations__about')
+    )
 
     from collections import defaultdict
     from judge.models.contest import ContestSubmission
@@ -965,7 +970,7 @@ def base_contest_ranking_list(contest, problems, queryset, frozen=False, result_
     best_results = defaultdict(dict)
     if participations:
         submissions_qs = ContestSubmission.objects.filter(
-            participation__in=participations
+            participation__in=participations,
         )
         if frozen:
             frozen_time = contest.frozen_time
@@ -973,7 +978,7 @@ def base_contest_ranking_list(contest, problems, queryset, frozen=False, result_
                 submissions_qs = submissions_qs.filter(submission__date__lt=frozen_time)
 
         submissions_qs = submissions_qs.select_related('submission').values(
-            'participation_id', 'problem_id', 'points', 'submission__result', 'submission__status'
+            'participation_id', 'problem_id', 'points', 'submission__result', 'submission__status',
         )
 
         for sub in submissions_qs:
@@ -994,11 +999,12 @@ def base_contest_ranking_list(contest, problems, queryset, frozen=False, result_
 
     first_solves, total_ac = contest.format.get_first_solves_and_total_ac(problems, participations, frozen)
     users = [
-        make_contest_ranking_profile(contest, participation, problems, first_solves, frozen, result_hidden, can_see_submissions)
+        make_contest_ranking_profile(
+            contest, participation, problems, first_solves, frozen, result_hidden, can_see_submissions,
+        )
         for participation in participations
     ]
     return users, total_ac
-
 
 
 def base_contest_ranking_queryset(contest):
@@ -1024,7 +1030,10 @@ def contest_ranking_list(contest, problems, frozen=False, can_see_submissions=Fa
 
 def get_contest_ranking_list(request, contest, participation=None, ranking_list=contest_ranking_list, ranker=ranker):
     problems = list(contest.contest_problems.select_related('problem').defer('problem__description').order_by('order'))
-    users, total_ac = ranking_list(contest, problems, can_see_submissions=contest.can_see_full_submission_list(request.user))
+    users, total_ac = ranking_list(
+        contest, problems,
+        can_see_submissions=contest.can_see_full_submission_list(request.user),
+    )
     users = ranker(users, key=attrgetter('points', 'cumtime', 'tiebreaker'))
 
     return users, problems, total_ac
