@@ -872,14 +872,69 @@ ContestRankingProfile = namedtuple(
 BestSolutionData = namedtuple('BestSolutionData', 'code points time state is_pretested')
 
 
-def make_contest_ranking_profile(contest, participation, contest_problems, first_solves, frozen=False):
+def make_contest_ranking_profile(contest, participation, contest_problems, first_solves,
+                                 frozen=False, result_hidden=False, can_see_submissions=False):
     def display_user_problem(contest_problem):
+        if result_hidden:
+            return contest.format.display_hidden_problem_cell(participation, contest_problem)
         # When the contest format is changed, `format_data` might be invalid.
         # This will cause `display_user_problem` to error, so we display '???' instead.
         try:
-            return contest.format.display_user_problem(participation, contest_problem, first_solves, frozen)
+            html = contest.format.display_user_problem(participation, contest_problem, first_solves, frozen)
         except (KeyError, TypeError, ValueError):
             return mark_safe('<td>???</td>')
+
+        best_results = getattr(participation, 'best_results', {})
+        res = best_results.get(contest_problem.id, {}).get('result', '')
+
+        format_data = (participation.format_data or {}).get(str(contest_problem.id))
+        is_pending = False
+        if format_data:
+            if format_data.get('pending', 0) > 0:
+                is_pending = True
+            elif frozen and format_data.get('is_frozen'):
+                is_pending = True
+
+        if is_pending:
+            res_translated = _('pending')
+        else:
+            points = 0
+            if format_data:
+                prefix = 'frozen_' if (frozen and 'frozen_points' in format_data) else ''
+                points = format_data.get(prefix + 'points', 0)
+            else:
+                points = best_results.get(contest_problem.id, {}).get('points', 0)
+
+            if points == contest_problem.points:
+                res = 'AC'
+            else:
+                if can_see_submissions:
+                    if res == 'AC':
+                        res = 'PA'
+                    else:
+                        res = res or 'WA'
+                else:
+                    res = ''
+
+            RESULT_TRANSLATIONS = {
+                'AC': _('AC'),
+                'WA': _('WA'),
+                'TLE': _('TLE'),
+                'MLE': _('MLE'),
+                'OLE': _('OLE'),
+                'IR': _('IR'),
+                'RTE': _('RTE'),
+                'CE': _('CE'),
+                'IE': _('IE'),
+                'SC': _('SC'),
+                'AB': _('AB'),
+                'PA': _('PA'),
+            }
+            res_translated = RESULT_TRANSLATIONS.get(res, res)
+
+        if res_translated and html.startswith('<td'):
+            html = mark_safe(html.replace('<td', f'<td data-submission-result="{res_translated}"', 1))
+        return html
 
     user = participation.user
     return ContestRankingProfile(
@@ -893,19 +948,57 @@ def make_contest_ranking_profile(contest, participation, contest_problems, first
         organization=user.organization,
         participation_rating=participation.rating.rating if hasattr(participation, 'rating') else None,
         problem_cells=[display_user_problem(contest_problem) for contest_problem in contest_problems],
-        result_cell=contest.format.display_participation_result(participation, frozen),
+        result_cell=(contest.format.display_hidden_result_cell(participation) if result_hidden
+                     else contest.format.display_participation_result(participation, frozen)),
         participation=participation,
         virtual=participation.virtual,
         display_name=user.display_name,
     )
 
 
-def base_contest_ranking_list(contest, problems, queryset, frozen=False):
-    queryset = queryset.select_related('user__user', 'rating').defer('user__about', 'user__organizations__about')
-    first_solves, total_ac = contest.format.get_first_solves_and_total_ac(problems, queryset, frozen)
-    users = [make_contest_ranking_profile(contest, participation, problems, first_solves, frozen) for participation
-             in queryset]
+def base_contest_ranking_list(contest, problems, queryset, frozen=False, result_hidden=False, can_see_submissions=False):
+    participations = list(queryset.select_related('user__user', 'rating').defer('user__about', 'user__organizations__about'))
+
+    from collections import defaultdict
+    from judge.models.contest import ContestSubmission
+
+    best_results = defaultdict(dict)
+    if participations:
+        submissions_qs = ContestSubmission.objects.filter(
+            participation__in=participations
+        )
+        if frozen:
+            frozen_time = contest.frozen_time
+            if frozen_time:
+                submissions_qs = submissions_qs.filter(submission__date__lt=frozen_time)
+
+        submissions_qs = submissions_qs.select_related('submission').values(
+            'participation_id', 'problem_id', 'points', 'submission__result', 'submission__status'
+        )
+
+        for sub in submissions_qs:
+            part_id = sub['participation_id']
+            prob_id = sub['problem_id']
+            points = sub['points']
+            result = sub['submission__result'] or sub['submission__status']
+
+            existing = best_results[part_id].get(prob_id)
+            if not existing or points > existing['points']:
+                best_results[part_id][prob_id] = {
+                    'points': points,
+                    'result': result,
+                }
+
+        for participation in participations:
+            participation.best_results = best_results.get(participation.id, {})
+
+    first_solves, total_ac = contest.format.get_first_solves_and_total_ac(problems, participations, frozen)
+    users = [
+        make_contest_ranking_profile(contest, participation, problems, first_solves, frozen, result_hidden, can_see_submissions)
+        for participation in participations
+    ]
     return users, total_ac
+
 
 
 def base_contest_ranking_queryset(contest):
@@ -924,13 +1017,14 @@ def base_contest_frozen_ranking_queryset(contest):
         .order_by('is_disqualified', '-frozen_score', 'frozen_cumtime', 'frozen_tiebreaker', '-submission_count')
 
 
-def contest_ranking_list(contest, problems, frozen=False):
-    return base_contest_ranking_list(contest, problems, base_contest_ranking_queryset(contest), frozen=frozen)
+def contest_ranking_list(contest, problems, frozen=False, can_see_submissions=False):
+    return base_contest_ranking_list(contest, problems, base_contest_ranking_queryset(contest),
+                                     frozen=frozen, can_see_submissions=can_see_submissions)
 
 
 def get_contest_ranking_list(request, contest, participation=None, ranking_list=contest_ranking_list, ranker=ranker):
     problems = list(contest.contest_problems.select_related('problem').defer('problem__description').order_by('order'))
-    users, total_ac = ranking_list(contest, problems)
+    users, total_ac = ranking_list(contest, problems, can_see_submissions=contest.can_see_full_submission_list(request.user))
     users = ranker(users, key=attrgetter('points', 'cumtime', 'tiebreaker'))
 
     return users, problems, total_ac
@@ -1004,7 +1098,7 @@ class ContestRanking(ContestRankingBase):
 
     @cached_property
     def is_frozen(self):
-        return self.object.is_frozen and not self.can_edit
+        return self.object.is_frozen and not self.object.can_see_full_submission_list(self.request.user)
 
     @property
     def cache_key(self):
@@ -1013,7 +1107,8 @@ class ContestRanking(ContestRankingBase):
 
     @property
     def bypass_cache_ranking(self):
-        return self.object.scoreboard_cache_timeout == 0 or self.can_edit or \
+        return self.object.scoreboard_cache_timeout == 0 or \
+            self.object.can_see_full_submission_list(self.request.user) or \
             (self.request.user.is_authenticated and not self.object.can_see_full_scoreboard(self.request.user))
 
     def get_ranking_queryset(self):
