@@ -39,6 +39,151 @@
         .filter-checklist-button {
             float: right;
         }
+
+        #ranking-notifications-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            max-width: 320px;
+            width: calc(100% - 40px);
+            pointer-events: none;
+        }
+        .ranking-notification {
+            pointer-events: auto;
+            margin-bottom: 0;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            display: none;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+        body[data-theme='dark'] .ranking-notification {
+            background-color: #121212;
+            border-color: #333;
+            color: #ccc;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        .ranking-notification .close {
+            float: right;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            opacity: 0.5;
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1;
+            margin-top: -2px;
+            transition: opacity 0.15s ease-in-out;
+        }
+        .ranking-notification .close:hover {
+            opacity: 1;
+        }
+        .ranking-notification a:not(.close) {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .ranking-notification a:not(.close):hover {
+            text-decoration: underline;
+        }
+        body[data-theme='dark'] .ranking-notification a:not(.close) {
+            color: #63b3ed;
+        }
+        @media (max-width: 480px) {
+            #ranking-notifications-container {
+                right: 10px;
+                bottom: 10px;
+                width: calc(100% - 20px);
+            }
+        }
+        .ranking-status {
+            font-weight: bold;
+        }
+        .ranking-status-AC {
+            color: #2ecc71;
+        }
+        .ranking-status-WA {
+            color: #e74c3c;
+        }
+        .ranking-status-TLE {
+            color: #ef8a17;
+        }
+        .ranking-status-MLE {
+            color: #ef8a17;
+        }
+        .ranking-status-OLE {
+            color: #ef8a17;
+        }
+        .ranking-status-RTE {
+            color: #9b59b6;
+        }
+        .ranking-status-IR {
+            color: #9b59b6;
+        }
+        .ranking-status-CE {
+            color: #7f8c8d;
+        }
+        .ranking-status-IE {
+            color: #e74c3c;
+        }
+        .ranking-status-PA {
+            color: #f39c12;
+        }
+        .ranking-status-pending {
+            color: #3498db;
+        }
+        .ranking-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 0.85em;
+            font-weight: bold;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+        .ranking-badge-AC {
+            background-color: #2ecc71;
+        }
+        .ranking-badge-WA {
+            background-color: #e74c3c;
+        }
+        .ranking-badge-TLE {
+            background-color: #ef8a17;
+        }
+        .ranking-badge-MLE {
+            background-color: #ef8a17;
+        }
+        .ranking-badge-OLE {
+            background-color: #ef8a17;
+        }
+        .ranking-badge-RTE {
+            background-color: #9b59b6;
+        }
+        .ranking-badge-IR {
+            background-color: #9b59b6;
+        }
+        .ranking-badge-CE {
+            background-color: #7f8c8d;
+        }
+        .ranking-badge-IE {
+            background-color: #e74c3c;
+        }
+        .ranking-badge-PA {
+            background-color: #f39c12;
+        }
+        .ranking-badge-pending {
+            background-color: #3498db;
+        }
     </style>
 {% endblock %}
 
@@ -60,17 +205,298 @@
 
                 install_tooltips();
 
-                // Auto reload every 10 seconds
                 var ranking_outdated = false;
+                var isICPC = {% if is_ICPC_format %}true{% else %}false{% endif %};
+                var pointsSuffix = {{ _('pt')|htmltojs }};
+
+                function formatICPCScore(isSolved, isFailed, isPending, totalTries) {
+                    if (isSolved) {
+                        return totalTries > 1 ? '+' + (totalTries - 1) : '+';
+                    }
+                    if (isFailed) {
+                        return totalTries > 0 ? '-' + totalTries : '-';
+                    }
+                    if (isPending) {
+                        return '?';
+                    }
+                    return '';
+                }
+
+                function showRankingNotification(displayName, userUrl, problemLabel, problemPoints, oldRank, newRank, problemResult, maxPoints, problemIsSolved, problemIsFailed, problemIsPending, problemTries) {
+                    if (localStorage.getItem('show-ranking-notifications') === 'false') {
+                        return;
+                    }
+                    var container = $('#ranking-notifications-container');
+                    if (container.length === 0) {
+                        container = $('<div>', { id: 'ranking-notifications-container' }).appendTo('body');
+                    }
+                    
+                    var activeNotifications = container.children('.ranking-notification');
+                    if (activeNotifications.length >= 5) {
+                        var oldest = activeNotifications.first();
+                        oldest.remove();
+                    }
+
+                    var notification = $('<div>', { class: 'alert alert-info alert-dismissable ranking-notification' });
+                    var closeBtn = $('<a>', { href: '#', class: 'close' }).html('&times;').appendTo(notification);
+
+                    var content = $('<div>');
+                    
+                    // User info
+                    var userLink = $('<a>', { href: userUrl || '#' }).text(displayName);
+                    $('<div>').html('<strong>' + {{ _('User')|htmltojs }} + ':</strong> ').append(userLink).appendTo(content);
+                    
+                    // Problem info
+                    if (problemLabel) {
+                        var scoreLabel = '';
+                        var ptsStr = problemPoints ? String(problemPoints) : '';
+                        if (isICPC || ptsStr) {
+                            var displayScore = ptsStr;
+                            if (isICPC) {
+                                displayScore = formatICPCScore(problemIsSolved, problemIsFailed, problemIsPending, problemTries);
+                            } else {
+                                if (maxPoints && !isNaN(ptsStr) && !isNaN(maxPoints)) {
+                                    displayScore = ptsStr + '/' + maxPoints;
+                                }
+                                if (pointsSuffix) {
+                                    displayScore += ' ' + pointsSuffix;
+                                }
+                            }
+                            if (problemResult) {
+                                var innerText = problemResult;
+                                if (displayScore) {
+                                    innerText += ' (' + displayScore + ')';
+                                }
+                                scoreLabel = ' <span class="ranking-badge ranking-badge-' + problemResult + '">' + innerText + '</span>';
+                            } else {
+                                scoreLabel = ' <span class="ranking-badge ranking-badge-pending">' + displayScore + '</span>';
+                            }
+                        } else if (problemResult) {
+                            scoreLabel = ' <span class="ranking-badge ranking-badge-' + problemResult + '">' + problemResult + '</span>';
+                        }
+                        $('<div>').html('<strong>' + {{ _('Problem')|htmltojs }} + ':</strong> ' + problemLabel + scoreLabel).appendTo(content);
+                    } else {
+                        $('<div>').text({{ _('Entered scoreboard')|htmltojs }}).appendTo(content);
+                    }
+                    
+                    // Rank change info
+                    var rankText = (oldRank ? oldRank : '-') + ' → ' + newRank;
+                    $('<div>').html('<strong>' + {{ _('Rank')|htmltojs }} + ':</strong> ' + rankText).appendTo(content);
+
+                    content.appendTo(notification);
+
+                    closeBtn.on('click', function(e) {
+                        e.preventDefault();
+                        notification.remove();
+                    });
+                    notification.appendTo(container).show();
+                    setTimeout(function() {
+                        if (notification.parent().length) {
+                            notification.remove();
+                        }
+                    }, 7000);
+                }
                 function update_ranking() {
                     if ($('body').hasClass('window-hidden')) {
                         return ranking_outdated = true;
                     }
-                    var queryParam = window.location.search
+                    var queryParam = window.location.search;
+
+                    // Map headers to find problem column indices
+                    var problemCols = [];
+                    $('#ranking-table thead th').each(function(index) {
+                        if ($(this).hasClass('points') && $(this).hasClass('header') && $(this).find('.problem-code').length > 0) {
+                            var denominator = $(this).find('.point-denominator').text().trim();
+                            var label = $(this).clone().find('.point-denominator, .problem-code').remove().end().text().trim();
+                            problemCols.push({
+                                index: index,
+                                label: label,
+                                maxPoints: denominator
+                            });
+                        }
+                    });
+
+                    var old_ranks = {};
+                    $('#ranking-table > tbody > tr[id]').each(function () {
+                        var row = $(this);
+                        var username = row.attr('id').substring(5);
+                        var rank = extractCurrentAbsRank(row.find('td').first().text().trim());
+                        var points = row.find('.user-points').clone().find('.solving-time').remove().end().text().trim();
+                        var displayName = row.find('.user-name a').first().text().trim();
+                        var userUrl = row.find('.user-name a').first().attr('href');
+                        
+                        var cells = row.find('td');
+                        var problemData = {};
+                        problemCols.forEach(function(col) {
+                            var cell = cells.eq(col.index);
+                            problemData[col.label] = {
+                                html: cell.length ? cell[0].outerHTML : '',
+                                text: cell.length ? cell.clone().find('.solving-time, .solving-time-minute').remove().end().text().trim() : '',
+                                result: cell.length ? (cell.attr('data-submission-result') || '') : '',
+                                maxPoints: col.maxPoints,
+                                isSolved: cell.length ? cell.hasClass('full-score') : false,
+                                isFailed: cell.length ? cell.hasClass('failed-score') : false,
+                                isPending: cell.length ? cell.hasClass('pending') : false,
+                                totalTries: cell.length ? (function() {
+                                    var cellClone = cell.clone();
+                                    cellClone.find('div').remove();
+                                    var text = cellClone.text().trim();
+                                    var symMatch = text.match(/^([+-])(\d*)/);
+                                    if (symMatch) {
+                                        return symMatch[1] === '+' ? (symMatch[2] ? parseInt(symMatch[2], 10) + 1 : 1) : parseInt(symMatch[2], 10);
+                                    }
+                                    var triesMatch = text.match(/(\d+)\s+tr/);
+                                    if (triesMatch) {
+                                        return parseInt(triesMatch[1], 10);
+                                    }
+                                    var penaltyMatch = text.match(/\((\d+)\)/);
+                                    if (penaltyMatch) {
+                                        return cell.hasClass('full-score') ? parseInt(penaltyMatch[1], 10) + 1 : parseInt(penaltyMatch[1], 10);
+                                    }
+                                    return cell.hasClass('full-score') ? 1 : 0;
+                                })() : 0
+                            };
+                        });
+
+                        old_ranks[username] = {
+                            rank: rank,
+                            points: points,
+                            displayName: displayName,
+                            userUrl: userUrl,
+                            problemData: problemData
+                        };
+                    });
+                    console.log('[DEBUG] old_ranks:', old_ranks);
                     $.ajax({
                         url: queryParam ? queryParam + '&raw' : '?raw',
+                        cache: false,
                     }).done(function (data) {
-                        $('#ranking-table').html(data);
+                        $('#ranking-table').replaceWith(data);
+                        var isFrozen = {% if is_frozen %}true{% else %}false{% endif %};
+                        var resultHidden = {% if result_hidden %}true{% else %}false{% endif %};
+                        console.log('[DEBUG] isFrozen:', isFrozen, 'resultHidden:', resultHidden);
+                        if (!isFrozen && !resultHidden) {
+                            var new_ranks = {};
+                            $('#ranking-table > tbody > tr[id]').each(function () {
+                                var row = $(this);
+                                var username = row.attr('id').substring(5);
+                                var rank = extractCurrentAbsRank(row.find('td').first().text().trim());
+                                var points = row.find('.user-points').clone().find('.solving-time').remove().end().text().trim();
+                                var displayName = row.find('.user-name a').first().text().trim();
+                                var userUrl = row.find('.user-name a').first().attr('href');
+
+                                var cells = row.find('td');
+                                var problemData = {};
+                                problemCols.forEach(function(col) {
+                                    var cell = cells.eq(col.index);
+                                    problemData[col.label] = {
+                                        html: cell.length ? cell[0].outerHTML : '',
+                                        text: cell.length ? cell.clone().find('.solving-time, .solving-time-minute').remove().end().text().trim() : '',
+                                        result: cell.length ? (cell.attr('data-submission-result') || '') : '',
+                                        maxPoints: col.maxPoints,
+                                        isSolved: cell.length ? cell.hasClass('full-score') : false,
+                                        isFailed: cell.length ? cell.hasClass('failed-score') : false,
+                                        isPending: cell.length ? cell.hasClass('pending') : false,
+                                        totalTries: cell.length ? (function() {
+                                            var cellClone = cell.clone();
+                                            cellClone.find('div').remove();
+                                            var text = cellClone.text().trim();
+                                            var symMatch = text.match(/^([+-])(\d*)/);
+                                            if (symMatch) {
+                                                return symMatch[1] === '+' ? (symMatch[2] ? parseInt(symMatch[2], 10) + 1 : 1) : parseInt(symMatch[2], 10);
+                                            }
+                                            var triesMatch = text.match(/(\d+)\s+tr/);
+                                            if (triesMatch) {
+                                                return parseInt(triesMatch[1], 10);
+                                            }
+                                            var penaltyMatch = text.match(/\((\d+)\)/);
+                                            if (penaltyMatch) {
+                                                return cell.hasClass('full-score') ? parseInt(penaltyMatch[1], 10) + 1 : parseInt(penaltyMatch[1], 10);
+                                            }
+                                            return cell.hasClass('full-score') ? 1 : 0;
+                                        })() : 0
+                                    };
+                                });
+
+                                new_ranks[username] = {
+                                    rank: rank,
+                                    points: points,
+                                    displayName: displayName,
+                                    userUrl: userUrl,
+                                    problemData: problemData
+                                };
+                            });
+                            console.log('[DEBUG] new_ranks:', new_ranks);
+                            
+                            for (var username in new_ranks) {
+                                var newVal = new_ranks[username];
+                                var oldVal = old_ranks[username];
+                                if (oldVal) {
+                                    var changedProblem = null;
+                                    var changedPoints = '';
+                                    var changedResult = '';
+                                    var changedMaxPoints = '';
+                                    var changedIsSolved = false;
+                                    var changedIsFailed = false;
+                                    var changedIsPending = false;
+                                    var changedTries = 0;
+                                    for (var label in newVal.problemData) {
+                                         var oldCell = oldVal.problemData[label];
+                                         var newCell = newVal.problemData[label];
+                                         if (oldCell) {
+                                             console.log('[DEBUG] Comparing', username, label,
+                                                         'oldText:', oldCell.text, 'newText:', newCell.text,
+                                                         'oldResult:', oldCell.result, 'newResult:', newCell.result,
+                                                         'oldPending:', oldCell.isPending, 'newPending:', newCell.isPending,
+                                                         'oldTries:', oldCell.totalTries, 'newTries:', newCell.totalTries);
+                                         }
+                                         if (!oldCell ||
+                                             oldCell.text !== newCell.text ||
+                                             oldCell.result !== newCell.result ||
+                                             oldCell.isPending !== newCell.isPending ||
+                                             oldCell.totalTries !== newCell.totalTries) {
+                                             changedProblem = label;
+                                             changedPoints = newCell.text;
+                                             changedResult = newCell.result;
+                                             changedMaxPoints = newCell.maxPoints;
+                                             changedIsSolved = newCell.isSolved;
+                                             changedIsFailed = newCell.isFailed;
+                                             changedIsPending = newCell.isPending;
+                                             changedTries = newCell.totalTries;
+                                             break;
+                                         }
+                                     }
+                                    if (changedProblem) {
+                                        console.log('[DEBUG] Triggering notification for:', newVal.displayName, changedProblem, changedPoints, changedResult, changedMaxPoints);
+                                        showRankingNotification(newVal.displayName, newVal.userUrl, changedProblem, changedPoints, oldVal.rank, newVal.rank, changedResult, changedMaxPoints, changedIsSolved, changedIsFailed, changedIsPending, changedTries);
+                                    }
+                                } else {
+                                    console.log('[DEBUG] User entered:', username, 'points:', newVal.points);
+                                    var changedProblem = null;
+                                    var changedPoints = '';
+                                    var changedResult = '';
+                                    var changedMaxPoints = '';
+                                    var changedIsSolved = false;
+                                    var changedIsFailed = false;
+                                    var changedIsPending = false;
+                                    var changedTries = 0;
+                                    for (var label in newVal.problemData) {
+                                        if (newVal.problemData[label].text !== '') {
+                                            changedProblem = label;
+                                            changedPoints = newVal.problemData[label].text;
+                                            changedResult = newVal.problemData[label].result;
+                                            changedMaxPoints = newVal.problemData[label].maxPoints;
+                                            changedIsSolved = newVal.problemData[label].isSolved;
+                                            changedIsFailed = newVal.problemData[label].isFailed;
+                                            changedIsPending = newVal.problemData[label].isPending;
+                                            changedTries = newVal.problemData[label].totalTries;
+                                            break;
+                                        }
+                                    }
+                                    showRankingNotification(newVal.displayName, newVal.userUrl, changedProblem, changedPoints, null, newVal.rank, changedResult, changedMaxPoints, changedIsSolved, changedIsFailed, changedIsPending, changedTries);
+                                }
+                            }
+                        }
                         if (localStorage.getItem('show-personal-info') == 'true') {
                             $('.personal-info').show();
                             $('#show-personal-info-checkbox').prop('checked', true);
@@ -79,9 +505,12 @@
                             window.applyRankingFilter();
                         {% endif %}
                         window.enableAdminOperations();
+                        window.install_tooltips();
+                    }).fail(function (xhr, textStatus, errorThrown) {
+                        console.error('[DEBUG] AJAX failed:', textStatus, errorThrown);
                     }).always(function () {
                         ranking_outdated = false;
-                        setTimeout(update_ranking, 10000);
+                        setTimeout(update_ranking, 3000);
                     });
                 }
                 $(window).on('dmoj:window-visible', function () {
@@ -89,7 +518,22 @@
                         update_ranking();
                     }
                 });
-                setTimeout(update_ranking, 10000);
+                setTimeout(update_ranking, 3000);
+
+                var $notifCheckbox = $('#show-ranking-notifications-checkbox');
+                if ($notifCheckbox.length) {
+                    var showNotifVal = localStorage.getItem('show-ranking-notifications');
+                    if (showNotifVal === null || showNotifVal === 'true') {
+                        $notifCheckbox.prop('checked', true);
+                    } else {
+                        $notifCheckbox.prop('checked', false);
+                    }
+
+                    $notifCheckbox.click(function () {
+                        var checked = $(this).prop('checked');
+                        localStorage.setItem('show-ranking-notifications', checked ? 'true' : 'false');
+                    });
+                }
             });
         </script>
     {% endif %}
@@ -164,6 +608,16 @@
 
             if (localStorage.getItem(`hide-frozen-alert-${contest_key}`) == 'true') {
                 $("a#frozen_alert").click();
+            }
+
+            $("a#result_hidden_alert").click(function () {
+                var $closer = $(this);
+                $closer.parent().hide();
+                localStorage.setItem(`hide-result-hidden-alert-${contest_key}`, 'true');
+            });
+
+            if (localStorage.getItem(`hide-result-hidden-alert-${contest_key}`) == 'true') {
+                $("a#result_hidden_alert").click();
             }
 
             // hack to keep scroll position after selecting option
@@ -297,14 +751,14 @@
 
             window.getOrganizationCodes();
 
-            function extractCurrentAbsRank(row_text) {
+            window.extractCurrentAbsRank = function (row_text) {
                 let paren_surround_text = row_text.match(/\(([^)]+)\)/);
                 let current_abs_rank
                     = (paren_surround_text !== null)
                     ? paren_surround_text[1]
                     : row_text;
                 return current_abs_rank;
-            }
+            };
 
             window.clearRankingFilter = function () {
                 if (localStorage.getItem(`filter-cleared-${contest_key}`) == 'true') {
@@ -496,6 +950,10 @@
         {% if tab == 'ranking' %}
             <input id="show-virtual-participations-checkbox" type="checkbox" style="vertical-align: bottom">
             <label for="show-virtual-participations-checkbox" style="vertical-align: bottom">{{ _('Show virtual participations') }}</label>
+            {% if not contest.ended %}
+                <input id="show-ranking-notifications-checkbox" type="checkbox" style="vertical-align: bottom">
+                <label for="show-ranking-notifications-checkbox" style="vertical-align: bottom">{{ _('Show notifications') }}</label>
+            {% endif %}
             {% if not is_ICPC_format %}
             <a href="#" onclick="download_table_as_csv()" style="float: right;">{{ _('Download as CSV') }}</a>
             {% endif %}
@@ -508,6 +966,21 @@
 {% endblock %}
 
 {% block body %}
+    {% if result_hidden %}
+    <div class="alert-warning">
+        <p style="padding: 10px; text-align: center">
+        <a class="close" id="result_hidden_alert">x</a>
+        {% if result_globally_hidden %}
+            {%- trans -%}
+                Submission results are hidden until they are released.
+            {%- endtrans -%}
+        {% else %}
+            {%- trans -%}
+                You are participating virtually; submission results are hidden until you leave the contest.
+            {%- endtrans -%}
+        {% endif %}
+    </p></div>
+    {% endif %}
     {% if is_frozen %}
     <div class="alert-warning">
         <p style="padding: 10px; text-align: center">
