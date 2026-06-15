@@ -247,8 +247,12 @@
                     return cell.hasClass('full-score') || cell.hasClass('pending') || cell.hasClass('failed-score') ? 1 : 0;
                 }
 
-                function showRankingNotification(displayName, userUrl, problemLabel, problemPoints, oldRank, newRank, problemResult, maxPoints, problemIsSolved, problemIsFailed, problemIsPending, problemTries) {
+                function showRankingNotification(displayName, userUrl, problemLabel, problemPoints, oldRank, newRank, problemResult, maxPoints, problemIsSolved, problemIsFailed, problemIsPending, problemTries, remainingTime, notifId) {
                     if (localStorage.getItem('show-ranking-notifications') === 'false') {
+                        return;
+                    }
+                    var timeout = remainingTime !== undefined ? remainingTime : 10000;
+                    if (timeout <= 0) {
                         return;
                     }
                     var container = $('#ranking-notifications-container');
@@ -256,13 +260,53 @@
                         container = $('<div>', { id: 'ranking-notifications-container' }).appendTo('body');
                     }
                     
+                    var id = notifId || (String(Date.now()) + '-' + Math.random());
+
+                    function removeNotifFromStorage(targetId) {
+                        var list = [];
+                        try {
+                            list = JSON.parse(localStorage.getItem('active-ranking-notifications') || '[]');
+                        } catch(e) {}
+                        list = list.filter(function(item) { return item.id !== targetId; });
+                        localStorage.setItem('active-ranking-notifications', JSON.stringify(list));
+                    }
+
+                    // Save to localStorage if it's a new notification
+                    if (!notifId) {
+                        var list = [];
+                        try {
+                            list = JSON.parse(localStorage.getItem('active-ranking-notifications') || '[]');
+                        } catch(e) {}
+                        list.push({
+                            id: id,
+                            displayName: displayName,
+                            userUrl: userUrl,
+                            problemLabel: problemLabel,
+                            problemPoints: problemPoints,
+                            oldRank: oldRank,
+                            newRank: newRank,
+                            problemResult: problemResult,
+                            maxPoints: maxPoints,
+                            problemIsSolved: problemIsSolved,
+                            problemIsFailed: problemIsFailed,
+                            problemIsPending: problemIsPending,
+                            problemTries: problemTries,
+                            expiresAt: Date.now() + timeout
+                        });
+                        localStorage.setItem('active-ranking-notifications', JSON.stringify(list));
+                    }
+
                     var activeNotifications = container.children('.ranking-notification');
                     if (activeNotifications.length >= 5) {
                         var oldest = activeNotifications.first();
+                        var oldestId = oldest.attr('data-notif-id');
+                        if (oldestId) {
+                            removeNotifFromStorage(oldestId);
+                        }
                         oldest.remove();
                     }
 
-                    var notification = $('<div>', { class: 'alert alert-info alert-dismissable ranking-notification' });
+                    var notification = $('<div>', { class: 'alert alert-info alert-dismissable ranking-notification' }).attr('data-notif-id', id);
                     var closeBtn = $('<a>', { href: '#', class: 'close' }).html('&times;').appendTo(notification);
 
                     var content = $('<div>');
@@ -314,14 +358,16 @@
 
                     closeBtn.on('click', function(e) {
                         e.preventDefault();
+                        removeNotifFromStorage(id);
                         notification.remove();
                     });
                     notification.appendTo(container).show();
                     setTimeout(function() {
                         if (notification.parent().length) {
+                            removeNotifFromStorage(id);
                             notification.remove();
                         }
-                    }, 10000);
+                    }, timeout);
                 }
                 function update_ranking() {
                     if ($('body').hasClass('window-hidden')) {
@@ -512,6 +558,30 @@
                         update_ranking();
                     }
                 });
+
+                // Restore saved notifications on load
+                if (localStorage.getItem('show-ranking-notifications') !== 'false') {
+                    var savedList = [];
+                    try {
+                        savedList = JSON.parse(localStorage.getItem('active-ranking-notifications') || '[]');
+                    } catch(e) {}
+                    var now = Date.now();
+                    var activeList = [];
+                    savedList.forEach(function(item) {
+                        var remaining = item.expiresAt - now;
+                        if (remaining > 0) {
+                            showRankingNotification(
+                                item.displayName, item.userUrl, item.problemLabel, item.problemPoints,
+                                item.oldRank, item.newRank, item.problemResult, item.maxPoints,
+                                item.problemIsSolved, item.problemIsFailed, item.problemIsPending,
+                                item.problemTries, remaining, item.id
+                            );
+                            activeList.push(item);
+                        }
+                    });
+                    localStorage.setItem('active-ranking-notifications', JSON.stringify(activeList));
+                }
+
                 setTimeout(update_ranking, 3000);
 
                 var $notifCheckbox = $('#show-ranking-notifications-checkbox');
@@ -526,6 +596,10 @@
                     $notifCheckbox.click(function () {
                         var checked = $(this).prop('checked');
                         localStorage.setItem('show-ranking-notifications', checked ? 'true' : 'false');
+                        if (!checked) {
+                            localStorage.removeItem('active-ranking-notifications');
+                            $('#ranking-notifications-container').empty();
+                        }
                     });
                 }
             });
