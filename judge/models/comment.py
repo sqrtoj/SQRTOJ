@@ -78,9 +78,53 @@ class Comment(MPTTModel):
 
         output = []
         for i in itertools.count(0):
-            slice = queryset[i * batch:i * batch + batch]
+            slice = list(queryset[i * batch:i * batch + batch])
             if not slice:
                 break
+
+            problems_to_fetch = set()
+            solutions_to_fetch = set()
+            contests_to_fetch = set()
+            blogs_to_fetch = set()
+            tags_to_fetch = set()
+
+            for comment in slice:
+                page_key = comment.page[2:]
+                if comment.page.startswith('p:'):
+                    problems_to_fetch.add(page_key)
+                elif comment.page.startswith('s:'):
+                    solutions_to_fetch.add(page_key)
+                elif comment.page.startswith('c:'):
+                    contests_to_fetch.add(page_key)
+                elif comment.page.startswith('b:'):
+                    try:
+                        blogs_to_fetch.add(int(page_key))
+                    except ValueError:
+                        pass
+                elif comment.page.startswith('t:'):
+                    tags_to_fetch.add(page_key)
+
+            if problems_to_fetch:
+                for problem in Problem.objects.defer('description', 'summary') \
+                        .filter(code__in=problems_to_fetch):
+                    problem_cache[problem.code] = problem
+            if solutions_to_fetch:
+                for solution in Solution.objects.defer('content').select_related('problem') \
+                        .filter(problem__code__in=solutions_to_fetch):
+                    solution_cache[solution.problem.code] = solution
+                    problem_cache[solution.problem.code] = solution.problem
+            if contests_to_fetch:
+                for contest in Contest.objects.defer('description') \
+                        .filter(key__in=contests_to_fetch):
+                    contest_cache[contest.key] = contest
+            if blogs_to_fetch:
+                for blog in BlogPost.objects.defer('summary', 'content') \
+                        .filter(id__in=blogs_to_fetch):
+                    blog_cache[str(blog.id)] = blog
+            if tags_to_fetch:
+                for tag in TagProblem.objects.filter(code__in=tags_to_fetch):
+                    problemtag_cache[tag.code] = tag
+
             for comment in slice:
                 page_key = comment.page[2:]
                 try:

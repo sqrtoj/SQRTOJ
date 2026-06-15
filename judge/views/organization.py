@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.db.models import Count, FilteredRelation, Q
+from django.db.models import Count, FilteredRelation, Prefetch, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
 from django.forms import Form, modelformset_factory
@@ -159,7 +159,11 @@ class OrganizationUsers(QueryStringSortMixin, DiggPaginatorMixin, BaseOrganizati
 
     def get_queryset(self):
         return self.object.members.filter(is_unlisted=False).order_by(self.order) \
-            .select_related('user', 'display_badge').defer('about', 'user_script', 'notes')
+            .select_related('user', 'display_badge').defer('about', 'user_script', 'notes') \
+            .prefetch_related(Prefetch(
+                'organizations',
+                queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug'),
+            ))
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationUsers, self).get_context_data(**kwargs)
