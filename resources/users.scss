@@ -1,6 +1,8 @@
 @import "vars";
 
-td.user-name, td.personal-info, td.organization-name {
+td.user-name,
+td.personal-info,
+td.organization-name {
     padding-left: 1em;
     text-align: left;
 }
@@ -10,7 +12,9 @@ tr {
         background: rgba($color_link200, 0.2);
     }
 
-    td.full-score, td.failed-score, td.partial-score {
+    td.full-score,
+    td.failed-score,
+    td.partial-score {
         a {
             font-size: 12px;
         }
@@ -26,7 +30,8 @@ span.organization {
     height: 2.3em;
 }
 
-.user-search-image, .user-search-name {
+.user-search-image,
+.user-search-name {
     vertical-align: middle;
 }
 
@@ -35,7 +40,11 @@ span.organization {
 }
 
 .users-table {
-    th.rank, th.points, th.problems, th.username {
+
+    th.rank,
+    th.points,
+    th.problems,
+    th.username {
         white-space: nowrap;
     }
 
@@ -49,14 +58,17 @@ span.organization {
     }
 
     .personal-info {
-        a, span {
+
+        a,
+        span {
             color: $color_primary50;
             font-weight: 600;
         }
     }
 }
 
-.users-table, .organization-table {
+.users-table,
+.organization-table {
     tr {
         transition: background-color linear .2s;
 
@@ -106,12 +118,12 @@ span.organization {
     overflow: hidden;
 }
 
-.hide-solved-problems > span {
+.hide-solved-problems>span {
     position: relative;
     display: inline-block;
 }
 
-.hide-solved-problems > span:before {
+.hide-solved-problems>span:before {
     content: "";
     position: absolute;
     top: 50%;
@@ -215,9 +227,12 @@ img.user-gravatar {
 #submission-activity {
     #submission-activity-actions {
         text-align: center;
-        #prev-year-action, #next-year-action {
+
+        #prev-year-action,
+        #next-year-action {
             font-size: 1.75em;
         }
+
         #year {
             font-size: 1.25em;
             color: $color_primary75;
@@ -284,20 +299,25 @@ img.user-gravatar {
                 }
 
                 &.activity-blank {
-                    background-color: $color_pageBg;
+                    background-color: transparent;
                 }
+
                 &.activity-0 {
                     background-color: $color_user_submission_activity0;
                 }
+
                 &.activity-1 {
                     background-color: $color_user_submission_activity1;
                 }
+
                 &.activity-2 {
                     background-color: $color_user_submission_activity2;
                 }
+
                 &.activity-3 {
                     background-color: $color_user_submission_activity3;
                 }
+
                 &.activity-4 {
                     background-color: $color_user_submission_activity4;
                 }

@@ -615,8 +615,10 @@ class UserList(QueryStringSortMixin, InfinitePaginationMixin, DiggPaginatorMixin
     def get_queryset(self):
         return (Profile.objects.filter(is_unlisted=False).order_by(self.order, 'id')
                 .select_related('user', 'display_badge')
-                .prefetch_related(Prefetch('organizations',
-                                  queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug')))
+                .prefetch_related(Prefetch(
+                    'organizations',
+                    queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug'),
+                ))
                 .only('display_rank', 'points', 'rating', 'performance_points',
                       'problem_count', 'username_display_override',
                       'user__username', 'user__first_name',
@@ -651,8 +653,10 @@ class ContribList(QueryStringSortMixin, DiggPaginatorMixin, TitleMixin, ListView
     def get_queryset(self):
         return (Profile.objects.filter(is_unlisted=False).order_by(self.order, 'id')
                 .select_related('user', 'display_badge')
-                .prefetch_related(Prefetch('organizations',
-                                  queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug')))
+                .prefetch_related(Prefetch(
+                    'organizations',
+                    queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug'),
+                ))
                 .only('display_rank', 'rating', 'contribution_points',
                       'username_display_override',
                       'user__username', 'user__first_name',
