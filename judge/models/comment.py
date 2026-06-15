@@ -59,7 +59,7 @@ class Comment(MPTTModel):
         else:
             queryset = cls.objects.filter(hidden=False)
 
-        queryset = (queryset.prefetch_related('author__user', 'author__display_badge')
+        queryset = (queryset.select_related('author__user', 'author__display_badge')
                     .defer('author__about', 'body').order_by('-id'))
 
         problem_cache = CacheDict(lambda code: Problem.objects.defer('description', 'summary').get(code=code))

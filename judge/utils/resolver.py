@@ -21,7 +21,7 @@ def build_resolver_payload(contest, show_virtual=False):
     participations = list(participations_qs)
 
     submissions_qs = ContestSubmission.objects.filter(participation__contest=contest) \
-        .select_related('participation__user', 'submission') \
+        .select_related('participation__user__user', 'submission') \
         .order_by('submission__date')
 
     if not show_virtual:

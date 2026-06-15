@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
-from django.db.models import Count, FilteredRelation, Max, Q
+from django.db.models import Count, FilteredRelation, Max, Prefetch, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
@@ -117,8 +117,11 @@ class PostListBase(ListView):
                              orphans=orphans, allow_empty_first_page=allow_empty_first_page, **kwargs)
 
     def get_queryset(self):
-        queryset = (BlogPost.objects.filter(visible=True, publish_on__lte=timezone.now())
-                    .prefetch_related('authors__user', 'authors__display_badge'))
+        queryset = BlogPost.objects.filter(
+            visible=True, publish_on__lte=timezone.now(),
+        ).prefetch_related(
+            Prefetch('authors', queryset=Profile.objects.select_related('user', 'display_badge')),
+        )
         if self.request.user.is_authenticated:
             profile = self.request.profile
             queryset = queryset.annotate(
@@ -169,9 +172,9 @@ def _get_cached_top_rated_users():
         lambda: list(
             Profile.objects.order_by('-rating')
             .filter(rating__isnull=False, is_unlisted=False)
-            .only('user', 'performance_points', 'display_rank', 'display_badge', 'rating',
-                  'username_display_override')
-            .select_related('user', 'display_badge')[:limit],
+            .select_related('user', 'display_badge')
+            .only('performance_points', 'display_rank', 'rating', 'username_display_override',
+                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
         ),
     )
 
@@ -191,9 +194,9 @@ def _get_cached_top_contributors():
         lambda: list(
             Profile.objects.order_by('-contribution_points')
             .filter(contribution_points__gt=0, is_unlisted=False)
-            .only('user', 'contribution_points', 'display_rank', 'display_badge', 'rating',
-                  'username_display_override')
-            .select_related('user', 'display_badge')[:limit],
+            .select_related('user', 'display_badge')
+            .only('contribution_points', 'display_rank', 'rating', 'username_display_override',
+                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
         ),
     )
 
