@@ -51,8 +51,8 @@ class MaintenanceModeMiddleware:
                     </head>
                     <body style="font-family:sans-serif;text-align:center;padding-top:100px">
                         <h1>SQRTOJ hiện đang bảo trì</h1>
-                        <p>SQRTOJ hiện đang bảo trì để chuẩn bị cho SQRT CUP 2026. \
-Vui lòng trở lại sau 1 tiếng, xin lỗi vì sự bất tiện này!</p>
+                        <p>SQRTOJ hiện đang bảo trì để tối ưu hiệu năng. \
+Vui lòng trở lại sau, xin lỗi vì sự bất tiện này!</p>
                     </body>
                 </html>
                 """, status=503)

@@ -614,12 +614,15 @@ class UserList(QueryStringSortMixin, InfinitePaginationMixin, DiggPaginatorMixin
 
     def get_queryset(self):
         return (Profile.objects.filter(is_unlisted=False).order_by(self.order, 'id')
-                .prefetch_related(Prefetch('user', queryset=User.objects.only('username', 'first_name')))
-                .prefetch_related(Prefetch('organizations',
-                                  queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug')))
-                .select_related('display_badge')
-                .only('display_rank', 'display_badge', 'user', 'points', 'rating', 'performance_points',
-                      'problem_count', 'organizations', 'username_display_override'))
+                .select_related('user', 'display_badge')
+                .prefetch_related(Prefetch(
+                    'organizations',
+                    queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug'),
+                ))
+                .only('display_rank', 'points', 'rating', 'performance_points',
+                      'problem_count', 'username_display_override',
+                      'user__username', 'user__first_name',
+                      'display_badge__mini', 'display_badge__name'))
 
     def get_context_data(self, **kwargs):
         context = super(UserList, self).get_context_data(**kwargs)
@@ -649,12 +652,15 @@ class ContribList(QueryStringSortMixin, DiggPaginatorMixin, TitleMixin, ListView
 
     def get_queryset(self):
         return (Profile.objects.filter(is_unlisted=False).order_by(self.order, 'id')
-                .prefetch_related(Prefetch('user', queryset=User.objects.only('username', 'first_name')))
-                .prefetch_related(Prefetch('organizations',
-                                  queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug')))
-                .select_related('display_badge')
-                .only('display_rank', 'display_badge', 'user', 'organizations', 'rating', 'contribution_points',
-                      'username_display_override'))
+                .select_related('user', 'display_badge')
+                .prefetch_related(Prefetch(
+                    'organizations',
+                    queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug'),
+                ))
+                .only('display_rank', 'rating', 'contribution_points',
+                      'username_display_override',
+                      'user__username', 'user__first_name',
+                      'display_badge__mini', 'display_badge__name'))
 
     def get_context_data(self, **kwargs):
         context = super(ContribList, self).get_context_data(**kwargs)

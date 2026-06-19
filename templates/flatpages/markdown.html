@@ -10,5 +10,9 @@
 {% block header %}{% include "flatpages/admin_link.html" %}{% endblock %}
 
 {% block body %}
-    <div class="content-description">{{ flatpage.content|markdown('flatpage')|reference|str|safe }}</div>
+    <div class="content-description">
+        {% cache 86400 'flatpage' flatpage.url %}
+            {{ flatpage.content|markdown('flatpage')|reference|str|safe }}
+        {% endcache %}
+    </div>
 {% endblock %}

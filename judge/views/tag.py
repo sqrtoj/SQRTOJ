@@ -242,9 +242,11 @@ class TagProblemDetail(TagProblemMixin, TitleMixin, CommentedDetailView):
         return 't:%s' % self.object.code
 
     def get_queryset(self):
-        queryset = TagData.objects.select_related('tag', 'assigner__user') \
+        queryset = TagData.objects.select_related('tag', 'assigner__user', 'assigner__display_badge') \
             .only('id', 'problem', 'tag', 'assigner__user__username',
-                  'assigner__display_rank', 'assigner__rating')
+                  'assigner__display_rank', 'assigner__rating',
+                  'assigner__username_display_override',
+                  'assigner__display_badge__mini', 'assigner__display_badge__name')
 
         return super(TagProblemDetail, self).get_queryset() \
             .prefetch_related(Prefetch('tagdata_set', queryset=queryset))

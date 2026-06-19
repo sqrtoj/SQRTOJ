@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
-from django.db.models import Count, FilteredRelation, Max, Q
+from django.db.models import Count, FilteredRelation, Max, Prefetch, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
@@ -117,8 +117,11 @@ class PostListBase(ListView):
                              orphans=orphans, allow_empty_first_page=allow_empty_first_page, **kwargs)
 
     def get_queryset(self):
-        queryset = (BlogPost.objects.filter(visible=True, publish_on__lte=timezone.now())
-                    .prefetch_related('authors__user', 'authors__display_badge'))
+        queryset = BlogPost.objects.filter(
+            visible=True, publish_on__lte=timezone.now(),
+        ).prefetch_related(
+            Prefetch('authors', queryset=Profile.objects.select_related('user', 'display_badge')),
+        )
         if self.request.user.is_authenticated:
             profile = self.request.profile
             queryset = queryset.annotate(
@@ -169,9 +172,9 @@ def _get_cached_top_rated_users():
         lambda: list(
             Profile.objects.order_by('-rating')
             .filter(rating__isnull=False, is_unlisted=False)
-            .only('user', 'performance_points', 'display_rank', 'display_badge', 'rating',
-                  'username_display_override')
-            .select_related('user', 'display_badge')[:limit],
+            .select_related('user', 'display_badge')
+            .only('performance_points', 'display_rank', 'rating', 'username_display_override',
+                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
         ),
     )
 
@@ -180,7 +183,11 @@ def _get_cached_new_problems():
     limit = settings.DMOJ_BLOG_NEW_PROBLEM_COUNT
     return _get_or_set_cache(
         f'homepage:new_problems:{limit}:v1',
-        lambda: list(Problem.get_public_problems().order_by('-date', 'code')[:limit]),
+        lambda: list(
+            Problem.get_public_problems()
+            .only('code', 'name', 'date')
+            .order_by('-date', 'code')[:limit],
+        ),
     )
 
 
@@ -191,9 +198,9 @@ def _get_cached_top_contributors():
         lambda: list(
             Profile.objects.order_by('-contribution_points')
             .filter(contribution_points__gt=0, is_unlisted=False)
-            .only('user', 'contribution_points', 'display_rank', 'display_badge', 'rating',
-                  'username_display_override')
-            .select_related('user', 'display_badge')[:limit],
+            .select_related('user', 'display_badge')
+            .only('contribution_points', 'display_rank', 'rating', 'username_display_override',
+                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
         ),
     )
 
@@ -245,6 +252,7 @@ class PostList(PostListBase):
         now = timezone.now()
 
         visible_contests = Contest.get_visible_contests(self.request.user).filter(is_visible=True) \
+                                  .only('key', 'name', 'start_time', 'end_time') \
                                   .order_by('start_time')
 
         context['current_contests'] = visible_contests.filter(start_time__lte=now, end_time__gt=now)
