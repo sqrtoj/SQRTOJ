@@ -27,7 +27,7 @@ cleaner_cache = {}
 INLINE_TEX_PAREN_RE = re.compile(r'\\\((.+?)\\\)', re.DOTALL)
 DISPLAY_TEX_BRACKET_RE = re.compile(r'\\\[(.+?)\\\]', re.DOTALL)
 DISPLAY_TEX_DOLLAR_RE = re.compile(r'(?<!\\)\$\$(.+?)(?<!\\)\$\$', re.DOTALL)
-INLINE_TEX_DOLLAR_RE = re.compile(r'(?<!\\)\$(?!\$)(.+?)(?<!\\)\$(?!\$)', re.DOTALL)
+INLINE_TEX_DOLLAR_RE = re.compile(r'(?<!\$)(?<!\\)\$(?!\$)(.+?)(?<!\$)(?<!\\)\$(?!\$)', re.DOTALL)
 
 
 def get_cleaner(name, params):
@@ -98,10 +98,9 @@ def add_table_class(text):
 @registry.filter
 def markdown(text, style, math_engine=None, lazy_load=False, strip_paragraphs=False):
     text = text or ''
-    # Normalize common LaTeX delimiters to ~...~ (the format currently rendered consistently by the site).
-    text = DISPLAY_TEX_BRACKET_RE.sub(r'~\1~', text)
+    text = DISPLAY_TEX_BRACKET_RE.sub(r'$$\1$$', text)
     text = INLINE_TEX_PAREN_RE.sub(r'~\1~', text)
-    text = DISPLAY_TEX_DOLLAR_RE.sub(r'~\1~', text)
+    text = DISPLAY_TEX_DOLLAR_RE.sub(r'$$\1$$', text)
     text = INLINE_TEX_DOLLAR_RE.sub(r'~\1~', text)
 
     styles = settings.MARKDOWN_STYLES.get(style, settings.MARKDOWN_DEFAULT_STYLE)
