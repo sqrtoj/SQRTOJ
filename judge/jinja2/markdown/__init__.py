@@ -27,7 +27,7 @@ cleaner_cache = {}
 INLINE_TEX_PAREN_RE = re.compile(r'\\\((.+?)\\\)', re.DOTALL)
 DISPLAY_TEX_BRACKET_RE = re.compile(r'\\\[(.+?)\\\]', re.DOTALL)
 DISPLAY_TEX_DOLLAR_RE = re.compile(r'(?<!\\)\$\$(.+?)(?<!\\)\$\$', re.DOTALL)
-INLINE_TEX_DOLLAR_RE = re.compile(r'(?<!\\)\$(?!\$)(.+?)(?<!\\)\$(?!\$)', re.DOTALL)
+INLINE_TEX_DOLLAR_RE = re.compile(r'(?<!\$)(?<!\\)\$(?!\$)(.+?)(?<!\$)(?<!\\)\$(?!\$)', re.DOTALL)
 
 
 def get_cleaner(name, params):
