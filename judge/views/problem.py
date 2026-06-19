@@ -16,7 +16,7 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
-from django.db.models import BooleanField, Case, Prefetch, Q, When
+from django.db.models import BooleanField, Case, IntegerField, OuterRef, Prefetch, Q, Subquery, Value, When
 from django.db.utils import ProgrammingError
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -354,20 +354,24 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
                 solved = user_completed_ids(profile)
                 attempted = user_attempted_ids(profile)
 
-                def _solved_sort_order(problem):
-                    if problem.id in solved:
-                        return 1
-                    if problem.id in attempted:
-                        return 0
-                    return -1
-
-                queryset = list(queryset)
-                queryset.sort(key=_solved_sort_order, reverse=self.order.startswith('-'))
+                queryset = queryset.annotate(
+                    solved_order=Case(
+                        When(id__in=solved, then=Value(1)),
+                        When(id__in=attempted, then=Value(0)),
+                        default=Value(-1),
+                        output_field=IntegerField(),
+                    ),
+                ).order_by(('-' if self.order.startswith('-') else '') + 'solved_order', 'id')
         elif sort_key == 'type':
             if self.show_types:
-                queryset = list(queryset)
-                queryset.sort(key=lambda problem: problem.types_list[0] if problem.types_list else '',
-                              reverse=self.order.startswith('-'))
+                first_type_name = (
+                    Problem.types.through.objects.filter(problem=OuterRef('pk'))
+                    .order_by('problemtype__full_name')
+                    .values('problemtype__full_name')[:1]
+                )
+                queryset = queryset.annotate(
+                    first_type=Subquery(first_type_name),
+                ).order_by(('-' if self.order.startswith('-') else '') + 'first_type', 'id')
         paginator.object_list = queryset
         return paginator
 
