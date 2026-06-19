@@ -16,7 +16,7 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
-from django.db.models import BooleanField, Case, Prefetch, Q, When, Value, IntegerField, Subquery, OuterRef
+from django.db.models import BooleanField, Case, IntegerField, OuterRef, Prefetch, Q, Subquery, Value, When
 from django.db.utils import ProgrammingError
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
