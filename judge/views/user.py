@@ -1,9 +1,8 @@
-import itertools
 import json
 import os
 from datetime import datetime
 from datetime import timedelta
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 
 import pytz
 from django.conf import settings
@@ -35,9 +34,8 @@ from reversion import revisions
 
 from judge.forms import CustomAuthenticationForm, ProfileForm, UserBanForm, UserDownloadDataForm, UserForm, \
     newsletter_id
-from judge.models import BlogPost, Organization, Profile, Submission
+from judge.models import BlogPost, Organization, Profile
 from judge.models import Comment
-from judge.performance_points import get_pp_breakdown
 from judge.ratings import rating_class, rating_progress
 from judge.tasks import prepare_user_data
 from judge.utils.celery import task_status_by_id, task_status_url_by_id
@@ -46,18 +44,13 @@ from judge.utils.problems import contest_completed_ids, user_completed_ids
 from judge.utils.pwned import PwnedPasswordsValidator
 from judge.utils.ranker import ranker
 from judge.utils.subscription import Subscription
-from judge.utils.unicode import utf8text
 from judge.utils.views import DiggPaginatorMixin, QueryStringSortMixin, SingleObjectFormView, TitleMixin, \
     add_file_response, generic_message
 from judge.views.blog import PostListBase
 from .contests import ContestRanking
 
-__all__ = ['UserPage', 'UserAboutPage', 'UserProblemsPage', 'UserCommentPage', 'UserDownloadData', 'UserPrepareData',
+__all__ = ['UserPage', 'UserAboutPage', 'UserCommentPage', 'UserDownloadData', 'UserPrepareData',
            'users', 'edit_profile']
-
-
-def remap_keys(iterable, mapping):
-    return [dict((mapping.get(k, k), v) for k, v in item.items()) for item in iterable]
 
 
 class UserMixin(object):
@@ -339,89 +332,6 @@ class UserCommentPage(CustomUserMixin, DiggPaginatorMixin, ListView):
         if request.method == 'POST':
             return self.delete_comments(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
-
-
-class UserProblemsPage(UserPage):
-    template_name = 'user/user-problems.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(UserProblemsPage, self).get_context_data(**kwargs)
-
-        cache_key = 'user_best_submissions:%s:%s' % (self.object.id, self.hide_solved)
-        best_submissions = cache.get(cache_key)
-
-        if best_submissions is None:
-            result = (
-                Submission.objects.filter(
-                    user=self.object,
-                    points__gt=0,
-                    problem__is_public=True,
-                    problem__is_organization_private=False,
-                )
-                .exclude(problem__in=self.get_completed_problems() if self.hide_solved else [])
-                .values(
-                    'problem__id',
-                    'problem__code',
-                    'problem__name',
-                    'problem__points',
-                    'problem__group__full_name',
-                )
-                .distinct()
-                .annotate(points=Max('points'))
-                .order_by('problem__group__full_name', 'problem__code')
-            )
-
-            def process_group(group, problems_iter):
-                problems = list(problems_iter)
-                points = sum(map(itemgetter('points'), problems))
-                return {'name': group, 'problems': problems, 'points': points}
-
-            best_submissions = [
-                process_group(group, problems)
-                for group, problems in itertools.groupby(
-                    remap_keys(result, {
-                        'problem__code': 'code',
-                        'problem__name': 'name',
-                        'problem__points': 'total',
-                        'problem__group__full_name': 'group',
-                    }),
-                    itemgetter('group'),
-                )
-            ]
-            cache.set(cache_key, best_submissions, 900)  # 15 mins cache
-
-        context['best_submissions'] = best_submissions
-        breakdown, has_more = get_pp_breakdown(self.object, start=0, end=10)
-        context['pp_breakdown'] = breakdown
-        context['pp_has_more'] = has_more
-
-        return context
-
-
-class UserPerformancePointsAjax(UserProblemsPage):
-    template_name = 'user/pp-table-body.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(UserPerformancePointsAjax, self).get_context_data(**kwargs)
-        try:
-            start = int(self.request.GET.get('start', 0))
-            end = int(self.request.GET.get('end', settings.DMOJ_PP_ENTRIES))
-            if start < 0 or end < 0 or start > end:
-                raise ValueError
-        except ValueError:
-            start, end = 0, 100
-        breakdown, self.has_more = get_pp_breakdown(self.object, start=start, end=end)
-        context['pp_breakdown'] = breakdown
-        return context
-
-    def get(self, request, *args, **kwargs):
-        httpresp = super(UserPerformancePointsAjax, self).get(request, *args, **kwargs)
-        httpresp.render()
-
-        return JsonResponse({
-            'results': utf8text(httpresp.content),
-            'has_more': self.has_more,
-        })
 
 
 class UserDataMixin:

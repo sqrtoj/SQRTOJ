@@ -54,7 +54,7 @@ from judge.utils.views import DiggPaginatorMixin, QueryStringSortMixin, SingleOb
 
 __all__ = ['ContestList', 'ContestDetail', 'ContestRanking', 'ContestJoin', 'ContestLeave', 'ContestCalendar',
            'ContestClone', 'ContestStats', 'ContestMossView', 'ContestMossDelete',
-           'ContestParticipationList', 'ContestParticipationDisqualify', 'get_contest_ranking_list',
+           'ContestParticipationDisqualify', 'get_contest_ranking_list',
            'base_contest_ranking_list']
 
 
@@ -1345,43 +1345,6 @@ class ContestResolverDataView(ContestResolverMixin, SingleObjectMixin, View):
         if denial is not None:
             return denial
         return JsonResponse(build_resolver_payload(self.object))
-
-
-class ContestParticipationList(LoginRequiredMixin, ContestRankingBase):
-    tab = 'participation'
-
-    def get_title(self):
-        if self.profile == self.request.profile:
-            return _('Your participation in %(contest)s') % {'contest': self.object.name}
-        return _("%(user)s's participation in %(contest)s") % {
-            'user': self.profile.username, 'contest': self.object.name,
-        }
-
-    def get_ranking_list(self):
-        if not self.object.can_see_full_scoreboard(self.request.user) and self.profile != self.request.profile:
-            raise Http404()
-
-        queryset = self.object.users.filter(user=self.profile, virtual__gte=0).order_by('-virtual')
-        live_link = format_html('<a href="{2}#!{1}">{0}</a>', _('Live'), self.profile.username,
-                                reverse('contest_ranking', args=[self.object.key]))
-
-        return get_contest_ranking_list(
-            self.request, self.object,
-            ranking_list=partial(base_contest_ranking_list, queryset=queryset),
-            ranker=lambda users, key: ((user.participation.virtual or live_link, user) for user in users))
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['has_rating'] = False
-        context['rank_header'] = _('Participation')
-        return context
-
-    def get(self, request, *args, **kwargs):
-        if 'user' in kwargs:
-            self.profile = get_object_or_404(Profile, user__username=kwargs['user'])
-        else:
-            self.profile = self.request.profile
-        return super().get(request, *args, **kwargs)
 
 
 class ContestParticipationDisqualify(ContestMixin, SingleObjectMixin, View):
