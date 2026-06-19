@@ -328,7 +328,7 @@
                                 if (maxPoints && !isNaN(ptsStr) && !isNaN(maxPoints)) {
                                     ptsBase = ptsStr + '/' + maxPoints;
                                 }
-                                var submissionNotifFormat = {{ _('%(points)s points - submission #%(tries)s')|htmltojs }};
+                                var submissionNotifFormat = {{ _('%(points)s points - submission #%(tries)s', points='%(points)s', tries='%(tries)s')|htmltojs }};
                                 displayScore = submissionNotifFormat
                                     .replace('%(points)s', ptsBase)
                                     .replace('%(tries)s', problemTries);
