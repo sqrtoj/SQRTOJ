@@ -130,6 +130,12 @@ class TestMarkdown(SimpleTestCase):
                              '<p><noscript><img src="test.png"></noscript>'
                              '<img src="/static/blank.gif" data-src="test.png" class="unveil"></p>')
 
+    def test_math_delimiters(self):
+        self.assertIn('$$a + b$$', markdown('$$a + b$$', self.BLEACHED_STYLE))
+        self.assertIn('$$a + b$$', markdown('\\[a + b\\]', self.BLEACHED_STYLE))
+        self.assertIn('~a + b~', markdown('$a + b$', self.BLEACHED_STYLE))
+        self.assertIn('~a + b~', markdown('\\(a + b\\)', self.BLEACHED_STYLE))
+
 
 class TestFragmentUtils(SimpleTestCase):
     def test_simple(self):
