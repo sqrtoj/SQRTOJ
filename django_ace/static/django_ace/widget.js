@@ -101,19 +101,34 @@
         if (theme) {
             editor.setTheme("ace/theme/" + theme);
         } else {
-            if (window.matchMedia) {
-                const setEditorTheme = function (is_dark) {
-                    if (is_dark) {
-                        editor.setTheme("ace/theme/" + default_dark_theme);
-                    } else {
-                        editor.setTheme("ace/theme/" + default_light_theme);
-                    }
+            const checkIsDark = function () {
+                const darkLink = document.querySelector('link[href*="dark/style.css"]');
+                if (!darkLink) return false;
+                if (darkLink.media && darkLink.media.includes('prefers-color-scheme: dark')) {
+                    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
                 }
+                return true;
+            };
 
-                setEditorTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
-                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(ev) {
-                    setEditorTheme(ev.matches);
-                })
+            const setEditorTheme = function () {
+                if (checkIsDark()) {
+                    editor.setTheme("ace/theme/" + default_dark_theme);
+                    document.documentElement.classList.add('theme-dark');
+                } else {
+                    editor.setTheme("ace/theme/" + default_light_theme);
+                    document.documentElement.classList.remove('theme-dark');
+                }
+            };
+
+            setEditorTheme();
+
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+                    const darkLink = document.querySelector('link[href*="dark/style.css"]');
+                    if (darkLink && darkLink.media && darkLink.media.includes('prefers-color-scheme: dark')) {
+                        setEditorTheme();
+                    }
+                });
             }
         }
         if (wordwrap == "true") {
