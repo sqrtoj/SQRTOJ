@@ -30,14 +30,12 @@
     overflow: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-    .django-ace-toolbar {
-        background-color: rgb(17, 17, 17);
-        background-image: none;
-        color: #ddd;
-        text-shadow: none;
-        border-bottom-color: #333;
-    }
+.theme-dark .django-ace-toolbar {
+    background-color: rgb(17, 17, 17);
+    background-image: none;
+    color: #ddd;
+    text-shadow: none;
+    border-bottom-color: #333;
 }
 
 .django-ace-max_min {
@@ -50,10 +48,8 @@
     width: 16px;
 }
 
-@media (prefers-color-scheme: dark) {
-    .django-ace-max_min {
-        filter: invert(1);
-    }
+.theme-dark .django-ace-max_min {
+    filter: invert(1);
 }
 
 .django-ace-editor {
