@@ -34,7 +34,7 @@ const followers = new Set();
  */
 const pollers = new Set();
 const maxQueue = config.max_queue || 50;
-const maxFilter = config.max_filter || 5;
+const maxFilter = config.max_filter || 100;
 const maxBodySize = config.max_body_size || 200;
 const longPollTimeout = config.long_poll_timeout || 60000;
 let messageId = Date.now();
