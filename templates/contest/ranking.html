@@ -271,6 +271,20 @@
                         localStorage.setItem('active-ranking-notifications', JSON.stringify(list));
                     }
 
+                    // Remove existing notifications for the same user and problem
+                    if (userUrl && problemLabel) {
+                        var existing = container.children('.ranking-notification[data-user-url="' + userUrl + '"][data-problem-label="' + problemLabel + '"]');
+                        if (existing.length > 0) {
+                            existing.each(function() {
+                                var existingId = $(this).attr('data-notif-id');
+                                if (existingId) {
+                                    removeNotifFromStorage(existingId);
+                                }
+                                $(this).remove();
+                            });
+                        }
+                    }
+
                     // Save to localStorage if it's a new notification
                     if (!notifId) {
                         var list = [];
@@ -306,7 +320,10 @@
                         oldest.remove();
                     }
 
-                    var notification = $('<div>', { class: 'alert alert-info alert-dismissable ranking-notification' }).attr('data-notif-id', id);
+                    var notification = $('<div>', { class: 'alert alert-info alert-dismissable ranking-notification' })
+                        .attr('data-notif-id', id)
+                        .attr('data-user-url', userUrl || '')
+                        .attr('data-problem-label', problemLabel || '');
                     var closeBtn = $('<a>', { href: '#', class: 'close' }).html('&times;').appendTo(notification);
 
                     var content = $('<div>');
@@ -340,7 +357,17 @@
                                 }
                                 scoreLabel = ' <span class="ranking-badge ranking-badge-' + problemResult + '">' + innerText + '</span>';
                             } else {
-                                scoreLabel = ' <span class="ranking-badge ranking-badge-pending">' + displayScore + '</span>';
+                                var badgeClass = 'pending';
+                                if (!problemIsPending) {
+                                    if (problemIsSolved) {
+                                        badgeClass = 'AC';
+                                    } else if (problemIsFailed) {
+                                        badgeClass = 'WA';
+                                    } else {
+                                        badgeClass = 'PA';
+                                    }
+                                }
+                                scoreLabel = ' <span class="ranking-badge ranking-badge-' + badgeClass + '">' + displayScore + '</span>';
                             }
                         } else if (problemResult) {
                             scoreLabel = ' <span class="ranking-badge ranking-badge-' + problemResult + '">' + problemResult + '</span>';
