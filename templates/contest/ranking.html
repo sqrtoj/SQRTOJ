@@ -271,7 +271,6 @@
                         localStorage.setItem('active-ranking-notifications', JSON.stringify(list));
                     }
 
-                    // Remove existing notifications for the same user and problem
                     if (userUrl && problemLabel) {
                         var existing = container.children('.ranking-notification[data-user-url="' + userUrl + '"][data-problem-label="' + problemLabel + '"]');
                         if (existing.length > 0) {
@@ -396,10 +395,22 @@
                         }
                     }, timeout);
                 }
+                var usesWebsocket = false;
+                var pollInterval = 3000;
+                var ranking_updating = false;
+                var ranking_dirty = false;
+
                 function update_ranking() {
                     if ($('body').hasClass('window-hidden')) {
-                        return ranking_outdated = true;
+                        ranking_outdated = true;
+                        return;
                     }
+                    if (ranking_updating) {
+                        ranking_dirty = true;
+                        return;
+                    }
+                    ranking_updating = true;
+                    ranking_dirty = false;
                     var queryParam = window.location.search;
 
                     // Map headers to find problem column indices
@@ -576,8 +587,13 @@
                     }).fail(function (xhr, textStatus, errorThrown) {
                         console.error('[DEBUG] AJAX failed:', textStatus, errorThrown);
                     }).always(function () {
+                        ranking_updating = false;
                         ranking_outdated = false;
-                        setTimeout(update_ranking, 3000);
+                        if (ranking_dirty) {
+                            setTimeout(update_ranking, 500);
+                        } else {
+                            setTimeout(update_ranking, pollInterval);
+                        }
                     });
                 }
                 $(window).on('dmoj:window-visible', function () {
@@ -609,7 +625,18 @@
                     localStorage.setItem('active-ranking-notifications', JSON.stringify(activeList));
                 }
 
-                setTimeout(update_ranking, 3000);
+                if (window.event_dispatcher) {
+                    window.event_dispatcher.auto_reconnect = true;
+                    window.event_dispatcher.on('contest_{{ contest.id }}', function (data) {
+                        if (data && data.type === 'update') {
+                            update_ranking();
+                        }
+                    });
+                    usesWebsocket = true;
+                    pollInterval = 60000; // Poll every 60 seconds as a backup
+                }
+
+                setTimeout(update_ranking, pollInterval);
 
                 var $notifCheckbox = $('#show-ranking-notifications-checkbox');
                 if ($notifCheckbox.length) {
