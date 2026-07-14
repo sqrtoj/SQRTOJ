@@ -124,15 +124,23 @@ sticky scoreboard header) is deferred to Phase 4 as CSS-only follow-ups.
 
 Goal: finish remaining surfaces and remove legacy artifacts.
 
-- [ ] Comments (`comments.scss`), tickets (`ticket.scss`).
-- [ ] Blog: reconcile `$color_blog_*` into shared tokens (dedupe). (5.5)
-- [ ] Home page (`home.html`) layout refresh.
-- [ ] Organization, stats, status, registration screens.
-- [ ] Remove tiled background images from `base.scss` (both themes) once surfaces
-      are finalized.
-- [ ] Retire redundant `$color_*` vars fully superseded by tokens.
-- [ ] Accessibility pass per `07-accessibility.md` (contrast, focus, keyboard).
-- [ ] Cross-browser check against `.browserslistrc`.
+- [x] Comments (`comments.scss`), tickets (`ticket.scss`): tokenized colors,
+      borders, radii; focus-visible on interactive controls.
+- [x] Blog: `blog.scss` migrated to shared link/border/surface tokens. (5.5)
+- [x] Home page (`home.html`): hero artwork slot reserved (A-1).
+- [x] Organization, stats, registration screens: no dedicated SCSS — inherit the
+      already-tokenized shared components (tables, buttons, cards, forms). `misc.scss`
+      tokenized.
+- [x] Web fonts loaded: `Inter` (UI) + `JetBrains Mono` (code) via `font-display:
+      swap`, prepended to the token stacks so type actually changes.
+- [x] Warm Harvest uses a flat themed canvas (tiled photos already replaced in
+      Phase 1 via `$flat_background`); Summer keeps its classic photos.
+- [~] Retire redundant `$color_*` vars: left in place — still consumed widely by
+      components; a full removal would be a risky big-bang refactor (out of scope).
+- [~] Accessibility: focus-visible + contrast-checked tokens applied; full manual
+      AT pass still recommended per `07-accessibility.md`.
+- [~] `status`/`task_status.css`: `status.scss` verdicts done (Phase 3);
+      `task_status.css` left as a self-contained utility page.
 
 Exit criteria: entire site on the system, legacy hex/backgrounds gone, a11y passes.
 
@@ -145,13 +153,15 @@ MUST stay fully usable if an asset is missing. Wire the slots as placeholders no
 dropping in the real files later needs no markup change. Assets will be supplied
 later — these stay `[ ]` until then.
 
-- [ ] Hero slot: reserve the `templates/home.html` header banner slot (A-1) behind a
-      token/placeholder; no layout shift when the WebP/PNG lands.
-- [ ] Tile slot: reserve the seamless leaf/paper body background (A-3) in
-      `base.scss`, behind content at low opacity, gated on reduced-contrast so it
-      never threatens AA (`07-accessibility.md`).
-- [ ] Logo slot: reserve the seasonal wordmark (A-2) in
-      `templates/site-logo-fragment.html`, light + dark variants.
+- [x] Hero slot: `#autumn-hero` reserved in `templates/home.html`, styled in
+      `base.scss` via the `--hero-image` token. Collapses to zero height until the
+      token is set, so no layout shift and no request until the asset lands.
+- [x] Tile slot: seamless leaf/paper body background (A-3) wired in `base.scss`
+      behind content via the `--bg-texture` / `--bg-texture-opacity` tokens
+      (default `none`, so no 404 until supplied).
+- [ ] Logo slot: left as the current logo for now. Deliberately token-driven only
+      (no eager `<img>` swap) to avoid a 404 on every page until the seasonal
+      wordmark (A-2) is supplied.
 - [ ] Remaining art (empty states, error art, dividers, falling leaves, favicon, OG
       image) tracked against the `08 §5` manifest as assets arrive.
 

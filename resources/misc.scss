@@ -6,7 +6,7 @@
     }
 
     .version-blank {
-        background: $color_primary10;
+        background: var(--color-surface-alt);
     }
 
     .version-latest {
@@ -58,5 +58,5 @@
 }
 
 .grayed {
-    color: $color_primary75;
+    color: var(--color-text-muted);
 }

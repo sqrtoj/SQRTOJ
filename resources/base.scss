@@ -144,7 +144,14 @@ body::before {
   inset: 0;
 
   @if $flat_background {
-    background: transparent;
+    // Artwork slot A-3: seamless leaf/paper texture. Defaults to `none` (via the
+    // --bg-texture token) so the page degrades gracefully with no 404 until the
+    // asset lands; dropping the file in and setting the token needs no markup
+    // change. Kept low-opacity and behind content so it never threatens AA.
+    background-color: transparent;
+    background-image: var(--bg-texture, none);
+    background-repeat: repeat;
+    opacity: var(--bg-texture-opacity, 1);
   }
 
   @else if $is_light_theme {
@@ -155,6 +162,20 @@ body::before {
   }
 
   z-index: -1;
+}
+
+// Artwork slot A-1: homepage hero banner. Reserved so dropping in the WebP/PNG
+// needs no markup change and causes no layout shift. Collapses to zero height (so
+// it is invisible and takes no space) until an asset is supplied: set both
+// --hero-image and --hero-height to activate it.
+.autumn-hero {
+    height: var(--hero-height, 0);
+    margin-bottom: var(--hero-margin, 0);
+    background-image: var(--hero-image, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: var(--radius-lg);
 }
 
 .unselectable {

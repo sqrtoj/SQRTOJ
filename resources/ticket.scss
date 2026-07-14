@@ -17,11 +17,11 @@ form#ticket-form {
 
 #ticket-list {
     .fa-check-circle-o, .fa-arrow-up {
-        color: #44AD41;
+        color: var(--color-success-fg);
     }
 
     .fa-exclamation-circle {
-        color: #DE2121;
+        color: var(--color-danger-fg);
     }
 }
 
@@ -53,15 +53,15 @@ div.ticket-title {
     column-gap: 0.3em;
 
     .fa-check-circle-o, .fa-arrow-up {
-        color: #00a900;
+        color: var(--color-success-fg);
     }
 
     .fa-exclamation-circle {
-        color: #ff130f;
+        color: var(--color-danger-fg);
     }
 
     small {
-        color: $color_primary50;
+        color: var(--color-text-muted);
         font-size: 0.9em;
     }
 }
@@ -93,24 +93,24 @@ div.ticket-title {
 
 .info-box {
     margin: 5px 0 10px;
-    border: 1px $color_primary50 solid;
-    border-radius: 5px;
+    border: 1px var(--color-border-strong) solid;
+    border-radius: var(--radius-md);
 
     a.edit-notes {
         float: right;
     }
 
     .fa {
-        color: $color_primary50;
+        color: var(--color-text-muted);
     }
 }
 
 .info-title {
     padding: 2px 5px;
     font-weight: 600;
-    border-bottom: 1px $color_primary50 solid;
-    background: $color_primary10;
-    border-radius: 5px 5px 0 0;
+    border-bottom: 1px var(--color-border-strong) solid;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .info-data {
@@ -119,7 +119,7 @@ div.ticket-title {
 }
 
 .info-empty {
-    color: $color_primary50;
+    color: var(--color-text-muted);
     font-style: italic;
 }
 
@@ -137,6 +137,11 @@ div.ticket-title {
     &:hover {
         background: #24710e;
     }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+    }
 }
 
 .open-ticket, .vote-norm {
@@ -148,6 +153,11 @@ div.ticket-title {
 
     &:hover {
         background: #853011;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
     }
 }
 
@@ -172,16 +182,16 @@ div.ticket-title {
     }
 
     .detail {
-        border: 1px $color_primary50 solid;
-        border-radius: 5px;
+        border: 1px var(--color-border-strong) solid;
+        border-radius: var(--radius-md);
         flex: 1;
         min-width: 300px;
     }
 
     .header {
-        background: $color_primary10;
-        border-bottom: 1px solid $color_primary50;
-        border-radius: 5px 5px 0 0;
+        background: var(--color-surface-alt);
+        border-bottom: 1px solid var(--color-border-strong);
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
         padding: 2px 5px;
         text-align: right;
         display: flex;
@@ -193,7 +203,7 @@ div.ticket-title {
         flex: auto;
 
         .fa {
-            color: $color_primary50;
+            color: var(--color-text-muted);
         }
     }
 

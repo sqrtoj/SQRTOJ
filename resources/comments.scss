@@ -7,11 +7,11 @@
 
 a {
     &.upvote-link, &.downvote-link {
-        color: $color_primary100;
+        color: var(--color-text);
     }
 
     &.voted {
-        text-shadow: 0 0 7px $color_primary100, 0 0 15px $color_voted_mark;
+        text-shadow: 0 0 7px var(--color-text), 0 0 15px $color_voted_mark;
     }
 }
 
@@ -38,14 +38,14 @@ a {
 
 .comment-edits:not(:empty) {
     padding-right: 2px;
-    color: $color_primary75;
+    color: var(--color-text);
 }
 
 .comment-operation {
     flex: auto;
 
     .fa {
-        color: $color_primary75;
+        color: var(--color-text);
     }
 
     a + a {
@@ -100,7 +100,7 @@ a {
 }
 
 .previous-revision, .next-revision {
-    color: $color_primary75;
+    color: var(--color-text);
 }
 
 .new-comments {
@@ -108,8 +108,8 @@ a {
         display: flex;
         padding-left: 1em;
         padding-top: 0.5em !important;
-        border: 1px solid $color_primary25;
-        background: $color_primary5;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface-alt);
         border-radius: $widget_border_radius;
     }
 
@@ -123,15 +123,15 @@ a {
             justify-content: space-between;
             padding: 2px 0px;
             font-weight: normal;
-            border-bottom: 1px $color_primary50 solid;
-            color: $color_primary50;
+            border-bottom: 1px var(--color-border-strong) solid;
+            color: var(--color-text-muted);
             text-align: right;
         }
     }
 
     .comment:target > .comment-display {
-        border: 1px solid $highlight_blue;
-        border-left: 10px solid $highlight_blue;
+        border: 1px solid var(--color-accent);
+        border-left: 10px solid var(--color-accent);
         padding-left: 5px;
     }
 
@@ -140,7 +140,7 @@ a {
     }
 
     .header i {
-        color: $color_primary50 !important;
+        color: var(--color-text-muted) !important;
     }
 
     .info {
