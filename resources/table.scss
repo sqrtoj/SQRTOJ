@@ -12,11 +12,23 @@ $is_light_theme: true;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 0.5em;
-    background: rgba($color_primary100, 0.01);
-    backdrop-filter: blur(3px);
+    background: var(--color-surface);
+    // Rounded, clipped corners give the table a modern card-like frame.
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-1);
 
     &.striped tr:nth-child(2n) {
-        background: rgba($color_primary100, 0.03);
+        background: var(--color-surface-alt);
+    }
+
+    // Smooth row highlight on hover for scannability.
+    tbody tr {
+        transition: background-color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-surface-alt);
+        }
     }
 
     th {
@@ -26,12 +38,13 @@ $is_light_theme: true;
         border-color: $color_primary50;
         border-width: 0 1px 1px 0;
         border-style: solid;
-        padding: var(--space-1) var(--space-3);
+        padding: var(--space-2) var(--space-3);
         vertical-align: middle;
         text-align: center;
         white-space: nowrap;
         font-weight: var(--weight-semibold);
-        font-size: 1.1em;
+        font-size: 1.05em;
+        letter-spacing: 0.01em;
         border-radius: 0;
     }
 
@@ -39,7 +52,7 @@ $is_light_theme: true;
         border-color: var(--color-border);
         border-width: 0 1px 1px 0;
         border-style: solid;
-        padding: 7px 5px;
+        padding: var(--space-2) var(--space-2);
         vertical-align: middle;
         text-align: center;
         border-radius: 0;

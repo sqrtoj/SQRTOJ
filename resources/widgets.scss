@@ -41,17 +41,24 @@ $is_light_theme: true;
     display: block;
     border: 0;
     text-align: center;
-    transition: background-color var(--motion-fast) var(--ease-standard);
+    box-shadow: var(--shadow-1);
+    transition: background-color var(--motion-fast) var(--ease-standard),
+        box-shadow var(--motion-fast) var(--ease-standard),
+        transform var(--motion-fast) var(--ease-standard);
 
     // 4k hack
     font-size: $base_font_size;
 
     &:hover {
         background: var(--color-accent-hover);
+        box-shadow: var(--shadow-2);
+        transform: translateY(-1px);
     }
 
     &:active {
         background: var(--color-accent-hover);
+        box-shadow: var(--shadow-1);
+        transform: translateY(0);
     }
 
     &:focus-visible {
@@ -115,13 +122,13 @@ $is_light_theme: true;
 
 input {
     &[type=text], &[type=password], &[type=email], &[type=number], &[type=url] {
-        padding: var(--space-1) var(--space-2);
+        padding: var(--space-2) var(--space-3);
         color: var(--color-text);
         background: var(--color-surface) none;
         border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
-        box-shadow: 0 1px 1px rgba($color_primary100, 0.075) inset;
-        transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+        border-radius: var(--radius-md);
+        transition: border-color var(--motion-fast) var(--ease-standard),
+            box-shadow var(--motion-fast) var(--ease-standard);
         box-sizing: border-box;
 
         // Need this explicitly because UA stylesheet for Chrome on 4k makes
@@ -129,12 +136,12 @@ input {
         font-size: $base_font_size;
 
         &:hover {
-            border-color: var(--color-focus-ring);
+            border-color: var(--color-border-strong);
         }
 
         &:focus {
-            border-color: var(--color-focus-ring);
-            box-shadow: 0 0 0 2px var(--color-focus-ring);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px var(--color-focus-ring-soft);
             outline: 0;
         }
     }
@@ -161,24 +168,23 @@ input {
 }
 
 textarea {
-    padding: 4px 8px;
+    padding: var(--space-2) var(--space-3);
     color: $color_primary75;
     background: var(--color-surface) none;
     border: 1px solid var(--color-border);
-    border-radius: $widget_border_radius;
-    box-shadow: 0 1px 1px rgba($color_primary100, 0.075) inset;
-    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    border-radius: var(--radius-md);
+    transition: border-color var(--motion-fast) var(--ease-standard),
+        box-shadow var(--motion-fast) var(--ease-standard);
     box-sizing: border-box;
 }
 
 textarea:hover {
-    border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 4px rgba(82, 168, 236, 0.6);
+    border-color: var(--color-border-strong);
 }
 
 textarea:focus {
-    border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-focus-ring-soft);
     outline: 0;
 }
 

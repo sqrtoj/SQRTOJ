@@ -40,6 +40,7 @@ $is_summer: false !default;
             --color-link: #1958c1;
             --color-link-hover: #0645ad;
             --color-focus-ring: #1958c1;
+            --color-focus-ring-soft: rgba(25, 88, 193, 0.25);
 
             --color-info-bg: #ddeeff;
             --color-info-fg: #26536b;
@@ -71,6 +72,7 @@ $is_summer: false !default;
             --color-link: #6bb0f5;
             --color-link-hover: #8fc4ff;
             --color-focus-ring: #6bb0f5;
+            --color-focus-ring-soft: rgba(107, 176, 245, 0.25);
 
             --color-info-bg: #002233;
             --color-info-fg: #77ddff;
@@ -106,6 +108,7 @@ $is_summer: false !default;
             --color-link: #c1440e;
             --color-link-hover: #7a2906;
             --color-focus-ring: #c1440e;
+            --color-focus-ring-soft: rgba(193, 68, 14, 0.25);
 
             --color-info-bg: #d9eef2;
             --color-info-fg: #1f5c6b;
@@ -137,6 +140,7 @@ $is_summer: false !default;
             --color-link: #e07b39;
             --color-link-hover: #e9c46a;
             --color-focus-ring: #e07b39;
+            --color-focus-ring-soft: rgba(224, 123, 57, 0.25);
 
             --color-info-bg: #0d2b33;
             --color-info-fg: #5fb3c4;

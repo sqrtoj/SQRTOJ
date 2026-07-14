@@ -36,6 +36,17 @@ a {
     outline-offset: 2px;
 }
 
+// Respect users who prefer reduced motion: disable transitions/animations and
+// any hover-lift transforms introduced by the modern UI (a11y, NFR-1.3).
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 img {
     max-width: 100%;
     // width: auto;
@@ -233,6 +244,9 @@ hr {
         // Brand heading color (sienna in Warm Harvest, green in Summer); blog post
         // titles match this via $color_primary75.
         color: $color_primary75;
+        font-weight: var(--weight-bold);
+        letter-spacing: -0.02em;
+        line-height: 1.15;
     }
 }
 
@@ -364,6 +378,7 @@ noscript #noscript {
     margin: 0 auto;
     border-right: 1px solid var(--color-border);
     border-left: 1px solid var(--color-border);
+    box-shadow: var(--shadow-2);
     max-width: 100em;
 }
 
