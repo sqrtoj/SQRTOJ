@@ -127,7 +127,17 @@ Goal: finish remaining surfaces and remove legacy artifacts.
 - [x] Comments (`comments.scss`), tickets (`ticket.scss`): tokenized colors,
       borders, radii; focus-visible on interactive controls.
 - [x] Blog: `blog.scss` migrated to shared link/border/surface tokens. (5.5)
-- [x] Home page (`home.html`): hero artwork slot reserved (A-1).
+- [x] Home page (`home.html`): hero artwork slot reserved (A-1); sidebox cards get
+      token surface + radius + subtle elevation; contest-list titles match the brand
+      heading color.
+- [x] Retire redundant `$color_*` vars: migrated unambiguous border/surface/muted-text
+      refs in the main-bundle partials to tokens. Aligned the Summer palette tokens to
+      its classic legacy values first, verified both Summer builds keep their classic
+      look (green count unchanged). Left as legacy by design: `rgba($color_*, ...)`
+      calls (Sass needs a compile-time color), `$color_primary75` (palette-brand/widget
+      color with no single semantic token), `$color_pageBg`/`$highlight_blue`/
+      `$announcement_red` (protected vars), and the standalone-compiled
+      `martor-description`/`ace-dmoj` files (no `:root` token layer).
 - [x] Organization, stats, registration screens: no dedicated SCSS — inherit the
       already-tokenized shared components (tables, buttons, cards, forms). `misc.scss`
       tokenized.
@@ -135,8 +145,6 @@ Goal: finish remaining surfaces and remove legacy artifacts.
       swap`, prepended to the token stacks so type actually changes.
 - [x] Warm Harvest uses a flat themed canvas (tiled photos already replaced in
       Phase 1 via `$flat_background`); Summer keeps its classic photos.
-- [~] Retire redundant `$color_*` vars: left in place — still consumed widely by
-      components; a full removal would be a risky big-bang refactor (out of scope).
 - [~] Accessibility: focus-visible + contrast-checked tokens applied; full manual
       AT pass still recommended per `07-accessibility.md`.
 - [~] `status`/`task_status.css`: `status.scss` verdicts done (Phase 3);

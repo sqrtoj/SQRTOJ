@@ -211,6 +211,22 @@
         .contest-list-title {
             margin-bottom: 0.25rem;
             line-height: 1.25;
+
+            a {
+                // Match the brand heading color (like blog post titles) so sidebar
+                // contest titles read as headings, not generic links. Palette-aware.
+                color: $color_primary75;
+                font-weight: 600;
+
+                &:hover {
+                    color: var(--color-accent);
+                }
+
+                &:focus-visible {
+                    outline: 2px solid var(--color-focus-ring);
+                    outline-offset: 2px;
+                }
+            }
         }
 
         .time {

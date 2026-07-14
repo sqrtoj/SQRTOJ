@@ -146,8 +146,8 @@ input {
     &[type=checkbox] {
         appearance: none;
         vertical-align: middle;
-        border: 1px solid $color_primary50;
-        background: $color_primary0;
+        border: 1px solid var(--color-border-strong);
+        background: var(--color-surface);
         border-radius: 2px;
         width: 0.95em;
         height: 0.95em;
@@ -163,8 +163,8 @@ input {
 textarea {
     padding: 4px 8px;
     color: $color_primary75;
-    background: $color_primary0 none;
-    border: 1px solid $color_primary25;
+    background: var(--color-surface) none;
+    border: 1px solid var(--color-border);
     border-radius: $widget_border_radius;
     box-shadow: 0 1px 1px rgba($color_primary100, 0.075) inset;
     transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
@@ -189,10 +189,10 @@ textarea:focus {
     display: block;
     font-size: 12px;
     font-weight: bold;
-    color: $color_primary50;
+    color: var(--color-text-muted);
     cursor: pointer;
     background-color: $color_pageBg;
-    border: 1px solid $color_primary25;
+    border: 1px solid var(--color-border);
     border-radius: 0 $widget_border_radius;
     position: absolute;
     padding: 5px 8px;
@@ -205,11 +205,11 @@ textarea:focus {
 
 // Bootstrap-y tabs
 .ul_tab_a_active {
-    color: $color_primary100;
+    color: var(--color-text);
     // Cover up the bottom border of active tabs with this color
     background: $color_pageBg;
     cursor: default;
-    border: 1px solid $color_primary25;
+    border: 1px solid var(--color-border);
     border-bottom-color: $color_pageBg;
     border-image: none;
 }
@@ -415,7 +415,7 @@ ul.pagination {
     font-size: 21px;
     font-weight: 700;
     line-height: 1;
-    color: $color_primary100;
+    color: var(--color-text);
     filter: alpha(opacity=20);
     opacity: 0.2;
 }
@@ -426,7 +426,7 @@ a.close {
     line-height: 1;
 
     &:hover {
-        color: $color_primary100;
+        color: var(--color-text);
     }
 }
 
@@ -469,7 +469,7 @@ a.close {
     gap: 0.6rem;
     margin: 0;
     background: $color_navbar_bg;
-    border-radius: 4px 4px 0 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     @if $is_light_theme {
         color: #fff;
     } 
@@ -504,7 +504,7 @@ a.close {
     min-width: 1.8em;
     height: 1.5em;
     padding: 0 0.4em;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     font-size: 0.58em;
     line-height: 1;
     font-weight: 700;
@@ -514,7 +514,7 @@ a.close {
 }
 
 .sidebox-content {
-    border: 1px solid $color_primary25;
+    border: 1px solid var(--color-border);
     border-top: none;
     margin: 0;
     padding: 0.35rem 0.6rem 0.5rem;
@@ -530,9 +530,12 @@ a.close {
     }
 }
 
+// Sidebox cards (home page + others). Card surface + subtle elevation from the
+// token layer for a cohesive, modern look across palettes/themes.
 .sidebox {
-    border-top-left-radius: $widget_border_radius;
-    border-top-right-radius: $widget_border_radius;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
     padding: 0 !important;
     padding-bottom: 1rem !important;
     overflow: hidden;
@@ -601,8 +604,8 @@ a.close {
 }
 
 details {
-    border: 1px solid $color_primary25;
-    background: $color_primary5;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-alt);
     padding: 5px 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }

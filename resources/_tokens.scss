@@ -18,15 +18,17 @@ $is_summer: false !default;
     // --- Color: surfaces & text ---
     @if $is_summer {
         @if $is_light_theme {
-            --color-canvas: #f8f9fa;
+            // Summer = the classic palette; tokens mirror the legacy $color_* values
+            // exactly so migrated components render identically to the original look.
+            --color-canvas: #f8f8f8;
             --color-surface: #ffffff;
             --color-surface-raised: #ffffff;
-            --color-surface-alt: #eef0f2;
-            --color-border: #dfe3e6;
-            --color-border-strong: #c4cbd1;
-            --color-text: #20262b;
-            --color-text-secondary: #4b545c;
-            --color-text-muted: #6b757e;
+            --color-surface-alt: #eeeeee;
+            --color-border: #cccccc;
+            --color-border-strong: #808080;
+            --color-text: #111111;
+            --color-text-secondary: #555555;
+            --color-text-muted: #808080;
             --color-text-inverse: #ffffff;
 
             --color-accent: #1ba94c;
@@ -48,15 +50,16 @@ $is_summer: false !default;
             --color-danger-bg: #f8dcdc;
             --color-danger-fg: #a52222;
         } @else {
-            --color-canvas: #161b1f;
-            --color-surface: #20262b;
-            --color-surface-raised: #333b42;
-            --color-surface-alt: #333b42;
-            --color-border: #333b42;
-            --color-border-strong: #4b545c;
-            --color-text: #eef0f2;
-            --color-text-secondary: #9aa4ad;
-            --color-text-muted: #8a94a0;
+            // Summer dark = classic dark palette; tokens mirror the legacy values.
+            --color-canvas: #222222;
+            --color-surface: #111111;
+            --color-surface-raised: #181818;
+            --color-surface-alt: #181818;
+            --color-border: #3b3b3b;
+            --color-border-strong: #808080;
+            --color-text: #f8f8f8;
+            --color-text-secondary: #aaaaaa;
+            --color-text-muted: #808080;
             --color-text-inverse: #ffffff;
 
             --color-accent: #1ba94c;
