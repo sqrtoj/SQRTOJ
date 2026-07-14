@@ -1,0 +1,169 @@
+// Design-system token layer (Phase 0).
+//
+// Emits the semantic design tokens from docs/design-system/03-design-tokens.md as
+// CSS custom properties on :root. This partial is imported once by style.scss,
+// after the theme `vars` file has defined `$is_light_theme`, so the light build
+// (style.css) emits the light values and the dark build (dark/style.css) emits the
+// dark values.
+//
+// Phase 0 is additive and backward compatible: these variables are DEFINED but not
+// yet CONSUMED by component partials. The values below intentionally match the
+// current green/blue palette so there is no visual change. Later phases migrate
+// components to `var(--...)` and swap the palette (see 06-implementation-roadmap.md).
+
+@import "vars";
+
+:root {
+    // --- Color: surfaces & text ---
+    @if $is_light_theme {
+        --color-canvas: #f8f9fa;
+        --color-surface: #ffffff;
+        --color-surface-raised: #ffffff;
+        --color-surface-alt: #eef0f2;
+        --color-border: #dfe3e6;
+        --color-border-strong: #c4cbd1;
+        --color-text: #20262b;
+        --color-text-secondary: #4b545c;
+        --color-text-muted: #9aa4ad;
+        --color-text-inverse: #ffffff;
+
+        --color-accent: #1ba94c;
+        --color-accent-hover: #158a3e;
+        --color-accent-contrast: #ffffff;
+        --color-accent-2: #5fc27e;
+        --color-navbar: #045c20;
+
+        --color-link: #1958c1;
+        --color-link-hover: #0645ad;
+        --color-focus-ring: #1958c1;
+
+        --color-info-bg: #ddeeff;
+        --color-info-fg: #26536b;
+        --color-success-bg: #ddf3e4;
+        --color-success-fg: #177a3a;
+        --color-warning-bg: #fff3cd;
+        --color-warning-fg: #8a6100;
+        --color-danger-bg: #f8dcdc;
+        --color-danger-fg: #a52222;
+    } @else {
+        --color-canvas: #161b1f;
+        --color-surface: #20262b;
+        --color-surface-raised: #333b42;
+        --color-surface-alt: #333b42;
+        --color-border: #333b42;
+        --color-border-strong: #4b545c;
+        --color-text: #eef0f2;
+        --color-text-secondary: #9aa4ad;
+        --color-text-muted: #6b757e;
+        --color-text-inverse: #ffffff;
+
+        --color-accent: #1ba94c;
+        --color-accent-hover: #5fc27e;
+        --color-accent-contrast: #ffffff;
+        --color-accent-2: #5fc27e;
+        --color-navbar: #0f1214;
+
+        --color-link: #6bb0f5;
+        --color-link-hover: #8fc4ff;
+        --color-focus-ring: #6bb0f5;
+
+        --color-info-bg: #002233;
+        --color-info-fg: #77ddff;
+        --color-success-bg: #0e3a22;
+        --color-success-fg: #66ff88;
+        --color-warning-bg: #3a2e05;
+        --color-warning-fg: #ffdd66;
+        --color-danger-bg: #3a1414;
+        --color-danger-fg: #ff9999;
+    }
+
+    // --- Color: rating tiers ---
+    @if $is_light_theme {
+        --rating-none: #999999;
+        --rating-newbie: #808080;
+        --rating-pupil: #008000;
+        --rating-specialist: #03a89e;
+        --rating-expert: #0000ff;
+        --rating-candidate-master: #aa00aa;
+        --rating-master: #ff8c00;
+        --rating-grandmaster: #ff0000;
+    } @else {
+        --rating-none: #aaaaaa;
+        --rating-newbie: #988f81;
+        --rating-pupil: #72ff72;
+        --rating-specialist: #57fcf2;
+        --rating-expert: #337dff;
+        --rating-candidate-master: #ff55ff;
+        --rating-master: #ff981a;
+        --rating-grandmaster: #ff1a1a;
+    }
+
+    // --- Spacing (4px base) ---
+    --space-0: 0;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    // --- Radius ---
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-pill: 999px;
+
+    // --- Elevation ---
+    @if $is_light_theme {
+        --shadow-0: none;
+        --shadow-1: 0 1px 2px rgba(16, 24, 32, 0.08);
+        --shadow-2: 0 2px 8px rgba(16, 24, 32, 0.1);
+        --shadow-3: 0 8px 24px rgba(16, 24, 32, 0.14);
+    } @else {
+        --shadow-0: none;
+        --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+        --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.55);
+        --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    // --- Typography ---
+    --font-ui: "Inter", "Segoe UI", "Lucida Grande", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", Consolas, "DejaVu Sans Mono", monospace;
+
+    --text-xs: 12px;
+    --text-sm: 13px;
+    --text-base: 15px;
+    --text-md: 17px;
+    --text-lg: 20px;
+    --text-xl: 24px;
+    --text-2xl: 30px;
+
+    --leading-xs: 1.4;
+    --leading-sm: 1.45;
+    --leading-base: 1.55;
+    --leading-md: 1.5;
+    --leading-lg: 1.4;
+    --leading-xl: 1.3;
+    --leading-2xl: 1.25;
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    // --- Motion ---
+    --motion-fast: 120ms;
+    --motion-base: 200ms;
+    --motion-slow: 320ms;
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+    // --- Z-index ---
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-navbar: 1000;
+    --z-overlay: 1100;
+    --z-modal: 1110;
+    --z-toast: 1200;
+}
