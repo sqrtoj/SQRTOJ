@@ -109,8 +109,9 @@ a {
         padding-left: 1em;
         padding-top: 0.5em !important;
         border: 1px solid var(--color-border);
-        background: var(--color-surface-alt);
-        border-radius: $widget_border_radius;
+        background: var(--color-surface);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-1);
     }
 
     .comment .detail {
