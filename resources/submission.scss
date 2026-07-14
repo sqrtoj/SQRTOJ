@@ -19,7 +19,18 @@
     border-top: var(--color-border) 1px solid;
     border-left: var(--color-border) 1px solid;
     border-right: var(--color-border) 1px solid;
-    transition: background-color linear 0.2s;
+    transition: background-color var(--motion-fast) var(--ease-standard);
+
+    // Rounded outer corners so the stacked rows read as one modern card list.
+    &:first-child {
+        border-top-left-radius: var(--radius-md);
+        border-top-right-radius: var(--radius-md);
+    }
+
+    &:last-child {
+        border-bottom-left-radius: var(--radius-md);
+        border-bottom-right-radius: var(--radius-md);
+    }
 
     &:hover {
         background: var(--color-surface-alt);
