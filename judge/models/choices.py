@@ -71,3 +71,8 @@ SITE_THEMES = (
     ('light', _('Light')),
     ('dark', _('Dark')),
 )
+
+SITE_PALETTES = (
+    ('warm', _('Warm Harvest (autumn)')),
+    ('summer', _('Summer (classic)')),
+)

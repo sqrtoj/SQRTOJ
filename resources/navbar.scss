@@ -1,5 +1,6 @@
-// Navbar should look the same in every theme, so vars-common should be enough.
-@import "vars-common";
+// Navbar brand color is theme-coupled (sienna for Warm Harvest, green for Summer),
+// so import the full theme `vars` to pick up $color_navbar_bg / $highlight_blue.
+@import "vars";
 
 #user-links {
     top: 0;
@@ -63,7 +64,7 @@
     left: 0;
     width: 100%;
     height: 48px;
-    background: #045c20;
+    background: $color_navbar_bg;
 }
 
 #nav-shadow {
@@ -72,7 +73,7 @@
 }
 
 #nav-container {
-    background: #045c20;
+    background: $color_navbar_bg;
 
     // opacity: 0.77
     // filter: alpha(opacity=77)
@@ -147,7 +148,7 @@ nav {
                 left: 5px;
                 display: none;
                 color: #fff;
-                background: #045c20;
+                background: $color_navbar_bg;
                 margin: 0 !important;
                 box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 
@@ -241,7 +242,7 @@ nav {
         margin: 0;
         position: fixed;
         top: 36px;
-        background: #045c20;
+        background: $color_navbar_bg;
         bottom: 0;
         width: 8em;
         left: 0;

@@ -27,7 +27,7 @@ $is_light_theme: true;
         @else {
             color: #ccc;
         }
-        background-color: #045c20;
+        background-color: $color_navbar_bg;
         border-color: $color_primary50;
         border-width: 0 1px 1px 0;
         border-style: solid;

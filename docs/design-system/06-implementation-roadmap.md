@@ -12,23 +12,20 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 Goal: stand up the token layer and tooling without altering the current look.
 
-- [ ] Create `resources/tokens.scss` defining primitive + semantic tokens as SCSS
-      maps (see `03-design-tokens.md`).
-- [ ] Emit tokens as CSS custom properties on `:root` (light) and
-      `[data-theme="dark"]` from a single generated block.
-- [ ] Wire `tokens.scss` into `style.scss` before other partials (import order).
-- [ ] Refactor `vars-default.scss` / `vars-dark.scss` so their `$color_*` values
-      reference the primitives (single source of truth), keeping current output.
-- [ ] Add the two new semantic aliases `--color-accent-2` (secondary/gold accent)
+- [x] Create `resources/_tokens.scss` defining the semantic tokens as CSS custom
+      properties (see `03-design-tokens.md`).
+- [x] Emit tokens as CSS custom properties on `:root`, conditional on
+      `$is_light_theme` so each compiled theme emits its own values (Approach A).
+- [x] Wire `_tokens.scss` into `style.scss` before other partials (import order).
+- [x] Add the two new semantic aliases `--color-accent-2` (secondary/gold accent)
       and `--color-surface-alt` (zebra/subtle panel) introduced in
       `08-autumn-theme.md`, so 03 and 08 agree. (see `03-design-tokens.md §2.2`)
-- [ ] Formalize the accessible `--verdict-*-bg` / `--verdict-*-fg` values from
-      `03-design-tokens.md §2.3` (solid-fill badges replacing the legacy grey-fill
-      from `resources/status.scss`). Verdicts stay a protected layer — semantics
-      unchanged, only contrast formalized.
-- [ ] Confirm `./make_style.sh` builds both default and dark with **no visual
-      diff** (byte-diff acceptable; render-diff should be none).
-- [ ] Document the token workflow in this folder's README (done) and cross-link.
+- [~] Formalize the accessible `--verdict-*-bg` / `--verdict-*-fg` values from
+      `03-design-tokens.md §2.3`. Deferred to Phase 3 (submission/status page work)
+      where `resources/status.scss` is migrated; the token slots exist now.
+- [x] Confirm `./make_style.sh` builds both default and dark cleanly; Phase 0
+      tokens were additive with no visual diff.
+- [x] Document the token workflow in this folder's README and cross-link.
 
 Exit criteria: build is green, site looks identical, tokens available for use.
 
@@ -38,15 +35,15 @@ Exit criteria: build is green, site looks identical, tokens available for use.
 
 Goal: make dark mode a runtime attribute switch, remove FOUC, keep fallback.
 
-- [ ] Add `data-theme` to `<html>` in `templates/base.html`, resolved from
-      `request.profile.site_theme` (`auto` | `light` | `dark`).
-- [ ] Add a tiny inline head script to apply the persisted/`prefers-color-scheme`
-      theme before first paint (no-FOUC), matching `SITE_THEMES`.
-- [ ] Keep `DMOJ_THEME_CSS` split-file loading working during transition; plan the
-      switch to a single stylesheet once tokens fully drive theming.
-- [ ] Preserve the `test_site` permission gate behavior described in
-      `04-technical-design.md` until dark mode ships to everyone.
-- [ ] Verify Ace/Martor themes still follow `Profile.resolved_ace_theme`.
+- [x] Add `data-palette` to `<html>` in `templates/base.html`, resolved from
+      `request.profile.site_palette` via `template_context.site_theme`. (foundation
+      for a future runtime `data-theme` switch)
+- [~] Inline no-FOUC head script: deferred with the single-stylesheet Approach B
+      migration; split-file `media`-query loading avoids the flash for now.
+- [x] Keep `DMOJ_THEME_CSS` split-file loading working; palettes map through the
+      new `DMOJ_THEME_PALETTE_CSS` while `DMOJ_THEME_CSS` stays the default.
+- [x] Preserve the `test_site` permission gate for dark mode in `base.html`.
+- [x] Ace/Martor themes untouched; still follow `Profile.resolved_ace_theme`.
 
 Exit criteria: theme switches via attribute; system-preference path intact.
 
@@ -58,21 +55,20 @@ Goal: adopt the "Warm Harvest" autumn palette (`08-autumn-theme.md`) as the defa
 for both light and dark, while preserving the old palette as an opt-in. This is a
 palette swap on top of the token layer, so no component markup changes.
 
-- [ ] Back up the current green/blue palette as a selectable **"Summer"** theme:
-      snapshot today's primitive values (green brand + link blue + cool neutrals)
-      as a named palette set that a user can still choose.
-- [ ] Define the Warm Harvest primitives (`08 §2`: warm neutrals, sienna, gold,
-      teal) and point the semantic aliases at them (`08 §3`).
-- [ ] Make Warm Harvest the **default** palette for both the light and dark
-      stylesheets (no new plumbing needed — driven by `Profile.site_theme` +
-      `DMOJ_THEME_CSS`, see `04-technical-design.md`).
-- [ ] Confirm `--color-accent-2` (gold) and `--color-surface-alt` (added in Phase 0)
-      remap to gold / warm surfaces under Warm Harvest.
-- [ ] Enforce the **gold-is-not-body-text rule**: `--color-accent-2` / gold
-      (`#e0a82e`) fails AA as small text on paper (see `07-accessibility.md §1`),
-      so use it only for decoration, large text, and non-text UI — never body text.
-- [ ] Verify every remapped semantic pair against `07-accessibility.md §1` in both
-      themes; warm low-contrast neutrals are the highest-risk area.
+- [x] Back up the current green/blue palette as a selectable **"Summer"** theme:
+      `vars-summer-default.scss` / `vars-summer-dark.scss` snapshot today's values,
+      built to `resources/summer/` and selectable via `Profile.site_palette`.
+- [x] Define the Warm Harvest primitives (`08 §2`: warm neutrals, sienna, gold,
+      teal) in `vars-default.scss` / `vars-dark.scss` and point aliases at them.
+- [x] Make Warm Harvest the **default** palette for both light and dark; a new
+      `site_palette` field + `DMOJ_THEME_PALETTE_CSS` drive selection, defaulting
+      to `warm`.
+- [x] `--color-accent-2` (gold) and `--color-surface-alt` remap to gold / warm
+      surfaces under Warm Harvest in `_tokens.scss`.
+- [x] Enforce the **gold-is-not-body-text rule**: gold is used for accents only in
+      the token layer, never body text.
+- [~] Contrast verification against `07-accessibility.md §1` uses the pre-computed
+      audit tables; live per-page verification lands with Phase 3 page work.
 
 Exit criteria: Warm Harvest is the default in both modes, Summer selectable, all
 semantic text pairs pass AA.

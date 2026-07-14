@@ -111,7 +111,11 @@ body {
     font-size: $base_font_size;
     line-height: 1.231;
 
-    @if $is_light_theme {
+    @if $flat_background {
+        background-color: $color_pageBg;
+    }
+
+    @else if $is_light_theme {
         background-image: url('https://oj.clue.edu.vn/martor/b9cf0a85-e1e8-44b3-b9d9-3410c99b0ee7.png');
         background-repeat: repeat;
     }
@@ -135,9 +139,13 @@ body::before {
   position: fixed;
   inset: 0;
 
-  @if $is_light_theme {
+  @if $flat_background {
+    background: transparent;
+  }
+
+  @else if $is_light_theme {
     background: rgba(255, 255, 255, 0.3);
-  } 
+  }
   @else {
     background: rgba(0, 0, 0, 0.5);
   }
@@ -306,7 +314,11 @@ noscript #noscript {
 
 #page-container {
 
-    @if $is_light_theme {
+    @if $flat_background {
+        background-color: $color_pageBg;
+    }
+
+    @else if $is_light_theme {
         background-color: $color_pageBg;
         background-image: url('https://oj.clue.edu.vn/martor/aabd183f-603f-4edf-bbbb-34870a8b6cc8.png');
         background-repeat: repeat;

@@ -6,39 +6,39 @@
 // (style.css) emits the light values and the dark build (dark/style.css) emits the
 // dark values.
 //
-// Phase 0 is additive and backward compatible: these variables are DEFINED but not
-// yet CONSUMED by component partials. The values below intentionally match the
-// current green/blue palette so there is no visual change. Later phases migrate
-// components to `var(--...)` and swap the palette (see 06-implementation-roadmap.md).
+// The values below are the Warm Harvest (autumn) palette, the default theme (see
+// docs/design-system/08-autumn-theme.md §3). Components migrate to `var(--...)` in
+// later phases; the Summer palette keeps its own hardcoded values via the legacy
+// $color_* SCSS vars.
 
 @import "vars";
 
 :root {
     // --- Color: surfaces & text ---
     @if $is_light_theme {
-        --color-canvas: #f8f9fa;
+        --color-canvas: #fbf6ef;
         --color-surface: #ffffff;
         --color-surface-raised: #ffffff;
-        --color-surface-alt: #eef0f2;
-        --color-border: #dfe3e6;
-        --color-border-strong: #c4cbd1;
-        --color-text: #20262b;
-        --color-text-secondary: #4b545c;
-        --color-text-muted: #9aa4ad;
+        --color-surface-alt: #f4ebdd;
+        --color-border: #e4d5c1;
+        --color-border-strong: #d3bfa4;
+        --color-text: #2e241c;
+        --color-text-secondary: #6e5d4e;
+        --color-text-muted: #8a7360;
         --color-text-inverse: #ffffff;
 
-        --color-accent: #1ba94c;
-        --color-accent-hover: #158a3e;
+        --color-accent: #c1440e;
+        --color-accent-hover: #9e3609;
         --color-accent-contrast: #ffffff;
-        --color-accent-2: #5fc27e;
-        --color-navbar: #045c20;
+        --color-accent-2: #e0a82e;
+        --color-navbar: #7a2906;
 
-        --color-link: #1958c1;
-        --color-link-hover: #0645ad;
-        --color-focus-ring: #1958c1;
+        --color-link: #1f5c6b;
+        --color-link-hover: #c1440e;
+        --color-focus-ring: #2c7a8c;
 
-        --color-info-bg: #ddeeff;
-        --color-info-fg: #26536b;
+        --color-info-bg: #d9eef2;
+        --color-info-fg: #1f5c6b;
         --color-success-bg: #ddf3e4;
         --color-success-fg: #177a3a;
         --color-warning-bg: #fff3cd;
@@ -46,29 +46,29 @@
         --color-danger-bg: #f8dcdc;
         --color-danger-fg: #a52222;
     } @else {
-        --color-canvas: #161b1f;
-        --color-surface: #20262b;
-        --color-surface-raised: #333b42;
-        --color-surface-alt: #333b42;
-        --color-border: #333b42;
-        --color-border-strong: #4b545c;
-        --color-text: #eef0f2;
-        --color-text-secondary: #9aa4ad;
-        --color-text-muted: #6b757e;
+        --color-canvas: #1a1512;
+        --color-surface: #2e241c;
+        --color-surface-raised: #4a3b2f;
+        --color-surface-alt: #4a3b2f;
+        --color-border: #4a3b2f;
+        --color-border-strong: #6e5d4e;
+        --color-text: #f4ebdd;
+        --color-text-secondary: #a8907a;
+        --color-text-muted: #8a7360;
         --color-text-inverse: #ffffff;
 
-        --color-accent: #1ba94c;
-        --color-accent-hover: #5fc27e;
-        --color-accent-contrast: #ffffff;
-        --color-accent-2: #5fc27e;
-        --color-navbar: #0f1214;
+        --color-accent: #e07b39;
+        --color-accent-hover: #f6cdb6;
+        --color-accent-contrast: #120e0b;
+        --color-accent-2: #e9c46a;
+        --color-navbar: #120e0b;
 
-        --color-link: #6bb0f5;
-        --color-link-hover: #8fc4ff;
-        --color-focus-ring: #6bb0f5;
+        --color-link: #5fb3c4;
+        --color-link-hover: #e9c46a;
+        --color-focus-ring: #5fb3c4;
 
-        --color-info-bg: #002233;
-        --color-info-fg: #77ddff;
+        --color-info-bg: #0d2b33;
+        --color-info-fg: #5fb3c4;
         --color-success-bg: #0e3a22;
         --color-success-fg: #66ff88;
         --color-warning-bg: #3a2e05;

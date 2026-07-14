@@ -418,7 +418,7 @@ a.close {
     justify-content: space-between;
     gap: 0.6rem;
     margin: 0;
-    background: #045c20;
+    background: $color_navbar_bg;
     border-radius: 4px 4px 0 0;
     @if $is_light_theme {
         color: #fff;

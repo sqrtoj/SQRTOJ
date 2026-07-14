@@ -255,11 +255,23 @@ DMOJ_API_PAGE_SIZE = 1000
 DMOJ_PASSWORD_RESET_LIMIT_WINDOW = 3600
 DMOJ_PASSWORD_RESET_LIMIT_COUNT = 10
 
-# At the bare minimum, dark and light theme CSS file locations must be declared
+# At the bare minimum, dark and light theme CSS file locations must be declared.
+# This is the default (Warm Harvest) palette, kept as the canonical mapping for
+# backward compatibility.
 DMOJ_THEME_CSS = {
     'light': 'style.css',
     'dark': 'dark/style.css',
 }
+# CSS files per selectable palette (see judge.models.choices.SITE_PALETTES). The
+# 'warm' palette reuses DMOJ_THEME_CSS; 'summer' is the classic green/blue palette.
+DMOJ_THEME_PALETTE_CSS = {
+    'warm': DMOJ_THEME_CSS,
+    'summer': {
+        'light': 'summer/style.css',
+        'dark': 'summer/dark/style.css',
+    },
+}
+DMOJ_DEFAULT_SITE_PALETTE = 'warm'
 # At the bare minimum, dark and light ace themes must be declared
 DMOJ_THEME_DEFAULT_ACE_THEME = {
     'light': 'github',
