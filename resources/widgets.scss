@@ -338,13 +338,15 @@ ul.pagination {
                 a, span {
                     position: relative;
                     float: left;
-                    padding: 4px 12px;
+                    padding: 6px 13px;
                     line-height: 1.42857;
                     text-decoration: none;
                     color: var(--color-link);
                     background-color: var(--color-surface);
                     border: 1px solid var(--color-border);
                     margin-left: -1px;
+                    transition: background-color var(--motion-fast) var(--ease-standard),
+                        color var(--motion-fast) var(--ease-standard);
                 }
             }
         }
