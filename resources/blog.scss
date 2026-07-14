@@ -23,10 +23,13 @@
             font-size: 1.7em;
 
             a {
-                color: var(--color-link);
+                // Match the page title color (#content .title) so post titles read
+                // as headings, not links. Palette-aware: sienna in Warm Harvest,
+                // green in Summer.
+                color: $color_primary75;
 
                 &:hover {
-                    color: var(--color-link-hover);
+                    color: var(--color-accent);
                 }
 
                 &:active {
