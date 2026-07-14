@@ -79,15 +79,15 @@ semantic text pairs pass AA.
 
 Goal: restyle the shared building blocks used on every page.
 
-- [ ] Navbar (`navbar.scss`, `base.html`): tokenize green/`#231F20`; add
+- [x] Navbar (`navbar.scss`, `base.html`): tokenize green/`#231F20`; add
       focus-visible; unify dropdowns. (spec 5.1)
-- [ ] Tokenize the impersonation navbar override: replace the inline `#893e89` in
+- [x] Tokenize the impersonation navbar override: replace the inline `#893e89` in
       `templates/base.html` with a `--color-navbar-impersonate` token (spec 5.1),
       keeping the distinct color and FR-2.5 behavior.
-- [ ] Buttons (`widgets.scss`): implement variant system + states. (spec 5.2)
-- [ ] Links & focus rings globally (`base.scss`). (a11y)
-- [ ] Cards/surfaces primitives generalized from blog tokens. (spec 5.5)
-- [ ] Typography: introduce type scale + font tokens; load `Inter`/mono
+- [x] Buttons (`widgets.scss`): implement variant system + states. (spec 5.2)
+- [x] Links & focus rings globally (`base.scss`). (a11y)
+- [x] Cards/surfaces primitives generalized from blog tokens. (spec 5.5)
+- [x] Typography: introduce type scale + font tokens; load `Inter`/mono
       progressively (keep system fallback). (03)
 
 Exit criteria: primitives themable, accessible, consistent across light/dark.

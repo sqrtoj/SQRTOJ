@@ -68,12 +68,12 @@
     <style>
         #page-container { min-height: 100vh; display: flex; flex-direction: column; }
         #content { flex: 1 0 auto; margin-top: 20px; }
-        #navigation { position: sticky; top: 0; z-index: 1000; width: 100%; height: 48px; background: #231F20; }
+        #navigation { position: sticky; top: 0; z-index: 1000; width: 100%; height: 48px; background: var(--color-navbar); }
         footer { content-visibility: auto; contain-intrinsic-size: 0 40px; }
     </style>
     {% if request.user.is_impersonate %}
         <style>
-            #nav-container { background: #893e89 !important; }
+            #nav-container { background: var(--color-navbar-impersonate) !important; }
         </style>
     {% endif %}
     {% block media %}{% endblock %}

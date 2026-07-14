@@ -24,43 +24,68 @@ $is_light_theme: true;
     float: right;
 }
 
-// Bootstrap-y buttons
+// Buttons (design-system primitive). Default variant is the brand accent; see
+// docs/design-system/05-component-specs.md §5.2. Colors come from tokens so both
+// palettes (Warm Harvest / Summer) and both themes stay in sync.
 .button, button, input[type=submit] {
-    color: white !important;
+    color: var(--color-accent-contrast) !important;
     text-decoration: none !important;
     cursor: pointer;
     vertical-align: middle;
     white-space: nowrap;
-    font-weight: 400;
+    font-weight: var(--weight-medium);
     line-height: 1.4;
-    background: rgb(51, 122, 183) none repeat scroll 0 (0% / auto) padding-box border-box;
-    background: -webkit-linear-gradient(top, #337ab7 0, #265a88 100%) repeat-x;
-    background: linear-gradient(to bottom, #337ab7 0, #265a88 100%) repeat-x;
-    border-radius: $widget_border_radius;
-    padding: 6px 12px;
+    background: var(--color-accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-4);
     display: block;
     border: 0;
     text-align: center;
+    transition: background-color var(--motion-fast) var(--ease-standard);
 
     // 4k hack
     font-size: $base_font_size;
 
     &:hover {
-        background: #265a88;
+        background: var(--color-accent-hover);
     }
 
     &:active {
-        border-color: #245580;
-        background: #265a88;
+        background: var(--color-accent-hover);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
     }
 
     &.full {
-        padding: 6px 0;
+        padding: var(--space-2) 0;
     }
 
-    &.disabled {
-        background: linear-gradient(to bottom, darkgray 0, gray 100%) repeat-x !important;
-        border-color: grey !important;
+    // Secondary / neutral button variant.
+    &.btn-secondary, &.btn-gray {
+        background: var(--color-surface-raised);
+        color: var(--color-text) !important;
+        border: 1px solid var(--color-border);
+
+        &:hover, &:active {
+            background: var(--color-surface-alt);
+        }
+    }
+
+    // Danger variant.
+    &.btn-danger, &.delete {
+        background: var(--color-danger-fg);
+        color: var(--color-accent-contrast) !important;
+
+        &:hover, &:active {
+            filter: brightness(0.92);
+        }
+    }
+
+    &.disabled, &:disabled {
+        opacity: 0.55;
         cursor: not-allowed;
     }
 }
@@ -71,13 +96,30 @@ $is_light_theme: true;
     padding: 3px 6px;
 }
 
+// Reusable card/surface primitive (design-system spec 5.5). Generalizes the blog's
+// card treatment so every feature shares one surface style.
+.card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+
+    &.card-flat {
+        box-shadow: none;
+    }
+
+    &.card-raised {
+        box-shadow: var(--shadow-1);
+    }
+}
+
 input {
     &[type=text], &[type=password], &[type=email], &[type=number], &[type=url] {
-        padding: 4px 8px;
-        color: $color_primary75;
-        background: $color_primary0 none;
-        border: 1px solid $color_primary25;
-        border-radius: $widget_border_radius;
+        padding: var(--space-1) var(--space-2);
+        color: var(--color-text);
+        background: var(--color-surface) none;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
         box-shadow: 0 1px 1px rgba($color_primary100, 0.075) inset;
         transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
         box-sizing: border-box;
@@ -87,13 +129,12 @@ input {
         font-size: $base_font_size;
 
         &:hover {
-            border-color: rgba(82, 168, 236, 0.8);
-            box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 4px rgba(82, 168, 236, 0.6);
+            border-color: var(--color-focus-ring);
         }
 
         &:focus {
-            border-color: rgba(82, 168, 236, 0.8);
-            box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+            border-color: var(--color-focus-ring);
+            box-shadow: 0 0 0 2px var(--color-focus-ring);
             outline: 0;
         }
     }
