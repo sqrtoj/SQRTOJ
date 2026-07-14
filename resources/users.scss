@@ -61,7 +61,7 @@ span.organization {
 
         a,
         span {
-            color: $color_primary50;
+            color: var(--color-text-muted);
             font-weight: 600;
         }
     }
@@ -129,7 +129,7 @@ span.organization {
     top: 50%;
     width: 100000px;
     height: 1px;
-    background: $color_primary25;
+    background: var(--color-border);
     right: 100%;
     margin-right: 5px;
 }
@@ -176,7 +176,7 @@ img.user-gravatar {
     }
 
     .pp-weighted {
-        color: $color_primary50;
+        color: var(--color-text-muted);
     }
 
     div.sub-pp {
@@ -189,7 +189,7 @@ img.user-gravatar {
 
 #pp-load-link-wrapper {
     text-align: center;
-    border: 1px solid $color_primary25;
+    border: 1px solid var(--color-border);
 }
 
 #pp-load-more-link {
@@ -235,12 +235,12 @@ img.user-gravatar {
 
         #year {
             font-size: 1.25em;
-            color: $color_primary75;
+            color: var(--color-text);
         }
     }
 
     #submission-activity-display {
-        border: 1px solid $color_primary25;
+        border: 1px solid var(--color-border);
         border-radius: $table_header_rounding;
 
         .info-bar {
@@ -261,7 +261,7 @@ img.user-gravatar {
             font-size: 0.75em;
             line-height: 1;
             font-weight: 100;
-            color: $color_primary75;
+            color: var(--color-text);
         }
 
         #submission-total-count {

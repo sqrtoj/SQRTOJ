@@ -1,44 +1,68 @@
+// Verdict / status badges. Colors come from the protected verdict-token layer
+// (docs/design-system/03-design-tokens.md §2.3): solid-fill background with a
+// contrasting label, replacing the legacy grey-fill + colored-text. Semantics are
+// unchanged (AC green, WA red, ...); the token values are theme-aware so badges
+// stay legible on warm paper (light) and warm charcoal (dark) surfaces.
+//
+// Color is always paired with the verdict abbreviation text (never color-only) for
+// accessibility (see 07-accessibility.md, spec 5.4).
+
 .AB {
-    background-color: #CCC;
-    color: black;
+    background-color: var(--verdict-ab-bg);
+    color: var(--verdict-ab-fg);
 }
 
 .AC {
-    background-color: #53f23f;
-    color: green;
+    background-color: var(--verdict-ac-bg);
+    color: var(--verdict-ac-fg);
 }
 
 ._AC {
-    background-color: #DFFF00;
-    color: green;
+    background-color: var(--verdict-partial-bg);
+    color: var(--verdict-partial-fg);
 }
 
 .WA {
-    background-color: #CCC;
-    color: #ef1b53;
+    background-color: var(--verdict-wa-bg);
+    color: var(--verdict-wa-fg);
 }
 
-.TLE, .MLE {
-    background-color: #CCC;
-    color: black;
+.TLE {
+    background-color: var(--verdict-tle-bg);
+    color: var(--verdict-tle-fg);
 }
 
-.OLE, .IR, .RTE, .OTH {
-    background-color: #FAB623;
-    color: black;
+.MLE {
+    background-color: var(--verdict-mle-bg);
+    color: var(--verdict-mle-fg);
+}
+
+.OLE {
+    background-color: var(--verdict-ole-bg);
+    color: var(--verdict-ole-fg);
+}
+
+.RTE {
+    background-color: var(--verdict-rte-bg);
+    color: var(--verdict-rte-fg);
+}
+
+.IR, .OTH {
+    background-color: var(--verdict-ir-bg);
+    color: var(--verdict-ir-fg);
 }
 
 .CE {
-    background-color: #CCC;
-    color: black;
+    background-color: var(--verdict-ce-bg);
+    color: var(--verdict-ce-fg);
 }
 
 .IE {
-    background-color: red;
-    color: black;
+    background-color: var(--verdict-ie-bg);
+    color: var(--verdict-ie-fg);
 }
 
 .QU, .G {
-    background: white;
-    color: black;
+    background: var(--verdict-queued-bg);
+    color: var(--verdict-queued-fg);
 }

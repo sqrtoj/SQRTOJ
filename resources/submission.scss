@@ -16,13 +16,13 @@
 
 .submission-row {
     display: flex;
-    border-top: $color_primary25 1px solid;
-    border-left: $color_primary25 1px solid;
-    border-right: $color_primary25 1px solid;
+    border-top: var(--color-border) 1px solid;
+    border-left: var(--color-border) 1px solid;
+    border-right: var(--color-border) 1px solid;
     transition: background-color linear 0.2s;
 
     &:hover {
-        background: $color_primary10;
+        background: var(--color-surface-alt);
     }
 
     &:not(:empty) ~ & {
@@ -32,7 +32,7 @@
     > div {
         padding: 7px 5px;
         vertical-align: middle;
-        border-bottom: $color_primary25 1px solid;
+        border-bottom: var(--color-border) 1px solid;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -42,8 +42,8 @@
         min-width: 80px;
         width: 80px;
         text-align: center;
-        border-bottom-color: $color_primary0;
-        border-right: $color_primary25 1px solid;
+        border-bottom-color: var(--color-surface);
+        border-right: var(--color-border) 1px solid;
 
         .state {
             font-size: 0.7em;
@@ -53,10 +53,11 @@
 
         .score {
             // font-size: 1.3em;
-            color: #000;
+            color: var(--color-text);
+            font-variant-numeric: tabular-nums;
 
             .grading-spinner {
-                color: $color_primary100;
+                color: var(--color-text);
             }
         }
     }
@@ -80,7 +81,7 @@
         }
 
         .sub-testcase {
-            color: $color_primary50;
+            color: var(--color-text-muted);
             white-space: nowrap;
             padding-right: 5px;
         }
@@ -97,10 +98,11 @@
         width: 70px;
         white-space: nowrap;
         text-align: center;
-        border-left: $color_primary25 1px solid;
+        border-left: var(--color-border) 1px solid;
 
         .time {
             font-weight: bold;
+            font-variant-numeric: tabular-nums;
         }
     }
 }
@@ -110,12 +112,12 @@
 }
 
 .sub-prop .grey-label {
-    color: $color_primary50;
+    color: var(--color-text-muted);
     font-style: italic;
 }
 
 .sub-prop .grey-icon {
-    color: $color_primary50;
+    color: var(--color-text-muted);
 }
 
 label[for="language"], label[for="status"], label[for="organization"] {
@@ -172,21 +174,26 @@ label[for="language"], label[for="status"], label[for="organization"] {
 }
 
 .submission-contest {
-    color: $color_primary75;
+    color: var(--color-text);
 }
 
 .source-ln {
-    color: $color_primary50;
-    border-right: 1px solid $color_primary50;
+    color: var(--color-text-muted);
+    border-right: 1px solid var(--color-border-strong);
     padding-right: 5px;
     text-align: right;
 
     a {
-        color: $color_primary50;
+        color: var(--color-text-muted);
         display: block;
 
         &:hover {
             text-decoration: underline;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
         }
 
         &::before {
@@ -220,7 +227,7 @@ label[for="language"], label[for="status"], label[for="organization"] {
     }
 
     .count {
-        color: black;
+        color: var(--color-text);
     }
 }
 
@@ -244,6 +251,7 @@ label[for="language"], label[for="status"], label[for="organization"] {
     .case-row td:nth-child(3) {
         padding-right: 0;
         text-align: right;
+        font-variant-numeric: tabular-nums;
     }
 
     .case-row td:nth-child(3) span {
@@ -252,6 +260,7 @@ label[for="language"], label[for="status"], label[for="organization"] {
 
     .case-row td:nth-child(4) {
         text-align: right;
+        font-variant-numeric: tabular-nums;
     }
 
     .case-info {
@@ -261,8 +270,8 @@ label[for="language"], label[for="status"], label[for="organization"] {
         padding-top: 3px;
         border: 1px solid #2980b9;
         border-left-width: .5em;
-        border-radius: 4px;
-        color: $color_primary75;
+        border-radius: var(--radius-sm);
+        color: var(--color-text);
     }
 
     .case-output {
@@ -351,6 +360,6 @@ label[for="language"], label[for="status"], label[for="organization"] {
     float: right;
 
     .submission-date {
-        color: $color_primary50;
+        color: var(--color-text-muted);
     }
 }

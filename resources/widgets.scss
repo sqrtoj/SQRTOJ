@@ -215,7 +215,7 @@ textarea:focus {
 }
 
 .tabs {
-    border-bottom: 1px solid $color_primary25;
+    border-bottom: 1px solid var(--color-border);
     margin: 0 0 8px;
     width: 100%;
     display: flex;
@@ -225,10 +225,10 @@ textarea:focus {
     .tab {
         .tab-icon {
             padding-right: 0.3em;
-            color: $color_primary50;
+            color: var(--color-text-muted);
 
             &.fa-plus {
-                color: green !important;
+                color: var(--color-success-fg) !important;
             }
         }
 
@@ -238,17 +238,17 @@ textarea:focus {
 
         &.active {
             a, span {
-                border-top-color: $highlight_blue !important;
+                border-top-color: var(--color-accent) !important;
             }
 
             .tab-icon {
-                color: $color_primary100;
+                color: var(--color-text);
             }
         }
     }
 
     h2 {
-        color: $color_primary75;
+        color: var(--color-text);
     }
 
     > ul {
@@ -284,7 +284,7 @@ textarea:focus {
                 position: relative;
                 display: block;
                 padding: 10px 15px;
-                color: $color_primary66;
+                color: var(--color-text-muted);
                 text-decoration: none;
                 white-space: nowrap;
             }
@@ -294,7 +294,7 @@ textarea:focus {
 
 // Bootstrap-y pagination
 ul.pagination a:hover {
-    background: rgba($color_primary100, 0.55);
+    background: var(--color-surface-alt);
 }
 
 ul.pagination {
@@ -328,9 +328,9 @@ ul.pagination {
                     padding: 4px 12px;
                     line-height: 1.42857;
                     text-decoration: none;
-                    color: $color_primary0;
-                    background-color: $color_primary75;
-                    border: 1px solid $color_primary50;
+                    color: var(--color-link);
+                    background-color: var(--color-surface);
+                    border: 1px solid var(--color-border);
                     margin-left: -1px;
                 }
             }
@@ -338,15 +338,15 @@ ul.pagination {
 
         .disabled-page > {
             a, span {
-                color: $color_primary50;
+                color: var(--color-text-muted);
             }
         }
 
         .active-page > {
             a, span {
                 z-index: 2;
-                color: #FFF;
-                background-color: $highlight_blue;
+                color: var(--color-accent-contrast);
+                background-color: var(--color-accent);
                 border-color: transparent;
                 cursor: default;
             }
@@ -365,29 +365,38 @@ ul.pagination {
     margin-top: 10px;
 }
 
+// Alerts / messages (spec 5.10): semantic token backgrounds + a left accent bar
+// in the level color. Icon/text pairing (never color-only) is provided by markup.
 .alert {
-    padding: 15px;
-    margin-bottom: 20px;
+    padding: var(--space-4);
+    margin-bottom: var(--space-5);
     border: 1px solid transparent;
-    border-radius: $widget_border_radius;
+    border-left-width: 4px;
+    border-radius: var(--radius-md);
 }
 
 .alert-info {
-    color: #31708f;
-    background-color: #d9edf7;
-    border-color: #bce8f1;
+    color: var(--color-info-fg);
+    background-color: var(--color-info-bg);
+    border-color: var(--color-info-fg);
 }
 
 .alert-warning {
-    color: #8a6d3b;
-    background-color: #fcf8e3;
-    border-color: #faebcc;
+    color: var(--color-warning-fg);
+    background-color: var(--color-warning-bg);
+    border-color: var(--color-warning-fg);
 }
 
 .alert-danger {
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
+    color: var(--color-danger-fg);
+    background-color: var(--color-danger-bg);
+    border-color: var(--color-danger-fg);
+}
+
+.alert-success {
+    color: var(--color-success-fg);
+    background-color: var(--color-success-bg);
+    border-color: var(--color-success-fg);
 }
 
 .alert-dismissable, .alert-dismissible {

@@ -164,6 +164,36 @@ $is_summer: false !default;
         --rating-grandmaster: #ff1a1a;
     }
 
+    // --- Color: verdict badges (protected layer; theme-dependent, palette-
+    // independent). Solid-fill bg + fg, AA-verified per 03-design-tokens.md §2.3. ---
+    @if $is_light_theme {
+        --verdict-ac-bg: #1a7f37;   --verdict-ac-fg: #ffffff;
+        --verdict-partial-bg: #8a6d00;  --verdict-partial-fg: #ffffff;
+        --verdict-wa-bg: #c1121f;   --verdict-wa-fg: #ffffff;
+        --verdict-tle-bg: #1f6feb;  --verdict-tle-fg: #ffffff;
+        --verdict-mle-bg: #0b5fa4;  --verdict-mle-fg: #ffffff;
+        --verdict-ole-bg: #8a4b00;  --verdict-ole-fg: #ffffff;
+        --verdict-rte-bg: #9a3412;  --verdict-rte-fg: #ffffff;
+        --verdict-ir-bg: #7a2e0e;   --verdict-ir-fg: #ffffff;
+        --verdict-ce-bg: #5a4a2a;   --verdict-ce-fg: #ffffff;
+        --verdict-ie-bg: #a11043;   --verdict-ie-fg: #ffffff;
+        --verdict-ab-bg: #5b5b5b;   --verdict-ab-fg: #ffffff;
+        --verdict-queued-bg: #e4d5c1;   --verdict-queued-fg: #2e241c;
+    } @else {
+        --verdict-ac-bg: #2ea043;   --verdict-ac-fg: #0a0a0a;
+        --verdict-partial-bg: #d9b310;  --verdict-partial-fg: #0a0a0a;
+        --verdict-wa-bg: #f28b96;   --verdict-wa-fg: #2a0608;
+        --verdict-tle-bg: #6cb0f5;  --verdict-tle-fg: #08132b;
+        --verdict-mle-bg: #4aa3df;  --verdict-mle-fg: #06121f;
+        --verdict-ole-bg: #e0913b;  --verdict-ole-fg: #241202;
+        --verdict-rte-bg: #f08a4b;  --verdict-rte-fg: #2a1102;
+        --verdict-ir-bg: #e08a5b;   --verdict-ir-fg: #25100a;
+        --verdict-ce-bg: #c9b184;   --verdict-ce-fg: #1c150a;
+        --verdict-ie-bg: #f2789f;   --verdict-ie-fg: #2a0512;
+        --verdict-ab-bg: #b8b8b8;   --verdict-ab-fg: #141414;
+        --verdict-queued-bg: #4a3b2f;   --verdict-queued-fg: #f4ebdd;
+    }
+
     // --- Navbar impersonation state (palette-independent) ---
     --color-navbar-impersonate: #893e89;
 

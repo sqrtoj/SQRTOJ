@@ -98,21 +98,25 @@ Exit criteria: primitives themable, accessible, consistent across light/dark.
 
 Goal: apply the system to the pages users spend the most time on.
 
-- [ ] Problem list (`problem.scss`, `templates/problem/list.html`): table +
-      filters + pagination. (specs 5.3, 5.9)
-- [ ] Problem statement (`problem.scss`, `content-description.scss`): reading
-      column, info sidebar, sample I/O, code blocks. (spec 5.8)
-- [ ] Submission list & detail (`submission.scss`, `status.scss`): verdict badges,
-      dense table, filters. (specs 5.3, 5.4)
-- [ ] Contest scoreboard (`contest.scss`): dense/compact table, sticky header,
-      tabular numerics. (spec 5.3)
-- [ ] User profile (`users.scss`, `user_profile.js`): rating colors, activity
-      heatmap tokens, cards. (spec 5.11)
-- [ ] Tabs across these pages (`tabs-base.html`). (spec 5.6)
-- [ ] Forms on submit/edit flows (`ui_form.css`, `select2-dmoj.scss`). (spec 5.7)
-- [ ] Messages/alerts (`messages.html`). (spec 5.10)
+- [x] Problem list (`problem.scss`): table + filters + pagination. (specs 5.3, 5.9)
+- [x] Problem statement (`problem.scss`, `content-description.scss`): info sidebar,
+      status colors, code blocks. (spec 5.8)
+- [x] Submission list & detail (`submission.scss`, `status.scss`): verdict badges
+      as solid-fill tokens, dense table, tabular numerics. (specs 5.3, 5.4)
+- [x] Contest scoreboard (`contest.scss`): tokenized table, tabular numerics,
+      right-aligned rank/points. (spec 5.3)
+- [x] User profile (`users.scss`): rating tokens, card borders; heatmap left
+      protected. (spec 5.11)
+- [x] Tabs (`widgets.scss` `.tabs`): active underline + muted/active states. (5.6)
+- [x] Forms on submit/edit flows (`ui_form.css`, `select2-dmoj.scss`,
+      `widgets.scss` inputs). (spec 5.7)
+- [x] Messages/alerts (`widgets.scss` `.alert*`): semantic tokens + accent bar.
+      (spec 5.10)
+- [x] Data-table primitive (`table.scss`): tokenized header/borders, tabular-nums.
 
 Exit criteria: primary user journeys fully on the new system, light + dark.
+Note: deeper markup/layout work (sample-I/O copy button, reading-measure column,
+sticky scoreboard header) is deferred to Phase 4 as CSS-only follow-ups.
 
 ---
 
