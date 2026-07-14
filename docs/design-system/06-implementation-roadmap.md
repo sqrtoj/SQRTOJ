@@ -154,6 +154,32 @@ Exit criteria: entire site on the system, legacy hex/backgrounds gone, a11y pass
 
 ---
 
+## Phase 5 — Visible modernization pass
+
+Goal: move beyond "recolored" to a genuinely more modern, contemporary feel,
+focusing on layout, depth, motion, and interaction polish. All token-driven and
+applied to both palettes; verified no Summer drift.
+
+- [x] Navbar: pill-style hover/active states, rounded dropdowns with soft shadow,
+      smooth transitions, refined nav shadow.
+- [x] Buttons: subtle hover-lift + shadow for depth (motion-guarded).
+- [x] Inputs: larger padding, medium radius, soft focus-ring glow
+      (`--color-focus-ring-soft` token added per palette).
+- [x] Tables: rounded outer corners, softer header, animated row hover, lighter
+      internal borders.
+- [x] `#page-container` / `.title`: stronger heading hierarchy, contemporary
+      elevation.
+- [x] Global `prefers-reduced-motion` guard added (`base.scss`) for a11y.
+- [x] Code blocks / problem info sidebar: card treatment (fallback-token pattern so
+      the standalone martor build degrades gracefully).
+- [x] User avatar, tabs, pagination, submission list, comment cards: modern radius,
+      hover, and elevation polish.
+
+Exit criteria: cohesive modern appearance across high-traffic pages, both palettes,
+both themes; `prefers-reduced-motion` respected; no Summer regression.
+
+---
+
 ## Deferred — Warm Harvest artwork slots (assets supplied later)
 
 The autumn artwork (`08-autumn-theme.md §5`) is decorative enhancement; every page
