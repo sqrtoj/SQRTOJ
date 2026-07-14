@@ -101,9 +101,11 @@ $is_summer: false !default;
             --color-accent-2: #e0a82e;
             --color-navbar: #7a2906;
 
-            --color-link: #1f5c6b;
-            --color-link-hover: #c1440e;
-            --color-focus-ring: #2c7a8c;
+            // Links use the warm sienna family (not teal) to match the autumn
+            // brand. #c1440e clears AA on white (5.12:1) and paper (~4.8:1).
+            --color-link: #c1440e;
+            --color-link-hover: #7a2906;
+            --color-focus-ring: #c1440e;
 
             --color-info-bg: #d9eef2;
             --color-info-fg: #1f5c6b;
@@ -131,9 +133,10 @@ $is_summer: false !default;
             --color-accent-2: #e9c46a;
             --color-navbar: #120e0b;
 
-            --color-link: #5fb3c4;
+            // Links use the warm pumpkin/gold family (not teal) to match autumn.
+            --color-link: #e07b39;
             --color-link-hover: #e9c46a;
-            --color-focus-ring: #5fb3c4;
+            --color-focus-ring: #e07b39;
 
             --color-info-bg: #0d2b33;
             --color-info-fg: #5fb3c4;

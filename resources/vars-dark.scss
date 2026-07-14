@@ -28,9 +28,10 @@ $color_primary90: #f4ebdd;
 $color_primary100: #f4ebdd;
 
 // Links: teal (brightened for dark); active/hover warms toward gold (08 §3).
-$color_link50: #5fb3c4; // default (title)
-$color_link75: #5fb3c4; // default
-$color_link100: #8fd3e0; // hover
+// Links: warm pumpkin/gold family so links read as part of the autumn theme.
+$color_link50: #f0a068; // default (title)
+$color_link75: #f0a068; // default
+$color_link100: #f6cdb6; // hover
 $color_link200: #e9c46a; // active
 
 $color_pageBg: #1a1512;

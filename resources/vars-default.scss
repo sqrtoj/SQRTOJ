@@ -29,11 +29,11 @@ $color_primary75: #7a2906; // brand widget (was green; now sienna)
 $color_primary90: #2e241c;
 $color_primary100: #2e241c;
 
-// Links: teal so they stay distinct from the sienna brand actions (08 §3).
-$color_link50: #2c7a8c; // default (title)
-$color_link75: #1f5c6b; // default
-$color_link100: #164752; // hover
-$color_link200: #c1440e; // active (warms toward sienna)
+// Links: warm sienna to match the autumn brand (site-wide link color).
+$color_link50: #9e3609; // default (title)
+$color_link75: #c1440e; // default
+$color_link100: #9e3609; // hover
+$color_link200: #7a2906; // active
 
 $color_pageBg: color.adjust($color_primary5, $lightness: 6%);
 
