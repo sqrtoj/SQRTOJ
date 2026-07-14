@@ -286,13 +286,20 @@ textarea:focus {
                 margin-right: 2px;
                 line-height: 1.42857;
                 border: 1px solid transparent;
-                border-radius: $widget_border_radius $widget_border_radius 0 0;
+                border-radius: var(--radius-md) var(--radius-md) 0 0;
                 position: relative;
                 display: block;
                 padding: 10px 15px;
                 color: var(--color-text-muted);
                 text-decoration: none;
                 white-space: nowrap;
+                transition: color var(--motion-fast) var(--ease-standard),
+                    background-color var(--motion-fast) var(--ease-standard);
+            }
+
+            > a:hover {
+                color: var(--color-text);
+                background: var(--color-surface-alt);
             }
         }
     }
