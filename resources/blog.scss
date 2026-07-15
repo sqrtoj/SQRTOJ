@@ -42,6 +42,49 @@
         }
     }
 
+    // Living aurora: slow-drifting gradient blobs behind the content for a
+    // modern, "alive" feel. Purely decorative; disabled for reduced-motion.
+    &__aurora {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    &__blob {
+        position: absolute;
+        width: 26rem;
+        height: 26rem;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.5;
+        mix-blend-mode: soft-light;
+
+        &--1 {
+            top: -8rem;
+            left: -6rem;
+            background: rgba(255, 255, 255, 0.55);
+            animation: hero-drift-1 18s ease-in-out infinite alternate;
+        }
+
+        &--2 {
+            bottom: -10rem;
+            right: -4rem;
+            background: rgba(0, 0, 0, 0.35);
+            animation: hero-drift-2 22s ease-in-out infinite alternate;
+        }
+
+        &--3 {
+            top: 20%;
+            right: 25%;
+            width: 18rem;
+            height: 18rem;
+            background: rgba(255, 255, 255, 0.4);
+            animation: hero-drift-3 26s ease-in-out infinite alternate;
+        }
+    }
+
     &__content {
         position: relative;
         z-index: 1;
@@ -136,6 +179,199 @@
         letter-spacing: 0.04em;
         opacity: 0.9;
     }
+}
+
+// -------------------------------------------------------------------------
+// Tier C: personal progress strip (logged-in users). A row of stat chips plus
+// a "continue solving" CTA. Uses request.profile data already in the template.
+// -------------------------------------------------------------------------
+.home-personal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+    }
+
+    &__cta.button {
+        width: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+}
+
+.home-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-1);
+
+    &__icon {
+        color: var(--color-accent);
+        font-size: 1.05em;
+    }
+
+    &__value {
+        font-weight: var(--weight-bold);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__label {
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+}
+
+// -------------------------------------------------------------------------
+// Tier B: contest spotlight strip. Responsive card grid; live contests get an
+// accent gradient face, upcoming ones a neutral surface. Auto-hides when empty.
+// -------------------------------------------------------------------------
+.home-spotlight {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.spotlight-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    min-width: 0;
+    box-shadow: var(--shadow-1);
+    transition: transform var(--motion-fast) var(--ease-standard),
+        box-shadow var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-3);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+    }
+
+    &__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__name {
+        font-size: var(--text-lg);
+        font-weight: var(--weight-bold);
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    &__countdown {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-variant-numeric: tabular-nums;
+        font-weight: var(--weight-semibold);
+    }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-top: var(--space-1);
+        font-weight: var(--weight-semibold);
+        font-size: var(--text-sm);
+    }
+
+    // Live contest: brand accent face with light text.
+    &--live {
+        background:
+            radial-gradient(circle at 88% -20%, rgba(255, 255, 255, 0.22), transparent 45%),
+            linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+        color: var(--color-accent-contrast);
+
+        .spotlight-card__cta { color: var(--color-accent-contrast); }
+    }
+
+    // Upcoming contest: neutral surface card.
+    &--upcoming {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        color: var(--color-text);
+
+        .spotlight-card__countdown { color: var(--color-text-secondary); }
+        .spotlight-card__cta { color: var(--color-accent); }
+    }
+}
+
+.spotlight-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &--live {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--color-accent-contrast);
+    }
+
+    &--upcoming {
+        background: var(--color-surface-alt);
+        color: var(--color-text-secondary);
+    }
+
+    &__dot {
+        width: 0.55em;
+        height: 0.55em;
+        border-radius: 50%;
+        background: currentColor;
+        animation: spotlight-pulse 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes spotlight-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes hero-drift-1 {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(4rem, 2.5rem) scale(1.15); }
+}
+
+@keyframes hero-drift-2 {
+    from { transform: translate(0, 0) scale(1.1); }
+    to { transform: translate(-3.5rem, -2rem) scale(0.9); }
+}
+
+@keyframes hero-drift-3 {
+    from { transform: translate(0, 0) scale(0.9); }
+    to { transform: translate(-2.5rem, 3rem) scale(1.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spotlight-badge__dot { animation: none; }
+    .home-hero__blob { animation: none !important; }
 }
 
 .blog-content {
