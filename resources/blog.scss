@@ -678,6 +678,69 @@
         }
     }
 
+    // Modern top-3 podium leaderboard: medal-tinted rank, avatar, name, value.
+    // Replaces the flat 2-column table for top users / contributors.
+    .leaderboard-podium {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-left: 1px solid var(--color-border);
+        border-right: 1px solid var(--color-border);
+
+        .podium-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            border-bottom: 1px solid var(--color-border);
+            transition: background-color var(--motion-fast) var(--ease-standard);
+
+            &:hover {
+                background: var(--color-surface-alt);
+            }
+        }
+
+        .podium-rank {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.6rem;
+            font-weight: var(--weight-bold);
+            font-variant-numeric: tabular-nums;
+            color: var(--color-text-muted);
+        }
+
+        .podium-avatar {
+            flex: 0 0 auto;
+            width: 1.9rem;
+            height: 1.9rem;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            background: #fff;
+            object-fit: cover;
+        }
+
+        .podium-name {
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .podium-value {
+            flex: 0 0 auto;
+            font-weight: var(--weight-semibold);
+            font-variant-numeric: tabular-nums;
+        }
+
+        // Medal tints for the top three ranks (gold / silver / bronze).
+        .podium-row--1 .podium-rank { color: #d4af37; }
+        .podium-row--2 .podium-rank { color: #9aa2ad; }
+        .podium-row--3 .podium-rank { color: #cd7f32; }
+    }
+
     .leaderboard-footer-wrap {
         position: relative;
         font-size: smaller;

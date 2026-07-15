@@ -149,47 +149,9 @@
                     </div>
                 </div>
             {% endif %}
-            {% if current_contests %}
-                <div class="blog-sidebox sidebox">
-                    <h3>
-                        <span>{{ _('Ongoing contests') }}</span>
-                    </h3>
-                    <div class="sidebox-content sidebox-ongoing-contest">
-                        {% for contest in current_contests %}
-                            <div class="contest">
-                                <div class="contest-list-title">
-                                    <a href="{{ url('contest_view', contest.key) }}">{{ contest.name }}</a>
-                                </div>
-                                <div class="time">
-                                    {{ _('Ends in %(countdown)s.', countdown=as_countdown(contest.time_before_end)) }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if future_contests %}
-                <div class="blog-sidebox sidebox">
-                    <h3>
-                        <span>{{ _('Upcoming contests') }}</span>
-                        
-                    </h3>
-                    <div class="sidebox-content">
-                        {% for contest in future_contests %}
-                            <div class="contest">
-                                <div class="contest-list-title">
-                                    <a href="{{ url('contest_view', contest.key) }}">{{ contest.name }}</a>
-                                </div>
-                                <div class="time">
-                                    {{ _('Starting in %(countdown)s.', countdown=as_countdown(contest.time_before_start)) }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
+            {# Ongoing / Upcoming contests intentionally omitted here: they are
+               surfaced in the contest spotlight strip on the homepage (home.html,
+               docs/design-system/19-homepage-dashboard.md) to avoid duplication. #}
             {% if top_rated_users %}
                 {% include "blog/top-rating.html" %}
             {% endif %}
