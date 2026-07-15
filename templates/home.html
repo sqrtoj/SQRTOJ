@@ -6,22 +6,24 @@
         <div class="home-hero__bg" role="presentation"></div>
         <div class="home-hero__content">
             {% if request.user.is_authenticated %}
+                <span class="home-hero__badge"><i class="fa fa-code" aria-hidden="true"></i> {{ SITE_NAME }}</span>
                 <h1 class="home-hero__title">
                     {{ _('Welcome back, %(name)s', name=request.user.username) }}
                 </h1>
                 <p class="home-hero__pitch">{{ _('Ready to solve something today?') }}</p>
                 <div class="home-hero__actions">
-                    <a class="button" href="{{ url('problem_list') }}">{{ _('Solve problems') }}</a>
-                    <a class="button btn-secondary" href="{{ url('contest_list') }}">{{ _('Contests') }}</a>
+                    <a class="button" href="{{ url('problem_list') }}"><i class="fa fa-code" aria-hidden="true"></i> {{ _('Solve problems') }}</a>
+                    <a class="button btn-secondary" href="{{ url('contest_list') }}"><i class="fa fa-trophy" aria-hidden="true"></i> {{ _('Contests') }}</a>
                 </div>
             {% else %}
+                <span class="home-hero__badge"><i class="fa fa-bolt" aria-hidden="true"></i> {{ _('Online Judge') }}</span>
                 <h1 class="home-hero__title">{{ SITE_LONG_NAME }}</h1>
                 <p class="home-hero__pitch">
                     {{ _('Practice competitive programming, join contests, and climb the ranks.') }}
                 </p>
                 <div class="home-hero__actions">
-                    <a class="button" href="{{ url('problem_list') }}">{{ _('Solve problems') }}</a>
-                    <a class="button btn-secondary" href="{{ url('contest_list') }}">{{ _('Join a contest') }}</a>
+                    <a class="button" href="{{ url('problem_list') }}"><i class="fa fa-code" aria-hidden="true"></i> {{ _('Solve problems') }}</a>
+                    <a class="button btn-secondary" href="{{ url('contest_list') }}"><i class="fa fa-trophy" aria-hidden="true"></i> {{ _('Join a contest') }}</a>
                 </div>
             {% endif %}
             <div class="home-hero__stats">

@@ -7,9 +7,12 @@
     <div class="auth-page">
         <div class="auth-card">
             <div class="auth-brand">
-                <img src="{{ static('icons/logo.svg') }}" alt="{{ SITE_NAME }}" width="48" height="48"
-                     onerror="this.src='{{ static('icons/logo.png') }}'; this.onerror=null">
+                <span class="auth-logo">
+                    <img src="{{ static('icons/logo.svg') }}" alt="{{ SITE_NAME }}" width="56" height="56"
+                         onerror="this.src='{{ static('icons/logo.png') }}'; this.onerror=null">
+                </span>
                 <h1 class="auth-title">{{ _('Sign in to %(sitename)s', sitename=SITE_NAME) }}</h1>
+                <p class="auth-subtitle">{{ _('Welcome back! Please enter your details.') }}</p>
             </div>
 
             {% if form.errors %}
