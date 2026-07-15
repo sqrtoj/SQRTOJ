@@ -329,18 +329,18 @@
         height: 2rem;
         padding: 0;
         border-radius: var(--radius-pill);
-        border: 1px solid var(--color-border);
-        background: var(--color-surface);
-        color: var(--color-text-secondary);
+        border: 1px solid var(--color-accent);
+        background: var(--color-accent);
+        color: var(--color-accent-contrast);
         cursor: pointer;
         transition: background-color var(--motion-fast) var(--ease-standard),
             border-color var(--motion-fast) var(--ease-standard),
             color var(--motion-fast) var(--ease-standard);
 
         &:hover {
-            background: var(--color-surface-alt);
-            border-color: var(--color-border-strong);
-            color: var(--color-text);
+            background: var(--color-accent-hover);
+            border-color: var(--color-accent-hover);
+            color: var(--color-accent-contrast);
         }
 
         &:focus-visible {
