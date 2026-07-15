@@ -116,6 +116,18 @@
         padding: var(--space-3) var(--space-3) var(--space-3) var(--space-7);
         font-size: var(--text-base);
         border-radius: var(--radius-md);
+
+        // Browser autofill forces a pale blue/yellow field background that breaks
+        // the warm palette. Pin the fill + text back to theme tokens.
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--color-text);
+            caret-color: var(--color-text);
+            box-shadow: 0 0 0 1000px var(--color-surface) inset;
+            -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset;
+            transition: background-color 100000s ease-in-out 0s;
+        }
     }
 
     &:focus-within > i {
