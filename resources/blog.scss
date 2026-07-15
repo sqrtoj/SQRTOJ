@@ -7,7 +7,7 @@
     position: relative;
     overflow: hidden;
     border-radius: var(--radius-lg);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-5);
     padding: clamp(var(--space-6), 6vw, var(--space-8)) clamp(var(--space-5), 5vw, var(--space-8));
     background:
         radial-gradient(circle at 82% -10%, rgba(255, 255, 255, 0.28), transparent 45%),
@@ -15,6 +15,12 @@
         linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
     color: var(--color-accent-contrast);
     box-shadow: var(--shadow-2);
+    // Two-zone layout: messaging on the left, glass stat panel on the right.
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(var(--space-5), 5vw, var(--space-8));
 
     // Decorative dotted texture overlay for depth.
     &::before {
@@ -25,10 +31,6 @@
         background-size: 22px 22px;
         opacity: 0.6;
         pointer-events: none;
-    }
-
-    &--compact {
-        padding: clamp(var(--space-5), 4vw, var(--space-6)) clamp(var(--space-5), 5vw, var(--space-8));
     }
 
     &__bg {
@@ -49,7 +51,23 @@
     &__content {
         position: relative;
         z-index: 1;
+        flex: 1 1 22rem;
+        min-width: 0;
         max-width: 42rem;
+    }
+
+    // Glass stat panel floating on the right of the band.
+    &__panel {
+        position: relative;
+        z-index: 1;
+        flex: 1 1 18rem;
+        max-width: 26rem;
+        padding: clamp(var(--space-4), 3vw, var(--space-5));
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(6px);
+        box-shadow: var(--shadow-1);
     }
 
     &__badge {
@@ -89,7 +107,6 @@
         display: flex;
         flex-wrap: wrap;
         gap: var(--space-3);
-        margin-bottom: var(--space-6);
 
         .button {
             display: inline-flex;
@@ -126,22 +143,21 @@
     }
 
     &__stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: clamp(var(--space-4), 4vw, var(--space-7));
-        padding-top: var(--space-5);
-        border-top: 1px solid rgba(255, 255, 255, 0.22);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(90px, 1fr));
+        gap: var(--space-4) var(--space-6);
     }
 }
 
 .hero-stat {
     display: flex;
     flex-direction: column;
+    gap: 2px;
 
     &__value {
-        font-size: clamp(1.4rem, 3vw, 2rem);
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
         font-weight: var(--weight-bold);
-        line-height: 1.1;
+        line-height: 1.05;
         font-variant-numeric: tabular-nums;
     }
 
@@ -153,9 +169,43 @@
     }
 }
 
-@media (max-width: 600px) {
-    .home-hero__stats {
-        gap: var(--space-4);
+// Quick-action launchpad: a responsive card grid linking the main sections.
+.home-quicknav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+
+    &__card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        padding: var(--space-4);
+        text-align: left;
+        color: var(--color-text);
+    }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.4rem;
+        height: 2.4rem;
+        margin-bottom: var(--space-2);
+        border-radius: var(--radius-md);
+        background: var(--color-surface-alt);
+        color: var(--color-accent);
+        font-size: 1.15rem;
+    }
+
+    &__label {
+        font-weight: var(--weight-semibold);
+        font-size: var(--text-md);
+    }
+
+    &__desc {
+        font-size: var(--text-sm);
+        color: var(--color-text-muted);
     }
 }
 
