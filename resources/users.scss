@@ -134,19 +134,6 @@ span.organization {
     margin-right: 5px;
 }
 
-.user-info-page {
-    display: flex;
-}
-
-.user-sidebar {
-    width: 200px;
-    flex: 0 0 200px;
-    padding-left: var(--space-4);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-}
-
 img.user-gravatar {
     display: block;
     border-radius: var(--radius-lg);
@@ -155,95 +142,225 @@ img.user-gravatar {
     box-shadow: var(--shadow-1);
 }
 
-// Profile sidebar (Phase 7): avatar + rating badge in a card, then a tokenized
-// definition-list of stats. Replaces the legacy <br>-separated label:value stack.
-.user-profile-card {
+// ---------------------------------------------------------------------------
+// Modern profile page (docs/design-system/12-profile-page-redesign.md).
+// A full-width identity header with metric tiles, then stacked content
+// sections. Replaces the legacy 150px label:value sidebar.
+// ---------------------------------------------------------------------------
+.user-profile {
     display: flex;
     flex-direction: column;
+    gap: var(--space-5);
+}
+
+.profile-header {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-4);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    justify-content: space-between;
+    gap: var(--space-5);
+}
+
+.profile-header__identity {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-width: 0;
+}
+
+.profile-avatar {
+    width: 96px;
+    height: 96px;
+    flex: 0 0 auto;
     border-radius: var(--radius-lg);
+    background-color: #fff;
+    border: 1px solid var(--color-border);
     box-shadow: var(--shadow-1);
-
-    .user-gravatar {
-        width: 135px;
-        height: 135px;
-    }
 }
 
-.user-rating-badge {
-    text-align: center;
-    font-weight: var(--weight-bold);
-    font-size: 0.95em;
-}
-
-.user-stat-list {
+.profile-header__meta {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+}
+
+.profile-name {
     margin: 0;
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-2xl);
+    word-break: break-word;
+}
 
-    .user-stat {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: var(--space-3);
+.profile-realname {
+    color: var(--color-text-secondary);
+    font-size: var(--text-md);
+}
 
-        dt {
-            color: var(--color-text-muted);
-            font-size: var(--text-sm);
-        }
+.profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
 
-        dd {
-            margin: 0;
-            color: var(--color-text);
-            font-weight: var(--weight-semibold);
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
+// Rank pill inherits the rating color for its text via the rate-* class; the
+// background stays a neutral surface so it reads as a chip in both themes.
+.profile-rank-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+}
 
-        &-break dd, dd.user-stat-break {
-            word-break: break-all;
-            font-weight: var(--weight-regular);
-            text-align: right;
-        }
+.profile-org-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    transition: background-color var(--motion-fast) var(--ease-standard),
+        border-color var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        background: var(--color-surface);
+        border-color: var(--color-border-strong);
+        color: var(--color-text);
+    }
+}
+
+.profile-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+    }
+}
+
+// Metric tiles: a responsive row of key numbers with uppercase micro-labels.
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: var(--space-2);
+    flex: 1 1 340px;
+}
+
+.profile-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-alt);
+
+    &__value {
+        font-size: var(--text-lg);
+        font-weight: var(--weight-bold);
+        color: var(--color-text);
+        font-variant-numeric: tabular-nums;
+        line-height: 1.1;
     }
 
-    .user-stat-heading {
+    &__label {
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--color-text-muted);
+        text-align: center;
+    }
+}
+
+// Content sections below the header.
+.profile-section {
+    margin-bottom: var(--space-6);
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &__title {
+        font-size: var(--text-lg);
         font-weight: var(--weight-semibold);
         color: var(--color-text);
-        padding-bottom: var(--space-1);
+        margin-bottom: var(--space-3);
+        padding-bottom: var(--space-2);
         border-bottom: 1px solid var(--color-border);
     }
 }
 
-.user-sidebar-actions {
+.profile-admin-notes {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+// Badge grid: image tiles in tokenized cards.
+.profile-badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--space-4);
+}
+
+.profile-badge {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-1);
+
+    &__img {
+        height: 8em;
+        width: auto;
+        object-fit: contain;
+    }
+
+    &__name {
+        text-align: center;
+        font-weight: var(--weight-semibold);
+        text-transform: uppercase;
+        font-size: var(--text-sm);
+        letter-spacing: 0.02em;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-header {
+        justify-content: center;
+    }
+
+    .profile-header__identity {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-tags,
+    .profile-header__actions {
+        justify-content: center;
+    }
 }
 
 .user-content {
-    flex: 1 1;
-    overflow: hidden;
     word-wrap: break-word;
-}
-
-@media not all and (min-width: 600px) {
-    .user-info-page {
-        display: block;
-    }
-
-    .user-sidebar {
-        margin: 0 auto;
-    }
-
-    .user-content {
-        overflow: visible;
-    }
 }
 
 .pp-table {

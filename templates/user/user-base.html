@@ -9,78 +9,79 @@
 {% endblock %}
 
 {% block body %}
-<div class="user-info-page">
-    <div class="user-sidebar">
-        <div class="user-profile-card">
-            <img src="{{ gravatar(user, 135) }}" class="user-gravatar" alt="{{ user.user.username }}">
+<div class="user-profile">
+    {# Modern profile header: avatar, identity, and key metric tiles. #}
+    <header class="profile-header card">
+        <div class="profile-header__identity">
+            <img src="{{ gravatar(user, 135) }}" class="profile-avatar" alt="{{ user.user.username }}">
+            <div class="profile-header__meta">
+                <h2 class="profile-name {{ user.css_class }}">{{ user.user.username }}</h2>
+                {% if user.user.first_name %}
+                    <div class="profile-realname">{{ user.user.first_name }}</div>
+                {% endif %}
+                <div class="profile-tags">
+                    {% if rating %}
+                        <span class="profile-rank-pill {{ rating_class(rating) }}">
+                            <i class="fa fa-trophy" aria-hidden="true"></i> {{ rating_name(rating) }}
+                        </span>
+                    {% endif %}
+                    {% with orgs=user.organizations.filter(is_unlisted=False) %}
+                        {% for org in orgs %}
+                            <a class="profile-org-chip" href="{{ org.get_absolute_url() }}">
+                                <i class="fa fa-users" aria-hidden="true"></i> {{ org.name }}
+                            </a>
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+                <div class="profile-header__actions">
+                    <a class="button btn-secondary" href="{{ url('all_user_submissions', user.user.username) }}">
+                        <i class="fa fa-list" aria-hidden="true"></i> {{ _('View submissions') }}
+                    </a>
+                    {% if user.user == request.user %}
+                        <a class="button btn-secondary" href="{{ url('user_edit_profile') }}">
+                            <i class="fa fa-pencil" aria-hidden="true"></i> {{ _('Edit profile') }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <span class="profile-stat__value">{{ user.problem_count }}</span>
+                <span class="profile-stat__label">{{ _('Problems solved') }}</span>
+            </div>
+            <div class="profile-stat">
+                <span class="profile-stat__value" title="{{ user.performance_points|floatformat(2) }}">
+                    {{ user.performance_points|floatformat(0) }}
+                </span>
+                <span class="profile-stat__label">{{ _('Points') }}</span>
+            </div>
+            {% if not user.is_unlisted %}
+            <div class="profile-stat">
+                <span class="profile-stat__value">#{{ rank }}</span>
+                <span class="profile-stat__label">{{ _('Rank by points') }}</span>
+            </div>
+            {% endif %}
             {% if rating %}
-            <div class="user-rating-badge">
-                <span class="{{ rating_class(rating) }}">{{ rating_name(rating) }}</span>
-            </div>
-            {% endif %}
-        </div>
-
-        <dl class="user-stat-list">
-            {% if user.user == request.user or request.user.is_superuser %}
-            <div class="user-stat">
-                <dt>{{ _('Email') }}</dt>
-                <dd class="user-stat-break">{{ user.user.email }}</dd>
-            </div>
-            {% endif %}
-            <div class="user-stat">
-                <dt>{{ _('Problems solved') }}</dt>
-                <dd>{{ user.problem_count }}</dd>
+            <div class="profile-stat">
+                <span class="profile-stat__value {{ rating_class(rating) }}">{{ rating_number(rating) }}</span>
+                <span class="profile-stat__label">{{ _('Rating') }}</span>
             </div>
             {% if not user.is_unlisted %}
-            <div class="user-stat">
-                <dt>{{ _('Rank by points') }}</dt>
-                <dd>#{{ rank }}</dd>
+            <div class="profile-stat">
+                <span class="profile-stat__value">#{{ rating_rank }}</span>
+                <span class="profile-stat__label">{{ _('Rank by rating') }}</span>
             </div>
             {% endif %}
-            <div class="user-stat">
-                <dt>{{ _('Total points') }}</dt>
-                <dd title="{{ user.performance_points|floatformat(2) }}">{{ user.performance_points|floatformat(2) }}</dd>
+            {% endif %}
+            <div class="profile-stat">
+                <span class="profile-stat__value">{{ user.contribution_points }}</span>
+                <span class="profile-stat__label">{{ _('Contribution') }}</span>
             </div>
-            <div class="user-stat">
-                <dt>{{ _('Contribution points') }}</dt>
-                <dd title="{{ user.contribution_points }}">{{ user.contribution_points }}</dd>
-            </div>
-        </dl>
-
-        <div class="user-sidebar-actions">
-            <a href="{{ url('all_user_submissions', user.user.username) }}">{{ _('View submissions') }}</a>
         </div>
+    </header>
 
-        {% if ratings %}
-        <dl class="user-stat-list">
-            <div class="user-stat-heading">
-                {%- trans trimmed counter=ratings|length %}
-                {{ counter }} contest written
-                {% pluralize %}
-                {{ counter }} contests written
-                {% endtrans -%}
-            </div>
-            {% if not user.is_unlisted %}
-            <div class="user-stat">
-                <dt>{{ _('Rank by rating') }}</dt>
-                <dd>#{{ rating_rank }}</dd>
-            </div>
-            {% endif %}
-            <div class="user-stat">
-                <dt>{{ _('Rating') }}</dt>
-                <dd>{{ rating_number(rating) }}</dd>
-            </div>
-            <div class="user-stat">
-                <dt>{{ _('Min. rating') }}</dt>
-                <dd>{{ rating_number(min_rating) }}</dd>
-            </div>
-            <div class="user-stat">
-                <dt>{{ _('Max rating') }}</dt>
-                <dd>{{ rating_number(max_rating) }}</dd>
-            </div>
-        </dl>
-        {% endif %}
-    </div>
     <div class="user-content">{% block user_content %}{% endblock %}</div>
 </div>
 {% endblock %}
