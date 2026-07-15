@@ -960,7 +960,7 @@ def base_contest_ranking_list(
     contest, problems, queryset, frozen=False, result_hidden=False, can_see_submissions=False,
 ):
     participations = list(
-        queryset.select_related('user__user', 'rating')
+        queryset.select_related('user__user', 'user__display_badge', 'rating')
         .prefetch_related(
             Prefetch(
                 'user__organizations',
