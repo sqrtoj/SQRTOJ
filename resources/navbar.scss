@@ -157,21 +157,40 @@ nav {
 
 // ---------------------------------------------------------------------------
 // Dropdowns (desktop: hover; mobile: .show-list toggled by JS)
+//
+// The same floating panel treatment is shared by the left-menu submenus
+// (#nav-list li ul) and the right-hand user menu (#user-links > ul > li > ul).
+// Previously only #nav-list submenus were styled, so the user dropdown dropped
+// out unstyled and shoved the layout; keeping the panel rules together fixes
+// that and keeps both menus visually identical.
 // ---------------------------------------------------------------------------
-#nav-list li ul {
+@keyframes nav-dropdown-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#nav-list li ul,
+#user-links > ul > li > ul {
     position: absolute;
-    top: calc(100% - 2px);
+    top: calc(100% + 6px);
     left: 0;
-    min-width: 190px;
+    min-width: 200px;
     margin: 0 !important;
     padding: var(--space-1);
     list-style: none;
     display: none;
-    background: color.adjust($color_navbar_bg, $lightness: 3%);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-3);
-    z-index: 10;
+    background: color.adjust($color_navbar_bg, $lightness: 4%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    z-index: 600;
 
     li {
         display: block;
@@ -193,11 +212,13 @@ nav {
             line-height: 1.35;
             white-space: nowrap;
             cursor: pointer;
-            transition: background-color var(--motion-fast) var(--ease-standard);
+            transition: background-color var(--motion-fast) var(--ease-standard),
+                padding-left var(--motion-fast) var(--ease-standard);
 
             &:hover {
                 background: rgba(255, 255, 255, 0.14);
                 color: #fff;
+                padding-left: calc(var(--space-3) + 3px);
             }
 
             &.active {
@@ -324,6 +345,19 @@ nav {
     #nav-list li:hover > ul,
     #user-links li:hover > ul {
         display: block;
+        animation: nav-dropdown-in var(--motion-fast) var(--ease-standard);
+    }
+
+    // Invisible bridge across the 6px gap between a trigger and its panel so
+    // moving the cursor down onto the menu doesn't drop the :hover state.
+    #nav-list > li:hover > ul::before,
+    #user-links > ul > li:hover > ul::before {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: 0;
+        right: 0;
+        height: 8px;
     }
 
     // The mobile-only "Home" text item is hidden on desktop (logo covers it).
