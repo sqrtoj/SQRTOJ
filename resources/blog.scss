@@ -8,19 +8,13 @@
     overflow: hidden;
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-5);
-    padding: clamp(var(--space-6), 6vw, var(--space-8)) clamp(var(--space-5), 5vw, var(--space-8));
+    padding: clamp(var(--space-5), 5vw, var(--space-7)) clamp(var(--space-4), 5vw, var(--space-7));
     background:
         radial-gradient(circle at 82% -10%, rgba(255, 255, 255, 0.28), transparent 45%),
         radial-gradient(circle at 12% 120%, rgba(0, 0, 0, 0.22), transparent 42%),
         linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
     color: var(--color-accent-contrast);
     box-shadow: var(--shadow-2);
-    // Two-zone layout: messaging on the left, glass stat panel on the right.
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: clamp(var(--space-5), 5vw, var(--space-8));
 
     // Decorative dotted texture overlay for depth.
     &::before {
@@ -51,52 +45,23 @@
     &__content {
         position: relative;
         z-index: 1;
-        flex: 1 1 22rem;
         min-width: 0;
-        max-width: 42rem;
-    }
-
-    // Glass stat panel floating on the right of the band.
-    &__panel {
-        position: relative;
-        z-index: 1;
-        flex: 1 1 18rem;
-        max-width: 26rem;
-        padding: clamp(var(--space-4), 3vw, var(--space-5));
-        border-radius: var(--radius-lg);
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        backdrop-filter: blur(6px);
-        box-shadow: var(--shadow-1);
-    }
-
-    &__badge {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-2);
-        padding: var(--space-1) var(--space-3);
-        margin-bottom: var(--space-4);
-        border-radius: var(--radius-pill);
-        background: rgba(255, 255, 255, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        font-size: var(--text-sm);
-        font-weight: var(--weight-semibold);
-        letter-spacing: 0.02em;
-        backdrop-filter: blur(4px);
+        max-width: 46rem;
     }
 
     &__title {
-        font-size: clamp(2rem, 5vw, 3rem);
+        font-size: clamp(1.6rem, 5vw, 3rem);
         font-weight: var(--weight-bold);
-        line-height: 1.1;
+        line-height: 1.12;
         letter-spacing: -0.025em;
         margin: 0 0 var(--space-3);
         color: var(--color-accent-contrast);
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        overflow-wrap: anywhere;
     }
 
     &__pitch {
-        font-size: clamp(1.05rem, 2vw, 1.3rem);
+        font-size: clamp(1rem, 2vw, 1.3rem);
         line-height: 1.5;
         max-width: 34rem;
         margin: 0 0 var(--space-5);
@@ -107,6 +72,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: var(--space-3);
+        margin-bottom: var(--space-5);
 
         .button {
             display: inline-flex;
@@ -142,10 +108,13 @@
         }
     }
 
+    // Stats sit in a horizontal row below the action buttons.
     &__stats {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(90px, 1fr));
-        gap: var(--space-4) var(--space-6);
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(var(--space-4), 5vw, var(--space-7));
+        padding-top: var(--space-4);
+        border-top: 1px solid rgba(255, 255, 255, 0.22);
     }
 }
 
@@ -155,7 +124,7 @@
     gap: 2px;
 
     &__value {
-        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        font-size: clamp(1.4rem, 3vw, 2rem);
         font-weight: var(--weight-bold);
         line-height: 1.05;
         font-variant-numeric: tabular-nums;
@@ -339,6 +308,27 @@
             margin: 1em 0;
             padding-left: 1em;
             padding-bottom: 0.25em;
+            min-width: 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+
+            // Keep wide media/code/tables inside the column so they never push
+            // the whole page wider than the viewport on mobile.
+            img, svg, video, iframe {
+                max-width: 100%;
+                height: auto;
+            }
+
+            pre {
+                max-width: 100%;
+                overflow-x: auto;
+            }
+
+            table {
+                display: block;
+                max-width: 100%;
+                overflow-x: auto;
+            }
         }
     }
 
