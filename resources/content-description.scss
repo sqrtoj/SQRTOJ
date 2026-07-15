@@ -4,6 +4,93 @@
     @include content-description;
 }
 
+// Flatpage shell (about / shop / custom pages). Presentation only — the stored
+// markdown content is never altered (see docs/design-system/10-modern-ui-overhaul.md).
+.flatpage-shell {
+    max-width: var(--container-narrow, 960px);
+    margin: 0 auto;
+
+    // Branded title band at the top of the page.
+    .flatpage-hero {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-left: 4px solid var(--color-accent);
+        border-radius: var(--radius-lg);
+        padding: var(--space-5) var(--space-5);
+        margin-bottom: var(--section-gap, 48px);
+        box-shadow: var(--shadow-1);
+
+        .flatpage-title {
+            margin: 0;
+            font-size: var(--text-2xl, 30px);
+            font-weight: var(--weight-bold, 700);
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            color: var(--color-text);
+        }
+    }
+
+    // Constrain prose to a comfortable reading measure; let tables/media breathe.
+    .flatpage-body.content-description {
+        line-height: 1.7;
+
+        > p, > ul, > ol, > blockquote, > h1, > h2, > h3, > h4 {
+            max-width: 72ch;
+        }
+
+        img {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+        }
+
+        // Pricing/spec tables in flatpages get the modern token treatment.
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: var(--space-5) 0;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+
+            th, td {
+                padding: var(--space-2) var(--space-3);
+                border-bottom: 1px solid var(--color-border);
+                text-align: left;
+            }
+
+            thead th {
+                background: var(--color-navbar);
+                color: var(--color-text-inverse);
+                font-weight: var(--weight-semibold, 600);
+            }
+
+            tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+            tbody tr:nth-child(2n) td {
+                background: var(--color-surface-alt);
+            }
+
+            tbody tr {
+                transition: background-color var(--motion-fast, 120ms) var(--ease-standard, ease);
+            }
+
+            tbody tr:hover td {
+                background: var(--color-surface-alt);
+            }
+        }
+    }
+}
+
+// Shop-specific: pricing tables read as emphasized tiers.
+.flatpage-shop {
+    .flatpage-body.content-description table tbody tr:hover td {
+        background: var(--color-accent-2-soft, var(--color-surface-alt));
+    }
+}
+
 .display-math {
     display: block;
     text-align: center;

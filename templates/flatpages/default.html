@@ -10,10 +10,14 @@
     {% include "flatpages/admin_link.html" %}
 {% endblock %}
 {% block body %}
-    <div class="body content-description">
-        {% cache 86400 'flatpage' flatpage.url %}
-            {{ flatpage.content|markdown('flatpage', jax)|reference|str|safe}}
-        {% endcache %}
+    {# Flatpage URL becomes a body-scoped class hook (e.g. flatpage-shop, flatpage-about)
+       so page-specific CSS can enhance the stored markdown without editing content. #}
+    <div class="flatpage-page flatpage{{ flatpage.url|replace('/', '-') }}">
+        <div class="body content-description flatpage-content">
+            {% cache 86400 'flatpage' flatpage.url %}
+                {{ flatpage.content|markdown('flatpage', jax)|reference|str|safe}}
+            {% endcache %}
+        </div>
     </div>
 {% endblock %}
 

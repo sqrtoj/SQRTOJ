@@ -224,6 +224,12 @@ $is_summer: false !default;
     --radius-lg: 12px;
     --radius-pill: 999px;
 
+    // --- Layout (Phase 6) ---
+    --container-max: 1120px;
+    --container-wide: 1320px;
+    --section-gap: 48px;
+    --card-pad: 24px;
+
     // --- Elevation ---
     @if $is_light_theme {
         --shadow-0: none;
