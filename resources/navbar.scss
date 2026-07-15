@@ -140,7 +140,8 @@ nav {
                 font-weight: var(--weight-medium);
                 position: relative;
                 transition: background-color var(--motion-fast, 120ms) var(--ease-standard, ease),
-                    color var(--motion-fast, 120ms) var(--ease-standard, ease);
+                    color var(--motion-fast, 120ms) var(--ease-standard, ease),
+                    transform var(--motion-fast, 120ms) var(--ease-standard, ease);
 
                 &:link {
                     color: #FFF;
@@ -149,6 +150,7 @@ nav {
                 &:hover {
                     color: #FFF;
                     background: rgba(255, 255, 255, 0.16);
+                    transform: translateY(-1px);
                 }
 
                 // Modern pill-active with an underline accent bar.
