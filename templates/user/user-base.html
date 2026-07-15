@@ -15,14 +15,18 @@
         <div class="profile-header__identity">
             <img src="{{ gravatar(user, 135) }}" class="profile-avatar" alt="{{ user.user.username }}">
             <div class="profile-header__meta">
-                <h2 class="profile-name {{ user.css_class }}">{{ user.user.username }}</h2>
+                {# Codeforces-style: rank title above the handle, handle colored by rating. #}
+                {% if rating %}
+                    <div class="profile-rank-title {{ rating_class(rating) }}">{{ rating_name(rating) }}</div>
+                {% endif %}
+                <h2 class="profile-name {{ rating_class(rating) if rating else '' }}">{{ user.user.username }}</h2>
                 {% if user.user.first_name %}
                     <div class="profile-realname">{{ user.user.first_name }}</div>
                 {% endif %}
                 <div class="profile-tags">
                     {% if rating %}
                         <span class="profile-rank-pill {{ rating_class(rating) }}">
-                            <i class="fa fa-trophy" aria-hidden="true"></i> {{ rating_name(rating) }}
+                            <i class="fa fa-trophy" aria-hidden="true"></i> {{ rating_number(rating) }}
                         </span>
                     {% endif %}
                     {% with orgs=user.organizations.filter(is_unlisted=False) %}

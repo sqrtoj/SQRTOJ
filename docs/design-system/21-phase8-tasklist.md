@@ -27,10 +27,12 @@ items are blocked on a product decision.
 - [~] #3  Prune problems missing statement with unassigned ticket — CANCELLED
 
 ## Large / needs product sign-off (user approved manage.py on test server)
-- [ ] #6  VOI-style contest format (freeze/hidden scoreboard)
-- [ ] #9  Upgrade to Django 5.2
-- [ ] #10 Simple custom invocation
-- [ ] #10 Codeforces-style profile page
+## Large
+- [x] #6  VOI contest format (subclass of VNOJ + freeze; migration 0215 applied on test)
+- [ ] #10 Codeforces-style profile page (in progress)
+- [ ] #10 Simple custom invocation (needs judge/bridge support)
+- [ ] #9  Upgrade to Django 5.2 (highest risk; separate branch)
+- [ ] FE: further modernization pass
 
 ## Notes
 - User granted permission to run manage.py in venv /home/sqrtoj/vnojsite on the

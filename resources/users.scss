@@ -185,6 +185,16 @@ img.user-gravatar {
     gap: var(--space-2);
 }
 
+// Codeforces-style rank title sitting just above the handle, colored by the
+// rating tier (the .rate-* class supplies the color).
+.profile-rank-title {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+}
+
 .profile-name {
     margin: 0;
     font-size: var(--text-2xl);
