@@ -66,3 +66,126 @@
     background: var(--verdict-queued-bg);
     color: var(--verdict-queued-fg);
 }
+
+// Judges page — responsive card grid (docs/design-system/10-modern-ui-overhaul.md
+// §3.5). Replaces the legacy judge-status table; the #judge-status container is
+// kept so the 10s AJAX refresh in status/media-js.html keeps working.
+#judge-status {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-4) 0;
+}
+
+.judge-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+    }
+
+    &__name {
+        font-size: var(--text-md);
+        font-weight: var(--weight-semibold);
+        color: var(--color-text);
+        word-break: break-word;
+    }
+
+    &__stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-2);
+    }
+
+    &__runtimes {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+}
+
+.judge-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    &__label {
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--color-text-muted);
+    }
+
+    &__value {
+        font-weight: var(--weight-medium);
+        color: var(--color-text);
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+// Online/offline status pill — pairs color with a text label (never color-only).
+.judge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+
+    .fa {
+        font-size: 0.7em;
+    }
+
+    &--online {
+        background: var(--color-success-bg);
+        color: var(--color-success-fg);
+    }
+
+    &--offline {
+        background: var(--color-danger-bg);
+        color: var(--color-danger-fg);
+    }
+}
+
+.judge-runtime-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+
+    .runtime-label {
+        display: inline-block;
+        padding: 2px var(--space-2);
+        border-radius: var(--radius-sm);
+        background: var(--color-surface-alt);
+        border: 1px solid var(--color-border);
+        color: var(--color-link);
+        font-size: var(--text-sm);
+        cursor: pointer;
+        transition: background-color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-surface);
+            border-color: var(--color-border-strong);
+        }
+    }
+}
+
+.judge-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: var(--space-7) var(--space-4);
+
+    .fa {
+        font-size: 2.5em;
+        margin-bottom: var(--space-3);
+        opacity: 0.5;
+    }
+}

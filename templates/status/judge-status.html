@@ -17,9 +17,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="h-scrollable-table">
-        <table id="judge-status" class="table striped">
-            {% include "status/judge-status-table.html" %}
-        </table>
+    <div id="judge-status" class="judge-card-grid u-grid-auto">
+        {% include "status/judge-status-table.html" %}
     </div>
 {% endblock %}
