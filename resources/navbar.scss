@@ -199,6 +199,7 @@ nav {
         button {
             display: block;
             width: 100%;
+            box-sizing: border-box;
             padding: var(--space-2) var(--space-3);
             margin: 0;
             border: none;
@@ -213,12 +214,12 @@ nav {
             white-space: nowrap;
             cursor: pointer;
             transition: background-color var(--motion-fast) var(--ease-standard),
-                padding-left var(--motion-fast) var(--ease-standard);
+                transform var(--motion-fast) var(--ease-standard);
 
             &:hover {
                 background: rgba(255, 255, 255, 0.14);
                 color: #fff;
-                padding-left: calc(var(--space-3) + 3px);
+                transform: translateX(3px);
             }
 
             &.active {
@@ -311,10 +312,12 @@ nav {
                 }
             }
 
-            // Right-aligned dropdown so it never overflows the viewport.
+            // Right-aligned dropdown so it never overflows the viewport, and
+            // width-clamped so a long username can't push it off-screen.
             > ul {
                 left: auto;
                 right: 0;
+                max-width: calc(100vw - var(--space-4));
             }
         }
     }
