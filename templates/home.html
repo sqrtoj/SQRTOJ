@@ -31,6 +31,12 @@
                     <a class="button btn-secondary" href="{{ url('contest_list') }}"><i class="fa fa-trophy" aria-hidden="true"></i> {{ _('Join a contest') }}</a>
                 </div>
             {% endif %}
+            <form class="home-handle-search" action="{{ url('user_ranking_redirect') }}" method="get" role="search">
+                <i class="fa fa-search home-handle-search__icon" aria-hidden="true"></i>
+                <input class="home-handle-search__input" type="text" name="handle"
+                       placeholder="{{ _('Find a user by handle...') }}" aria-label="{{ _('Find a user by handle') }}" autocomplete="off">
+                <button class="home-handle-search__btn" type="submit">{{ _('Find') }}</button>
+            </form>
             <div class="home-hero__stats">
                 <div class="hero-stat">
                     <span class="hero-stat__value" data-count-to="{{ user_count }}">{{ user_count }}</span>

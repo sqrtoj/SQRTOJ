@@ -161,6 +161,68 @@
     }
 }
 
+// Handle search on the hero: a glass search bar that jumps straight to a user's
+// place on the leaderboard (GET -> user_ranking_redirect).
+.home-handle-search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: 30rem;
+    margin-bottom: var(--space-5);
+    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(4px);
+
+    &__icon {
+        flex: 0 0 auto;
+        color: var(--color-accent-contrast);
+        opacity: 0.85;
+    }
+
+    &__input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: none;
+        background: none;
+        color: var(--color-accent-contrast);
+        font-size: var(--text-md);
+        padding: var(--space-1) 0;
+
+        &::placeholder {
+            color: var(--color-accent-contrast);
+            opacity: 0.75;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    &__btn {
+        flex: 0 0 auto;
+        width: auto;
+        border: none;
+        cursor: pointer;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-pill);
+        background: var(--color-surface);
+        color: var(--color-accent);
+        font-weight: var(--weight-semibold);
+        transition: background-color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-surface-alt);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-accent-contrast);
+            outline-offset: 2px;
+        }
+    }
+}
+
 .hero-stat {
     display: flex;
     flex-direction: column;
@@ -491,10 +553,19 @@
             }
         }
 
-        // Collapsed state: hide the body and meta, leaving just the header row.
-        // The header stays as a compact, clickable teaser.
+        // Collapsed state: keep a short preview of the body (fading out at the
+        // bottom) instead of hiding it entirely, so readers get a teaser and can
+        // click to expand. The meta footer is hidden while collapsed.
         &.collapsed {
-            .blog-body,
+            .blog-body {
+                position: relative;
+                max-height: 5.5em;
+                overflow: hidden;
+                // Fade the preview into the surface so the cut looks intentional.
+                -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+            }
+
             .meta {
                 display: none;
             }

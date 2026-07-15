@@ -6,6 +6,22 @@ $is_light_theme: true;
     overflow-x: auto;
 }
 
+// Auto-width, left-aligned variant for standalone / small tables (key-value
+// detail tables, stats) that should hug their content instead of stretching
+// the full row and centering everything. Opt-in so the big full-width list
+// tables (problem list, ranking, submissions) are untouched.
+.table--auto {
+    width: auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100%;
+
+    th, td {
+        text-align: left !important;
+        white-space: normal;
+    }
+}
+
 .table {
     border-spacing: 0;
     width: 100%;
