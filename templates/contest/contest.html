@@ -186,10 +186,13 @@
 
     {% if is_in_contest or contest.ended or request.user.is_superuser or is_editor or is_tester %}
         <div class="contest-problems">
-            <h2 style="margin-bottom: 0.2em; float:left;"><i class="fa fa-fw fa-question-circle"></i>{{ _('Problems') }} </h2>
-            {% if can_edit and can_download_data %}
-                <a class="button" style="float:right" href="{{ url('contest_prepare_data', contest.key) }}">{{ _('Download data') }}</a>
-            {% endif %}
+            <div class="contest-section-head">
+                <h2 style="margin-bottom: 0.2em;"><i class="fa fa-fw fa-question-circle"></i>{{ _('Problems') }} </h2>
+                {% if can_edit and can_download_data %}
+                    <a class="button" href="{{ url('contest_prepare_data', contest.key) }}">{{ _('Download data') }}</a>
+                {% endif %}
+            </div>
+            <div class="h-scrollable-table">
             <table class="table striped">
                 <thead>
                 <tr>
@@ -262,6 +265,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% if can_view_all_problems %}
             <a class="button" style="width: fit-content" href="{{ url('contest_all_problems', contest.key) }}">{{ _('All problems') }}</a>
             {% endif %}
@@ -269,6 +273,7 @@
         {% if has_announcements or can_edit %}
         <div class="contest-announcements">
             <h2 style="margin-bottom: 0.2em"><i class="fa fa-check"></i> {{ _('Announcements') }}</h2>
+            <div class="h-scrollable-table">
             <table id="contest-announcements" class="table">
                 <thead>
                     <tr>
@@ -303,6 +308,7 @@
         {% if has_clarifications %}
         <div class="contest-clarifications">
             <h2 style="margin-bottom: 0.2em"><i class="fa fa-check"></i> {{ _('Clarifications') }}</h2>
+            <div class="h-scrollable-table">
             <table id="contest-clarifications" class="table">
                 <thead>
                     <tr>

@@ -69,6 +69,45 @@
                 writeCollapsed(state);
             });
 
+            // "Collapse all" / "Expand all" toolbar button. Collapses every post if
+            // any is still open, otherwise expands them all, and syncs localStorage.
+            function refreshCollapseAllButton() {
+                var $posts = $('.post');
+                var anyOpen = $posts.not('.collapsed').length > 0;
+                var $btn = $('#collapse-all-posts');
+                var $icon = $btn.find('i');
+                var $label = $btn.find('.newsfeed-toolbar__label');
+                if (anyOpen) {
+                    $label.text(gettext('Collapse all'));
+                    $icon.removeClass('fa-expand').addClass('fa-compress');
+                    $btn.attr('aria-pressed', 'false');
+                } else {
+                    $label.text(gettext('Expand all'));
+                    $icon.removeClass('fa-compress').addClass('fa-expand');
+                    $btn.attr('aria-pressed', 'true');
+                }
+            }
+
+            $('#collapse-all-posts').on('click', function (e) {
+                e.preventDefault();
+                var $posts = $('.post');
+                var collapseThemAll = $posts.not('.collapsed').length > 0;
+                var state = readCollapsed();
+                $posts.each(function () {
+                    var $post = $(this);
+                    setCollapsed($post, collapseThemAll);
+                    if (collapseThemAll) {
+                        state[$post.attr('id')] = true;
+                    } else {
+                        delete state[$post.attr('id')];
+                    }
+                });
+                writeCollapsed(state);
+                refreshCollapseAllButton();
+            });
+
+            refreshCollapseAllButton();
+
             $('.blog-sidebar').hide();
             $('#blog-tab').find('a').click(function (e) {
                 e.preventDefault();
@@ -101,6 +140,14 @@
     <div id="blog-container">
         <div class="blog-content sidebox">
             {% include "blog/blog-list-tabs.html" %}
+            {% if posts %}
+                <div class="newsfeed-toolbar">
+                    <button type="button" id="collapse-all-posts" class="newsfeed-toolbar__btn">
+                        <i class="fa fa-compress" aria-hidden="true"></i>
+                        <span class="newsfeed-toolbar__label">{{ _('Collapse all') }}</span>
+                    </button>
+                </div>
+            {% endif %}
             <div class="sidebox-content" style="border: unset;">
                 {% for post in posts %}
                     {% include "blog/blog-post.html" %}

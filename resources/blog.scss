@@ -166,6 +166,44 @@
     overflow: hidden;
     vertical-align: top;
 
+    // Newsfeed toolbar: right-aligned "collapse/expand all" control.
+    .newsfeed-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        padding: var(--space-2) var(--space-3) 0;
+
+        &__btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-3);
+            width: auto;
+            font-size: var(--text-sm);
+            font-weight: var(--weight-medium);
+            color: var(--color-text-secondary) !important;
+            background: var(--color-surface-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-pill);
+            box-shadow: none;
+            cursor: pointer;
+            transition: background-color var(--motion-fast) var(--ease-standard),
+                border-color var(--motion-fast) var(--ease-standard),
+                color var(--motion-fast) var(--ease-standard);
+
+            &:hover {
+                background: var(--color-surface);
+                border-color: var(--color-border-strong);
+                color: var(--color-text) !important;
+                transform: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--color-focus-ring);
+                outline-offset: 2px;
+            }
+        }
+    }
+
     .post {
         margin: 0em 0.5em;
 

@@ -172,6 +172,10 @@ div.ticket-title {
 
 .ticket-message {
     display: flex;
+    // Wrap so the fixed-width info column and the detail block stack instead of
+    // forcing horizontal page overflow on narrow screens.
+    flex-wrap: wrap;
+    gap: var(--space-3);
     padding-top: 15px;
 
     .info {
@@ -186,7 +190,7 @@ div.ticket-title {
         border: 1px var(--color-border-strong) solid;
         border-radius: var(--radius-md);
         flex: 1;
-        min-width: 300px;
+        min-width: 0;
     }
 
     .header {

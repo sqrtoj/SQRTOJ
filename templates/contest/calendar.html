@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block body %}
+    <div class="h-scrollable-table">
     <table id="contest-calendar">
         <tr>
             <th>{{ _('Sunday') }}</th>
@@ -43,4 +44,5 @@
             {% endfor %}</tr>
         {% endfor %}
     </table>
+    </div>
 {% endblock %}

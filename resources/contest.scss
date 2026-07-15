@@ -2,6 +2,17 @@
 
 $is_light_theme: true;
 
+// Section header for contest detail blocks: title left, action button right, and
+// wraps instead of colliding on narrow screens (replaces the old float layout).
+.contest-section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
 #contest-calendar {
     border-collapse: collapse;
     width: 100%;
@@ -65,6 +76,16 @@ $is_light_theme: true;
 
     .today {
         background: rgba($color_link200, 0.2);
+    }
+
+    // On small screens the 7-column grid can't keep 170px cells; let them shrink
+    // and rely on the .h-scrollable-table wrapper for any residual overflow.
+    @media (max-width: 700px) {
+        td {
+            width: auto;
+            height: 80px;
+            font-size: 0.9em;
+        }
     }
 }
 
@@ -324,6 +345,15 @@ form.contest-join-pseudotab {
     .user-points, .user-points a {
         color: var(--color-text);
         font-variant-numeric: tabular-nums;
+    }
+
+    // The 20em name column is comfortable on desktop but forces the horizontal
+    // scroll to start almost immediately on phones; tighten it there. The table
+    // is wrapped in .h-scrollable-table, so any residual width scrolls internally.
+    @media (max-width: 700px) {
+        .user-name {
+            min-width: 12em;
+        }
     }
 }
 
