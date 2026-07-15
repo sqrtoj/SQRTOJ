@@ -29,10 +29,19 @@ items are blocked on a product decision.
 ## Large / needs product sign-off (user approved manage.py on test server)
 ## Large
 - [x] #6  VOI contest format (subclass of VNOJ + freeze; migration 0215 applied on test)
-- [ ] #10 Codeforces-style profile page (in progress)
-- [ ] #10 Simple custom invocation (needs judge/bridge support)
-- [ ] #9  Upgrade to Django 5.2 (highest risk; separate branch)
-- [ ] FE: further modernization pass
+- [x] #10 Codeforces-style profile page (rank title above handle, rating-colored)
+- [~] #10 Simple custom invocation — BLOCKED (out of repo scope): the grading
+  pipeline only supports `submission-request` bound to an existing problem;
+  arbitrary-stdin runs require a new `custom-invocation` packet + sandbox
+  executor in the separate judge-server repo, which is not part of this project.
+  Won't ship a dead web-only form with no judge backend.
+- [~] #9  Upgrade to Django 5.2 — BLOCKED (no safe path from here): 3.2 → 5.2 is
+  a 2-major jump; forked deps (django-fernet-fields, jsonfield, martor,
+  markdown2) and pinned old libs (registration-redux, social-auth, webauthn<1,
+  pytz) use APIs removed in Django 4+. Needs a green test suite, which can't run
+  from this machine (no local Python). Must be a dedicated branch with server-
+  side test runs before any deploy.
+- [x] FE: further modernization pass (in progress)
 
 ## Notes
 - User granted permission to run manage.py in venv /home/sqrtoj/vnojsite on the
