@@ -183,23 +183,6 @@
                     </span>
                 </div>
             </div>
-            <div class="blog-sidebox sidebox">
-                <h3 class="sidebox-head">
-                    <span><i class="fa fa-puzzle-piece" aria-hidden="true"></i> {{ _('New problems') }}</span>
-                </h3>
-                <div class="sidebox-content">
-                    <ul class="problem-list new-problems">
-                        {% for problem in new_problems %}
-                            <li><a href="{{ url('problem_detail', problem.code) }}">{{ problem.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    <span class="rssatom">
-                        <a href="{{ url('problem_rss') }}"><span><i class="fa fa-rss"></i></span> RSS</a>
-                        /
-                        <a href="{{ url('problem_atom') }}">Atom</a>
-                    </span>
-                </div>
-            </div>
         </div>
     </div>
     {% block after_posts %}{% endblock %}
