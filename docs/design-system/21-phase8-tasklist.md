@@ -41,7 +41,9 @@ items are blocked on a product decision.
   pytz) use APIs removed in Django 4+. Needs a green test suite, which can't run
   from this machine (no local Python). Must be a dedicated branch with server-
   side test runs before any deploy.
-- [x] FE: further modernization pass (in progress)
+- [x] FE: further modernization pass
+  - Problem list: points badge, AC-rate progress bar, type-tag pills
+  - Leaderboard/ranking: gold/silver/bronze medal tint for top-3 rank
 
 ## Notes
 - User granted permission to run manage.py in venv /home/sqrtoj/vnojsite on the
