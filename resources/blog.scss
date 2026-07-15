@@ -621,6 +621,33 @@
 }
 
 .blog-sidebox {
+    // Consistent, compact sidebox header with an accent icon.
+    .sidebox-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+        white-space: nowrap;
+
+        > span:first-child {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fa {
+            color: var(--color-accent);
+        }
+
+        .sidebox-head__badge img {
+            max-width: none;
+            vertical-align: middle;
+        }
+    }
+
     .leaderboard-content {
         padding: 0 !important;
         border: 0 !important;
@@ -735,6 +762,16 @@
             font-variant-numeric: tabular-nums;
         }
 
+        // Contribution value + heart use the brand accent (sienna in Warm
+        // Harvest, green in Summer) instead of a generic red heart.
+        .podium-value--contrib {
+            color: var(--color-accent);
+
+            .fa-heart {
+                color: var(--color-accent);
+            }
+        }
+
         // Medal tints for the top three ranks (gold / silver / bronze).
         .podium-row--1 .podium-rank { color: #d4af37; }
         .podium-row--2 .podium-rank { color: #9aa2ad; }
@@ -795,6 +832,56 @@
 
         li {
             margin-bottom: 0.75em;
+        }
+    }
+
+    // Compact comment stream: poster name then the target page, wrapping neatly.
+    .comment-stream {
+        li {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: var(--space-1) var(--space-2);
+            margin-bottom: var(--space-3);
+            line-height: 1.35;
+        }
+
+        .poster {
+            font-weight: var(--weight-semibold);
+        }
+
+        .comment-stream__page {
+            color: var(--color-text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &::before {
+                content: "\f105"; // fa-angle-right
+                font-family: FontAwesome;
+                color: var(--color-text-muted);
+                margin-right: var(--space-1);
+            }
+
+            &:hover {
+                color: var(--color-accent);
+            }
+        }
+    }
+
+    // New problems: puzzle bullet in the accent color for a bit of life.
+    .new-problems {
+        li {
+            margin-bottom: var(--space-2);
+            position: relative;
+            padding-left: var(--space-4);
+
+            &::before {
+                content: "\f0da"; // fa-caret-right
+                font-family: FontAwesome;
+                position: absolute;
+                left: 0;
+                color: var(--color-accent);
+            }
         }
     }
 
