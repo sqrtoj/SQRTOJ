@@ -288,11 +288,92 @@
 // Tier B: contest spotlight strip. Responsive card grid; live contests get an
 // accent gradient face, upcoming ones a neutral surface. Auto-hides when empty.
 // -------------------------------------------------------------------------
+// Contest spotlight slider: a header row (title + prev/next arrows) above a
+// horizontally scrollable, scroll-snapping track of cards.
 .home-spotlight {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-    gap: var(--space-4);
     margin-bottom: var(--space-6);
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+        margin-bottom: var(--space-3);
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin: 0;
+        font-size: var(--text-lg);
+
+        .fa { color: var(--color-accent); }
+    }
+
+    &__nav {
+        display: flex;
+        gap: var(--space-2);
+    }
+
+    // When the track fits without overflowing, the arrows are redundant.
+    &--static &__nav {
+        display: none;
+    }
+
+    &__arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        transition: background-color var(--motion-fast) var(--ease-standard),
+            border-color var(--motion-fast) var(--ease-standard),
+            color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-surface-alt);
+            border-color: var(--color-border-strong);
+            color: var(--color-text);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
+        }
+
+        &[disabled] {
+            opacity: 0.4;
+            cursor: default;
+            pointer-events: none;
+        }
+    }
+
+    &__track {
+        display: flex;
+        gap: var(--space-4);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        padding-bottom: var(--space-2);
+        // Hide scrollbar (arrows drive navigation) while keeping it scrollable.
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar { display: none; }
+    }
+
+    // Cards take a fixed, responsive width inside the flex track.
+    .spotlight-card {
+        flex: 0 0 clamp(260px, 80%, 340px);
+        scroll-snap-align: start;
+    }
 }
 
 .spotlight-card {

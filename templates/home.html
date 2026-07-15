@@ -78,45 +78,60 @@
                 {% endif %}
             </div>
             <a class="button btn-secondary home-personal__cta" href="{{ url('problem_random') }}">
-                <i class="fa fa-random" aria-hidden="true"></i> {{ _('Continue solving') }}
+                <i class="fa fa-random" aria-hidden="true"></i> {{ _("I'm feeling lucky") }}
             </a>
         </section>
     {% endif %}
 
-    {# Tier B: contest spotlight. Reuses as_countdown → .time-remaining span, which
-       the existing count_down() handler animates. Auto-hides when empty. #}
+    {# Tier B: contest spotlight as a horizontal slider. Reuses as_countdown →
+       .time-remaining span, which the existing count_down() handler animates.
+       Auto-hides when empty. Prev/next buttons scroll the track; they and the
+       progress dots are wired up in the after_posts JS block. #}
     {% if current_contests or future_contests %}
-        <section class="home-spotlight" aria-label="{{ _('Contests') }}">
-            {% for contest in current_contests %}
-                <a class="spotlight-card spotlight-card--live" href="{{ url('contest_view', contest.key) }}">
-                    <div class="spotlight-card__top">
-                        <span class="spotlight-badge spotlight-badge--live">
-                            <span class="spotlight-badge__dot"></span> {{ _('Live') }}
-                        </span>
-                    </div>
-                    <div class="spotlight-card__name">{{ contest.name }}</div>
-                    <div class="spotlight-card__countdown">
-                        <i class="fa fa-hourglass-half" aria-hidden="true"></i>
-                        {{ _('Ends in %(countdown)s', countdown=as_countdown(contest.time_before_end)) }}
-                    </div>
-                    <span class="spotlight-card__cta">{{ _('Enter') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
-                </a>
-            {% endfor %}
-            {% for contest in future_contests %}
-                <a class="spotlight-card spotlight-card--upcoming" href="{{ url('contest_view', contest.key) }}">
-                    <div class="spotlight-card__top">
-                        <span class="spotlight-badge spotlight-badge--upcoming">
-                            <i class="fa fa-calendar-o" aria-hidden="true"></i> {{ _('Upcoming') }}
-                        </span>
-                    </div>
-                    <div class="spotlight-card__name">{{ contest.name }}</div>
-                    <div class="spotlight-card__countdown">
-                        <i class="fa fa-clock-o" aria-hidden="true"></i>
-                        {{ _('Starts in %(countdown)s', countdown=as_countdown(contest.time_before_start)) }}
-                    </div>
-                    <span class="spotlight-card__cta">{{ _('Details') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
-                </a>
-            {% endfor %}
+        <section class="home-spotlight" aria-label="{{ _('Contests') }}" data-spotlight>
+            <div class="home-spotlight__head">
+                <h2 class="home-spotlight__title"><i class="fa fa-trophy" aria-hidden="true"></i> {{ _('Contests') }}</h2>
+                <div class="home-spotlight__nav">
+                    <button type="button" class="home-spotlight__arrow" data-spotlight-prev aria-label="{{ _('Previous') }}">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="home-spotlight__arrow" data-spotlight-next aria-label="{{ _('Next') }}">
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="home-spotlight__track" data-spotlight-track>
+                {% for contest in current_contests %}
+                    <a class="spotlight-card spotlight-card--live" href="{{ url('contest_view', contest.key) }}">
+                        <div class="spotlight-card__top">
+                            <span class="spotlight-badge spotlight-badge--live">
+                                <span class="spotlight-badge__dot"></span> {{ _('Live') }}
+                            </span>
+                        </div>
+                        <div class="spotlight-card__name">{{ contest.name }}</div>
+                        <div class="spotlight-card__countdown">
+                            <i class="fa fa-hourglass-half" aria-hidden="true"></i>
+                            {{ _('Ends in %(countdown)s', countdown=as_countdown(contest.time_before_end)) }}
+                        </div>
+                        <span class="spotlight-card__cta">{{ _('Enter') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                    </a>
+                {% endfor %}
+                {% for contest in future_contests %}
+                    <a class="spotlight-card spotlight-card--upcoming" href="{{ url('contest_view', contest.key) }}">
+                        <div class="spotlight-card__top">
+                            <span class="spotlight-badge spotlight-badge--upcoming">
+                                <i class="fa fa-calendar-o" aria-hidden="true"></i> {{ _('Upcoming') }}
+                            </span>
+                        </div>
+                        <div class="spotlight-card__name">{{ contest.name }}</div>
+                        <div class="spotlight-card__countdown">
+                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                            {{ _('Starts in %(countdown)s', countdown=as_countdown(contest.time_before_start)) }}
+                        </div>
+                        <span class="spotlight-card__cta">{{ _('Details') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                    </a>
+                {% endfor %}
+            </div>
         </section>
     {% endif %}
 
@@ -147,6 +162,45 @@
                     if (p < 1) requestAnimationFrame(step);
                 }
                 requestAnimationFrame(step);
+            });
+        });
+    </script>
+    {# Contest spotlight slider: scroll the track by one card-width via the
+       prev/next buttons. Purely progressive — with JS off the track is still a
+       horizontally scrollable row of cards. #}
+    <script type="text/javascript">
+        $(function () {
+            $('[data-spotlight]').each(function () {
+                var $root = $(this);
+                var track = $root.find('[data-spotlight-track]')[0];
+                if (!track) return;
+                var $prev = $root.find('[data-spotlight-prev]');
+                var $next = $root.find('[data-spotlight-next]');
+
+                function step() {
+                    var card = track.querySelector('.spotlight-card');
+                    if (!card) return track.clientWidth;
+                    var gap = parseInt(getComputedStyle(track).columnGap || getComputedStyle(track).gap, 10) || 0;
+                    return card.offsetWidth + gap;
+                }
+
+                function refresh() {
+                    var maxScroll = track.scrollWidth - track.clientWidth - 1;
+                    var overflowing = maxScroll > 0;
+                    $root.toggleClass('home-spotlight--static', !overflowing);
+                    $prev.prop('disabled', track.scrollLeft <= 0);
+                    $next.prop('disabled', track.scrollLeft >= maxScroll);
+                }
+
+                $prev.on('click', function () {
+                    track.scrollBy({ left: -step(), behavior: 'smooth' });
+                });
+                $next.on('click', function () {
+                    track.scrollBy({ left: step(), behavior: 'smooth' });
+                });
+                track.addEventListener('scroll', refresh, { passive: true });
+                $(window).on('resize', refresh);
+                refresh();
             });
         });
     </script>
