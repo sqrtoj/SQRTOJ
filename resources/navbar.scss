@@ -4,15 +4,15 @@
 @import "vars";
 
 #user-links {
-    top: 0;
-    right: 0;
-    position: absolute;
     color: #fff;
     padding-right: 10px;
     display: inline-flex;
-    min-height: 100%;
     align-items: center;
     white-space: nowrap;
+    // Pushed to the far right of the flex row in #nav-container, and
+    // vertically centered by the container's align-items: center. This keeps
+    // it on the same baseline as the left-hand nav items.
+    margin-left: auto;
 
     a {
         color: #FFF;
@@ -51,8 +51,12 @@
                 }
             }
 
+            // Right-edge dropdown: anchor to the right so the menu drops
+            // straight down under the avatar instead of overflowing the
+            // viewport to the right.
             &>ul {
-                left: 0;
+                left: auto;
+                right: 0;
             }
         }
     }
@@ -83,6 +87,11 @@
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset,
         0 2px 10px rgba(0, 0, 0, 0.18);
     height: 100%;
+    // Single flex row so the left menu (#nav-list) and the right cluster
+    // (#user-links) are centered on one shared vertical axis instead of each
+    // aligning independently.
+    display: flex;
+    align-items: center;
 }
 
 nav {

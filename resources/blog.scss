@@ -177,6 +177,58 @@
             border-bottom: none;
         }
 
+        // Newsfeed header row: vote column, title/meta block, and the collapse
+        // toggle pinned to the right. The main block flexes to fill the middle.
+        .post-header {
+            align-items: flex-start;
+        }
+
+        .post-header-main {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        // Collapse toggle button. Ghost styling so it reads as a control without
+        // competing with the post title; only visible affordance is on hover/focus.
+        .blog-collapse-toggle {
+            flex: 0 0 auto;
+            align-self: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+            &:hover {
+                background: var(--color-surface-alt);
+                color: var(--color-text);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--color-focus-ring);
+                outline-offset: 2px;
+            }
+
+            i {
+                transition: transform 0.2s ease;
+            }
+        }
+
+        // Collapsed state: hide the body and meta, leaving just the header row.
+        &.collapsed {
+            .blog-body,
+            .meta {
+                display: none;
+            }
+        }
+
         .title {
             font-weight: 600;
             font-size: 1.7em;
