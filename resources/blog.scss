@@ -161,42 +161,30 @@
     }
 }
 
-// Handle search on the hero: a glass search bar that jumps straight to a user's
-// place on the leaderboard (GET -> user_ranking_redirect).
-.home-handle-search {
+// Handle search in the sidebar (above Top users): a compact input + button that
+// jumps straight to a user's place on the leaderboard (GET -> user_ranking_redirect).
+.handle-search {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    max-width: 30rem;
-    margin-bottom: var(--space-5);
-    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-3);
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(4px);
-
-    &__icon {
-        flex: 0 0 auto;
-        color: var(--color-accent-contrast);
-        opacity: 0.85;
-    }
 
     &__input {
         flex: 1 1 auto;
         min-width: 0;
-        border: none;
-        background: none;
-        color: var(--color-accent-contrast);
-        font-size: var(--text-md);
-        padding: var(--space-1) 0;
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+        color: var(--color-text);
+        font-size: var(--text-sm);
 
         &::placeholder {
-            color: var(--color-accent-contrast);
-            opacity: 0.75;
+            color: var(--color-text-muted);
         }
 
         &:focus {
             outline: none;
+            border-color: var(--color-accent);
         }
     }
 
@@ -205,19 +193,18 @@
         width: auto;
         border: none;
         cursor: pointer;
-        padding: var(--space-2) var(--space-4);
-        border-radius: var(--radius-pill);
-        background: var(--color-surface);
-        color: var(--color-accent);
-        font-weight: var(--weight-semibold);
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-md);
+        background: var(--color-accent);
+        color: var(--color-accent-contrast);
         transition: background-color var(--motion-fast) var(--ease-standard);
 
         &:hover {
-            background: var(--color-surface-alt);
+            background: var(--color-accent-hover);
         }
 
         &:focus-visible {
-            outline: 2px solid var(--color-accent-contrast);
+            outline: 2px solid var(--color-focus-ring);
             outline-offset: 2px;
         }
     }

@@ -152,6 +152,18 @@
             {# Ongoing / Upcoming contests intentionally omitted here: they are
                surfaced in the contest spotlight strip on the homepage (home.html,
                docs/design-system/19-homepage-dashboard.md) to avoid duplication. #}
+            <div class="blog-sidebox sidebox">
+                <h3 class="sidebox-head">
+                    <span><i class="fa fa-search" aria-hidden="true"></i> {{ _('Find user') }}</span>
+                </h3>
+                <div class="sidebox-content">
+                    <form class="handle-search" action="{{ url('user_ranking_redirect') }}" method="get" role="search">
+                        <input class="handle-search__input" type="text" name="handle"
+                               placeholder="{{ _('Enter a handle...') }}" aria-label="{{ _('Find a user by handle') }}" autocomplete="off">
+                        <button class="handle-search__btn" type="submit" aria-label="{{ _('Find') }}"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
             {% if top_rated_users %}
                 {% include "blog/top-rating.html" %}
             {% endif %}

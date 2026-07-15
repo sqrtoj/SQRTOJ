@@ -446,6 +446,36 @@ ul.pagination {
     color: var(--color-warning-fg);
     background-color: var(--color-warning-bg);
     border-color: var(--color-warning-fg);
+
+    // Some templates use `.alert-warning` without the `.alert` base class, so
+    // give it the box treatment on its own too (padding + rounded + left bar).
+    // Without this it rendered as bare colored text, which read poorly on the
+    // dark warm-charcoal surface.
+    &:not(.alert) {
+        padding: var(--space-4);
+        margin-bottom: var(--space-5);
+        border: 1px solid var(--color-warning-fg);
+        border-left-width: 4px;
+        border-radius: var(--radius-md);
+    }
+}
+
+// Links and bold text inside any alert inherit the alert's foreground so they
+// stay legible in dark mode (default link blue washes out on dark surfaces).
+.alert {
+    a:not(.button), b, strong {
+        color: inherit;
+    }
+
+    a:not(.button) {
+        text-decoration: underline;
+    }
+}
+
+.alert-warning a:not(.button),
+.alert-warning b,
+.alert-warning strong {
+    color: inherit;
 }
 
 .alert-danger {

@@ -421,6 +421,16 @@ form.contest-register-tab {
         font-variant-numeric: tabular-nums;
     }
 
+    // Problem-column headers (A/B/C/D ...) read as centered labels above their
+    // right-aligned score cells.
+    th.points {
+        text-align: center;
+
+        a {
+            text-align: center;
+        }
+    }
+
     .disqualified {
         background-color: $color_contest_ranking_disqualified !important;
     }
