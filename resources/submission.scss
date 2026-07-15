@@ -63,12 +63,15 @@
         }
 
         .score {
-            // font-size: 1.3em;
-            color: var(--color-text);
+            // Inherit the verdict class's contrasting foreground (--verdict-*-fg)
+            // set on .sub-result, so the "20 / 20" stays legible on the solid
+            // verdict background instead of using dark body text.
+            color: inherit;
+            font-weight: var(--weight-semibold);
             font-variant-numeric: tabular-nums;
 
             .grading-spinner {
-                color: var(--color-text);
+                color: inherit;
             }
         }
     }
