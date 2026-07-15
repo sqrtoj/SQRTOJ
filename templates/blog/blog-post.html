@@ -1,6 +1,6 @@
 {% set logged_in = request.user.is_authenticated %}
 {% set profile = request.profile if logged_in else None %}
-<section class="{% if post.sticky %}sticky {% endif %}post" id="post-{{ post.id }}">
+<section class="{% if post.sticky %}sticky {% endif %}post collapsed" id="post-{{ post.id }}">
     <div class="post-header">
         <div class="vote">
             {% if logged_in %}
@@ -36,9 +36,9 @@
                 {% endwith %}
             </span>
         </div>
-        <button type="button" class="blog-collapse-toggle" aria-expanded="true"
-                title="{{ _('Collapse') }}" aria-label="{{ _('Collapse post') }}">
-            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+        <button type="button" class="blog-collapse-toggle" aria-expanded="false"
+                title="{{ _('Expand') }}" aria-label="{{ _('Expand post') }}">
+            <i class="fa fa-chevron-down" aria-hidden="true"></i>
         </button>
     </div>
     <div class="summary content-description blog-body">

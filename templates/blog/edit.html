@@ -30,9 +30,17 @@
 {% endblock %}
 
 {% block body %}
-<div>
+<div class="form-shell">
+    <div class="form-shell__head">
+        <div class="form-shell__icon"><i class="fa {% if edit %}fa-pencil{% else %}fa-pencil-square-o{% endif %}" aria-hidden="true"></i></div>
+        <div>
+            <h2 class="form-shell__title">{% if edit %}{{ _('Edit blog post') }}{% else %}{{ _('New blog post') }}{% endif %}</h2>
+            <p class="form-shell__subtitle">{{ _('Share news, editorials, or announcements with the community.') }}</p>
+        </div>
+    </div>
+
     {% if edit and request.user.is_staff %}
-        <div class="alert alert-warning alert-dismissable">
+        <div class="alert alert-info alert-dismissable">
             <a class="close">x</a>
             <a href="{{ url('admin:judge_blogpost_change', object.id) }}">{{ _('Edit blog post in admin panel for more options') }}</a>
         </div>
@@ -46,13 +54,13 @@
             {% csrf_token %}
         </form>
     {% endif %}
-    <form action="" method="post" class="form-area" style="display: flex; justify-content: center; flex-direction: column;">
+    <form action="" method="post" class="form-area form-shell__body">
         {% csrf_token %}
         <table class="django-as-table">{{ form.as_table() }}</table>
-        <hr>
-        <div style="display: flex; justify-content: flex-end; gap: 0.5em;">
-            {% if delete %}<input type="submit" value="{{ _('Delete') }}" class="button" id="delete-button" form="deleteForm">{% endif %}
-            <input type="submit" value="{% if edit %} {{ _('Update') }} {% else %} {{ _('Create') }} {% endif %}" class="button">
+        <div class="form-shell__actions">
+            {% if delete %}<input type="submit" value="{{ _('Delete') }}" class="button btn-danger" id="delete-button" form="deleteForm">{% endif %}
+            <a href="{{ url('home') }}" class="button btn-secondary">{{ _('Cancel') }}</a>
+            <input type="submit" value="{% if edit %}{{ _('Update') }}{% else %}{{ _('Create') }}{% endif %}" class="button">
         </div>
     </form>
 </div>

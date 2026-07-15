@@ -231,11 +231,24 @@
             display: flex;
             gap: var(--space-2);
             align-items: flex-start;
+            border-radius: var(--radius-md);
+            transition: background-color var(--motion-fast) var(--ease-standard);
         }
 
+        // The title/meta block is the click target for expand/collapse, so give
+        // it a pointer and a subtle hover cue.
         .post-header-main {
             flex: 1 1 auto;
             min-width: 0;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            padding: var(--space-1) var(--space-2);
+            margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1);
+            transition: background-color var(--motion-fast) var(--ease-standard);
+
+            &:hover {
+                background: var(--color-surface-alt);
+            }
         }
 
         // Collapse toggle button. Ghost styling so it reads as a control without
@@ -272,10 +285,15 @@
         }
 
         // Collapsed state: hide the body and meta, leaving just the header row.
+        // The header stays as a compact, clickable teaser.
         &.collapsed {
             .blog-body,
             .meta {
                 display: none;
+            }
+
+            .post-header {
+                margin-bottom: 0.4em;
             }
         }
 

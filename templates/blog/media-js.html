@@ -52,20 +52,23 @@
             $('votes-link').find('a[data-featherlight]').featherlight();
 
             // Per-post collapse. Canonical here so the toggle works anywhere
-            // blog-post.html is rendered (newsfeed + user blogs). State persists
-            // per-post in localStorage. The "collapse all" control on the
-            // newsfeed reuses window.blogCollapse.* below.
-            var COLLAPSE_KEY = 'newsfeed_collapsed_posts';
-            function readCollapsed() {
+            // blog-post.html is rendered (newsfeed + user blogs).
+            //
+            // Behaviour: every post is COLLAPSED by default (only the head -- title,
+            // author, time -- shows). Clicking a post expands its body. We persist the
+            // set of posts the reader has explicitly EXPANDED, so their choices stick
+            // across reloads while new/unseen posts stay collapsed.
+            var EXPANDED_KEY = 'newsfeed_expanded_posts';
+            function readExpanded() {
                 try {
-                    return JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || {};
+                    return JSON.parse(localStorage.getItem(EXPANDED_KEY)) || {};
                 } catch (e) {
                     return {};
                 }
             }
-            function writeCollapsed(state) {
+            function writeExpanded(state) {
                 try {
-                    localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state));
+                    localStorage.setItem(EXPANDED_KEY, JSON.stringify(state));
                 } catch (e) { /* storage unavailable; collapse still works per-session */ }
             }
             function setCollapsed($post, collapsed) {
@@ -74,52 +77,62 @@
                 $post.toggleClass('collapsed', collapsed);
                 $toggle.attr('aria-expanded', collapsed ? 'false' : 'true');
                 $toggle.attr('title', collapsed ? gettext('Expand') : gettext('Collapse'));
-                $icon.toggleClass('fa-chevron-up', !collapsed);
                 $icon.toggleClass('fa-chevron-down', collapsed);
+                $icon.toggleClass('fa-chevron-up', !collapsed);
             }
 
             function setAllCollapsed(collapsed) {
-                var state = readCollapsed();
+                var state = readExpanded();
                 $('.post').each(function () {
                     var $post = $(this);
                     setCollapsed($post, collapsed);
                     if (collapsed) {
-                        state[$post.attr('id')] = true;
-                    } else {
                         delete state[$post.attr('id')];
+                    } else {
+                        state[$post.attr('id')] = true;
                     }
                 });
-                writeCollapsed(state);
+                writeExpanded(state);
             }
 
             window.blogCollapse = {
-                read: readCollapsed,
-                write: writeCollapsed,
+                read: readExpanded,
+                write: writeExpanded,
                 set: setCollapsed,
                 setAll: setAllCollapsed,
             };
 
-            var collapsedState = readCollapsed();
+            // Collapse everything by default, then re-open only what the reader
+            // previously expanded.
+            var expandedState = readExpanded();
             $('.post').each(function () {
-                if (collapsedState[this.id]) {
-                    setCollapsed($(this), true);
-                }
+                setCollapsed($(this), !expandedState[this.id]);
             });
 
             $(document).on('click', '.blog-collapse-toggle', function (e) {
                 e.preventDefault();
-                var $post = $(this).closest('.post');
+                togglePost($(this).closest('.post'));
+            });
+
+            // Clicking the header block (but not the title link itself) also
+            // toggles, so the whole teaser is an easy expand/collapse target.
+            $(document).on('click', '.post-header-main', function (e) {
+                if ($(e.target).closest('a').length) return;
+                togglePost($(this).closest('.post'));
+            });
+
+            function togglePost($post) {
                 var collapsed = !$post.hasClass('collapsed');
                 setCollapsed($post, collapsed);
-                var state = readCollapsed();
+                var state = readExpanded();
                 if (collapsed) {
-                    state[$post.attr('id')] = true;
-                } else {
                     delete state[$post.attr('id')];
+                } else {
+                    state[$post.attr('id')] = true;
                 }
-                writeCollapsed(state);
+                writeExpanded(state);
                 $(document).trigger('blog:collapse-changed');
-            });
+            }
         });
     </script>
 {% endcompress %}
