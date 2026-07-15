@@ -2,6 +2,27 @@
 
 $is_light_theme: true;
 
+// Collapsible section headers on the contest list (Active / Ongoing). Click or
+// keyboard-toggle to expand/collapse; state persists in localStorage.
+.contest-section-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    user-select: none;
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+    }
+
+    .contest-section-toggle__chevron {
+        color: var(--color-accent);
+        font-size: 0.8em;
+        transition: transform var(--motion-fast) var(--ease-standard);
+    }
+}
+
 // Section header for contest detail blocks: title left, action button right, and
 // wraps instead of colliding on narrow screens (replaces the old float layout).
 .contest-section-head {

@@ -11,6 +11,29 @@
                 count_down($(this));
             });
 
+            // Collapsible Active/Ongoing contest sections so they don't dominate
+            // the page. State is remembered per-section in localStorage.
+            function setContestSection($h4, open) {
+                var id = $h4.data('target');
+                $('#' + id).toggle(open);
+                $h4.attr('aria-expanded', open ? 'true' : 'false');
+                $h4.find('.contest-section-toggle__chevron')
+                   .toggleClass('fa-chevron-down', open)
+                   .toggleClass('fa-chevron-right', !open);
+                try { localStorage.setItem('contest_section:' + id, open ? '1' : '0'); } catch (e) {}
+            }
+            $('.contest-section-toggle').each(function () {
+                var $h4 = $(this), id = $h4.data('target'), stored = null;
+                try { stored = localStorage.getItem('contest_section:' + id); } catch (e) {}
+                setContestSection($h4, stored !== '0');
+            });
+            $('.contest-section-toggle').on('click keydown', function (e) {
+                if (e.type === 'keydown' && e.which !== 13 && e.which !== 32) return;
+                e.preventDefault();
+                var $h4 = $(this);
+                setContestSection($h4, $h4.attr('aria-expanded') !== 'true');
+            });
+
             $('.contest-tag').find('a[data-featherlight]').featherlight();
 
             {% if not request.official_contest_mode %}
@@ -196,7 +219,10 @@
 {% block body %}
     <div class="content-description">
         {% if active_participations %}
-            <h4>{{ _('Active contests') }}</h4>
+            <h4 class="contest-section-toggle" data-target="active-contests-section" role="button" tabindex="0" aria-expanded="true">
+                <i class="fa fa-chevron-down contest-section-toggle__chevron" aria-hidden="true"></i> {{ _('Active contests') }}
+            </h4>
+            <div id="active-contests-section" class="contest-section-body">
             <div class="h-scrollable-table">
             <table class="contest-list table striped">
                 <thead>
@@ -234,11 +260,15 @@
                 </tbody>
             </table>
             </div>
+            </div>
             <br>
         {% endif %}
 
         {% if current_contests %}
-            <h4>{{ _('Ongoing contests') }}</h4>
+            <h4 class="contest-section-toggle" data-target="ongoing-contests-section" role="button" tabindex="0" aria-expanded="true">
+                <i class="fa fa-chevron-down contest-section-toggle__chevron" aria-hidden="true"></i> {{ _('Ongoing contests') }}
+            </h4>
+            <div id="ongoing-contests-section" class="contest-section-body">
             <div class="h-scrollable-table">
             <table class="contest-list table striped">
                 <thead>
@@ -275,6 +305,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
             </div>
             <br>
         {% endif %}

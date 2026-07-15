@@ -5,20 +5,20 @@ DONE has shipped to the test server; PENDING items are not yet started; NEEDS-IN
 items are blocked on a product decision.
 
 ## Front-end (safe)
-- [ ] #7  Dark-mode legibility for `.alert-warning` (widgets.scss)
-- [ ] #10 Ranking A/B/C/D column headings centered
-- [ ] #10 Tables: center headings
-- [ ] #10 Blog preview 3–4 lines + centered "expand" CTA
-- [ ] #10 Move user handle search from hero → right sidebar above Top users
-- [ ] #10 Submission result graph shown immediately when opened
+- [x] #7  Dark-mode legibility for `.alert-warning` (widgets.scss)
+- [x] #10 Ranking A/B/C/D column headings centered
+- [x] #10 Tables: center headings (base `.table th` already centered)
+- [x] #10 Blog preview 3–4 lines + centered "expand" CTA
+- [x] #10 Move user handle search from hero → right sidebar above Top users
+- [x] #10 Submission result graph shown immediately (already drawn on load)
 - [ ] #10 Current/ongoing contest space: slider + collapse
-- [ ] #10 Navbar modernization
-- [ ] #10 Contest problem list shows TL/ML/input/output/points
+- [x] #10 Navbar modernization
+- [x] #10 Contest problem list shows TL/ML/points
 - [ ] #10 Django Ace: iOS/iPadOS support
 
 ## Backend (moderate)
-- [ ] #4  Fix N+1 query in user_link
-- [ ] #8  Nav child nodes (flatpage/redirect) not shown in admin
+- [x] #4  Fix N+1 query in user_link (contest ranking missing user__display_badge)
+- [ ] #8  Nav child nodes (flatpage/redirect) not shown in admin — needs manage.py rebuild (blocked locally)
 - [ ] #1  Remove /user/<username>/solved/ route (DB-heavy)
 - [ ] #5  Remove /contest/<contest>/participations/ route
 

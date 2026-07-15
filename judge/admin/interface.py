@@ -20,10 +20,21 @@ class NavigationBarAdmin(DraggableMPTTAdmin):
     list_editable = ()  # Bug in SortableModelAdmin: 500 without list_editable being set
     mptt_level_indent = 20
     sortable = 'order'
+    actions = ('rebuild_tree',)
 
     def __init__(self, *args, **kwargs):
         super(NavigationBarAdmin, self).__init__(*args, **kwargs)
         self.__save_model_calls = 0
+
+    @admin.action(description=_('Rebuild navigation tree (fix missing child items)'))
+    def rebuild_tree(self, request, queryset):
+        # Child nav items can vanish from the admin list when the MPTT tree
+        # bookkeeping (lft/rght/tree_id/level) drifts out of sync -- e.g. after
+        # rows were edited outside the admin. Rebuilding recomputes it so the
+        # full parent/child hierarchy shows again.
+        with LockModel(write=(NavigationBar,)):
+            NavigationBar.objects.rebuild()
+        self.message_user(request, _('Navigation tree rebuilt.'))
 
     @admin.display(description=_('link path'))
     def linked_path(self, obj):
