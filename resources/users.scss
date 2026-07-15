@@ -57,6 +57,17 @@ span.organization {
         width: 100%;
     }
 
+    // Medal tints for the top three ranks (gold / silver / bronze).
+    .rank-cell--medal {
+        font-weight: var(--weight-bold);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .rank-cell--1 .rank-medal { color: #d4af37; }
+    .rank-cell--2 .rank-medal { color: #9aa2ad; }
+    .rank-cell--3 .rank-medal { color: #cd7f32; }
+
     .personal-info {
 
         a,
