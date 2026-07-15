@@ -180,6 +180,38 @@ both themes; `prefers-reduced-motion` respected; no Summer regression.
 
 ---
 
+## Phase 6 — Modern UI overhaul (page-level redesign)
+
+Spec: `10-modern-ui-overhaul.md`. Page-level layout redesigns beyond tokenization.
+
+- [x] 6a Foundations: layout tokens (`--container-max/-wide`, `--section-gap`,
+      `--card-pad`), `_layout.scss` utilities (`.u-container`, `.u-grid-auto`,
+      `.u-stack`, `.u-cluster`, `.section-head`), generalized `.card` family
+      (`--interactive`/`--media`/`__title`/`__meta`/`__body`/`__footer`), and the
+      flatpage shell (`flatpages/default.html` + `.flatpage-shell` in
+      `content-description.scss`) that upgrades about **and** shop with no DB edits.
+- [x] 6b Auth pages: `auth.scss` + redesigned `registration/login.html` (centered
+      card, real labeled fields, icon affordances, inline `.alert` errors),
+      modernized `registration/oauth.html` provider buttons, and a card shell for
+      the registration form. No view/logic changes.
+- [x] 6c Home hero: `home.html` hero band with CTAs + live stat chips, logged-in
+      "welcome back" variant, autumn `--hero-image` slot, responsive; styled in
+      `blog.scss`.
+- [x] 6d Judges page → responsive card grid: `judge-status-table.html` renders
+      `.judge-card`s with online/offline status pills + runtime chips; the
+      `#judge-status` container and `.runtime-label` data attributes are preserved
+      so the 10s AJAX refresh and runtime popovers keep working; tablesorter call
+      removed (cards aren't sortable).
+- [ ] 6e Shop-specific CSS-only card tiers + site-wide polish (containers on more
+      pages, consistent empty states, sticky long-table headers). Shop currently
+      gets the upgraded flatpage shell + modern tables (6a); CSS-only tier cards
+      pending (may not be achievable without a content restructure — see spec §7).
+
+Exit criteria: home/auth/judges redesigned; about+shop modernized with content
+intact; both palettes + themes correct; no Summer regression.
+
+---
+
 ## Deferred — Warm Harvest artwork slots (assets supplied later)
 
 The autumn artwork (`08-autumn-theme.md §5`) is decorative enhancement; every page
