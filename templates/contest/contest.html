@@ -40,6 +40,7 @@
 
 {% block body %}
     <div id="banner">
+        <div class="contest-countdown">
         <a href="https://www.timeanddate.com/worldclock/fixedtime.html?msg={{ contest.name|urlquote('') }}&amp;iso=
                 {{- (contest.start_time if contest.start_time >= now else contest.end_time)|utc|date('Y-m-d\TH:i:s') }}" class="date">
             {%- if is_in_contest and not request.participation.live -%}
@@ -79,6 +80,7 @@
                     {{ _('%(length)s long starting on %(start_time)s', start_time=bold(start_time), length=bold(length)) }}
                 {% endif %}
             {% endwith %}
+        </div>
         </div>
         {% if contest.show_short_display %}
             <div id="details">
@@ -187,7 +189,7 @@
     {% if is_in_contest or contest.ended or request.user.is_superuser or is_editor or is_tester %}
         <div class="contest-problems">
             <div class="contest-section-head">
-                <h2 style="margin-bottom: 0.2em;"><i class="fa fa-fw fa-question-circle"></i>{{ _('Problems') }} </h2>
+                <h2><i class="fa fa-fw fa-list-ol"></i> {{ _('Problems') }}</h2>
                 {% if can_edit and can_download_data %}
                     <a class="button" href="{{ url('contest_prepare_data', contest.key) }}">{{ _('Download data') }}</a>
                 {% endif %}
@@ -272,7 +274,9 @@
         </div>
         {% if has_announcements or can_edit %}
         <div class="contest-announcements">
-            <h2 style="margin-bottom: 0.2em"><i class="fa fa-check"></i> {{ _('Announcements') }}</h2>
+            <div class="contest-section-head">
+                <h2><i class="fa fa-bullhorn"></i> {{ _('Announcements') }}</h2>
+            </div>
             <div class="h-scrollable-table">
             <table id="contest-announcements" class="table">
                 <thead>
@@ -307,7 +311,9 @@
         {% endif %}
         {% if has_clarifications %}
         <div class="contest-clarifications">
-            <h2 style="margin-bottom: 0.2em"><i class="fa fa-check"></i> {{ _('Clarifications') }}</h2>
+            <div class="contest-section-head">
+                <h2><i class="fa fa-question-circle"></i> {{ _('Clarifications') }}</h2>
+            </div>
             <div class="h-scrollable-table">
             <table id="contest-clarifications" class="table">
                 <thead>

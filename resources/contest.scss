@@ -10,7 +10,26 @@ $is_light_theme: true;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-3);
+
+    h2 {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin: 0;
+
+        .fa {
+            color: var(--color-accent);
+        }
+    }
+}
+
+// Space out the contest detail sections so problems / announcements /
+// clarifications read as distinct blocks.
+.contest-problems,
+.contest-announcements,
+.contest-clarifications {
+    margin-bottom: var(--space-6);
 }
 
 #contest-calendar {
@@ -89,45 +108,113 @@ $is_light_theme: true;
     }
 }
 
+// Contest detail banner (modernized): a branded accent card with a prominent
+// countdown, the time window below it, and the contest-rules details in a
+// clean, tokenized panel. Presentation only -- countdown JS/markup unchanged.
 #banner {
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 1em;
+    margin-bottom: var(--space-5);
     color: var(--color-text);
     font-size: $base_font_size;
+
+    // Countdown + time window sit on a brand accent band, like the home hero.
+    .contest-countdown {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+        padding: clamp(var(--space-4), 4vw, var(--space-6)) var(--space-5);
+        background:
+            radial-gradient(circle at 85% -20%, rgba(255, 255, 255, 0.25), transparent 45%),
+            linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+        box-shadow: var(--shadow-2);
+        text-align: center;
+    }
 
     a.date {
         display: block;
         text-decoration: none;
-        text-align: center;
-        line-height: 1.3;
-        font-size: 2.3em;
-        padding-bottom: 0.15em;
-        color: var(--color-link);
+        line-height: 1.2;
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+        font-weight: var(--weight-bold);
+        letter-spacing: -0.02em;
+        color: var(--color-accent-contrast);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 
         &:hover {
-            color: var(--color-link-hover);
-        }
-
-        &:active {
-            color: $color_link200;
+            color: var(--color-accent-contrast);
+            opacity: 0.92;
         }
 
         &:focus-visible {
-            outline: 2px solid var(--color-focus-ring);
-            outline-offset: 2px;
+            outline: 2px solid var(--color-accent-contrast);
+            outline-offset: 3px;
+            border-radius: var(--radius-sm);
         }
     }
 
     #time {
-        text-align: center;
         display: block;
+        margin-top: var(--space-2);
+        color: var(--color-accent-contrast);
+        opacity: 0.95;
+        font-size: var(--text-sm);
+
+        b {
+            font-weight: var(--weight-semibold);
+        }
     }
 
-    div#details ul {
-        margin-bottom: 0;
-        list-style: none;
+    // Rules/details panel below the accent band.
+    div#details {
+        margin-top: var(--space-4);
+
+        > ul {
+            margin: 0;
+            padding: var(--space-4) var(--space-5);
+            list-style: none;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-1);
+
+            > li {
+                position: relative;
+                padding: var(--space-1) 0 var(--space-1) var(--space-5);
+                line-height: 1.5;
+
+                &::before {
+                    content: "\f058"; // fa-check-circle
+                    font-family: FontAwesome;
+                    position: absolute;
+                    left: 0;
+                    top: var(--space-1);
+                    color: var(--color-accent);
+                }
+            }
+
+            ul {
+                margin: var(--space-2) 0 0;
+                padding-left: var(--space-4);
+                list-style: none;
+
+                li {
+                    position: relative;
+                    padding: 2px 0 2px var(--space-4);
+                    color: var(--color-text-secondary);
+
+                    &::before {
+                        content: "\f105"; // fa-angle-right
+                        font-family: FontAwesome;
+                        position: absolute;
+                        left: 0;
+                        color: var(--color-text-muted);
+                    }
+                }
+            }
+        }
+
         p {
             margin: 0;
+            display: inline;
         }
     }
 }
@@ -249,6 +336,20 @@ form.contest-join-pseudotab {
         padding: 0;
         background: none;
         font-weight: 600;
+    }
+}
+
+// Register pseudo-tab: use the brand accent instead of the legacy green gradient
+// so it matches the tokenized button system in both palettes/themes.
+form.contest-register-tab {
+    background: var(--color-accent) !important;
+
+    &:hover {
+        background: var(--color-accent-hover) !important;
+    }
+
+    input.register-warning {
+        color: var(--color-accent-contrast) !important;
     }
 }
 
