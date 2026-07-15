@@ -1,65 +1,21 @@
-// Navbar brand color is theme-coupled (sienna for Warm Harvest, green for Summer),
-// so import the full theme `vars` to pick up $color_navbar_bg / $highlight_blue.
+// Navbar (rebuilt). Brand color is theme-coupled (sienna for Warm Harvest, green
+// for Summer), so import the full theme `vars` to pick up $color_navbar_bg /
+// $highlight_blue. Markup, IDs and classes are unchanged so the existing mobile
+// toggle (#navicon / .show-list) and hover dropdowns keep working; only the
+// presentation is modernized: a glassy gradient bar, pill nav items with a
+// smooth animated active indicator, and refined dropdowns.
 @use 'sass:color';
 @import "vars";
 
-#user-links {
-    color: #fff;
-    padding-right: 10px;
-    display: inline-flex;
-    align-items: center;
-    white-space: nowrap;
-    // Pushed to the far right of the flex row in #nav-container, and
-    // vertically centered by the container's align-items: center. This keeps
-    // it on the same baseline as the left-hand nav items.
-    margin-left: auto;
-
-    a {
-        color: #FFF;
-    }
-
-    li {
-        text-transform: none;
-    }
-
-    &>ul {
-        display: block;
-        margin: 0;
-
-        &>li {
-            &>a {
-                display: block;
-                padding: 0;
-                height: 100%;
-
-                &>span {
-                    font-size: 13px;
-                    padding: 10px 10px;
-                    display: block;
-                    white-space: nowrap;
-
-                    &>img {
-                        vertical-align: middle;
-                        border-radius: $widget_border_radius;
-                        margin-right: 6px;
-                    }
-
-                    &>span {
-                        vertical-align: middle;
-                        color: #eee;
-                    }
-                }
-            }
-
-            // Right-edge dropdown: anchor to the right so the menu drops
-            // straight down under the avatar instead of overflowing the
-            // viewport to the right.
-            &>ul {
-                left: auto;
-                right: 0;
-            }
-        }
-    }
+// ---------------------------------------------------------------------------
+// Bar shell
+// ---------------------------------------------------------------------------
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 500;
 }
 
 #nav-background {
@@ -69,280 +25,422 @@
     left: 0;
     width: 100%;
     height: 48px;
-    // Subtle vertical gradient gives the bar depth instead of a flat fill.
     background: linear-gradient(180deg,
-        color.adjust($color_navbar_bg, $lightness: 4%),
+        color.adjust($color_navbar_bg, $lightness: 5%),
         $color_navbar_bg);
-}
-
-#nav-shadow {
-    height: 4px;
-    background: linear-gradient(rgba(0, 0, 0, 0.28), transparent);
 }
 
 #nav-container {
-    background: linear-gradient(180deg,
-        color.adjust($color_navbar_bg, $lightness: 4%),
-        $color_navbar_bg);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset,
-        0 2px 10px rgba(0, 0, 0, 0.18);
+    position: relative;
     height: 100%;
-    // Single flex row so the left menu (#nav-list) and the right cluster
-    // (#user-links) are centered on one shared vertical axis instead of each
-    // aligning independently.
     display: flex;
     align-items: center;
+    gap: var(--space-1);
+    padding: 0 clamp(var(--space-2), 3vw, var(--space-5));
+    // Depth: a soft top highlight + a diffuse drop shadow, over a subtle
+    // vertical gradient of the brand color.
+    background: linear-gradient(180deg,
+        color.adjust($color_navbar_bg, $lightness: 6%),
+        $color_navbar_bg);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 4px 18px rgba(0, 0, 0, 0.22);
 }
 
-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 500;
+// Thin accent hairline sitting at the very bottom of the bar for polish.
+#nav-shadow {
+    height: 3px;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.12) 20%,
+        rgba(255, 255, 255, 0.12) 80%,
+        transparent);
+}
 
-    ul {
-        margin: 0 0 0 -5px;
-        padding: 0 0 0 1%;
+// ---------------------------------------------------------------------------
+// Left menu (#nav-list)
+// ---------------------------------------------------------------------------
+#nav-list {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    height: 100%;
+
+    > li {
+        display: inline-flex;
+        align-items: center;
+        height: 100%;
+        position: relative;
+        color: #fff;
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+}
+
+// Shared link/button styling for top-level items.
+#nav-list > li > a,
+#nav-list > li > button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    height: 34px;
+    padding: 0 var(--space-3);
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.02em;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+    transition: background-color var(--motion-fast) var(--ease-standard),
+        color var(--motion-fast) var(--ease-standard);
+
+    &:link,
+    &:visited {
+        color: #fff;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.85);
+        outline-offset: -2px;
+    }
+
+    // Animated active pill: filled background plus a centered underline bar
+    // that grows in from the middle.
+    &.active {
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -11px;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            border-radius: var(--radius-pill);
+            background: $highlight_blue;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+    }
+}
+
+// The little ">" child indicator on parent items -> a rotating chevron feel.
+.nav-expand {
+    display: inline-flex;
+    font-size: 0.7em;
+    opacity: 0.7;
+}
+
+// Brand logo cell: no pill treatment, just the logo.
+#nav-list > li.home-nav-element {
+    > a {
+        height: 100%;
+        padding: 0 var(--space-2);
+        border-radius: 0;
+        text-transform: none;
+
+        &:hover {
+            background: transparent;
+        }
+    }
+}
+
+// Divider between the logo and the first menu item.
+.nav-divider {
+    display: inline-block;
+    width: 1px;
+    height: 22px;
+    margin: 0 var(--space-2);
+    background: rgba(255, 255, 255, 0.22);
+}
+
+// ---------------------------------------------------------------------------
+// Dropdowns (desktop: hover; mobile: .show-list toggled by JS)
+// ---------------------------------------------------------------------------
+#nav-list li ul {
+    position: absolute;
+    top: calc(100% - 2px);
+    left: 0;
+    min-width: 190px;
+    margin: 0 !important;
+    padding: var(--space-1);
+    list-style: none;
+    display: none;
+    background: color.adjust($color_navbar_bg, $lightness: 3%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-3);
+    z-index: 10;
+
+    li {
         display: block;
 
-        li {
-            display: inline-block;
-            color: #FFF;
-            text-transform: uppercase;
-            position: relative;
-            font-family: 'Source Sans Pro', sans-serif;
+        a,
+        button {
+            display: block;
+            width: 100%;
+            padding: var(--space-2) var(--space-3);
+            margin: 0;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: none;
+            color: #fff;
+            text-align: left;
+            text-transform: none;
+            font-size: 0.85rem;
+            font-weight: var(--weight-medium);
+            line-height: 1.35;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color var(--motion-fast) var(--ease-standard);
 
-            &.home-nav-element a {
-                padding: 0;
-                margin: 0;
-                height: 44px;
-
-                &:hover {
-                    border-bottom: none;
-                    padding-top: 0;
-                    padding-bottom: 0;
-                    background: transparent;
-                }
-            }
-
-            a,
-            button {
-                text-decoration: none;
-                vertical-align: middle;
-                color: #FFF;
-                padding: 8px 12px;
-                margin: 8px 2px;
-                height: auto;
-                display: inline-flex;
-                align-items: center;
-                border-radius: var(--radius-md);
-                font-weight: var(--weight-medium);
-                position: relative;
-                transition: background-color var(--motion-fast, 120ms) var(--ease-standard, ease),
-                    color var(--motion-fast, 120ms) var(--ease-standard, ease),
-                    transform var(--motion-fast, 120ms) var(--ease-standard, ease);
-
-                &:link {
-                    color: #FFF;
-                }
-
-                &:hover {
-                    color: #FFF;
-                    background: rgba(255, 255, 255, 0.16);
-                    transform: translateY(-1px);
-                }
-
-                // Modern pill-active with an underline accent bar.
-                &.active {
-                    color: #FFF;
-                    background: rgba(255, 255, 255, 0.14);
-
-                    &::after {
-                        content: "";
-                        position: absolute;
-                        left: 12px;
-                        right: 12px;
-                        bottom: -9px;
-                        height: 3px;
-                        border-radius: var(--radius-pill);
-                        background: $highlight_blue;
-                    }
-                }
-
-                .nav-expand {
-                    display: none;
-                }
-            }
-
-            ul {
-                padding: 6px 0;
-                position: absolute;
-                left: 5px;
-                display: none;
+            &:hover {
+                background: rgba(255, 255, 255, 0.14);
                 color: #fff;
-                background: $color_navbar_bg;
-                margin: 0 !important;
-                border-radius: 0 0 var(--radius-md) var(--radius-md);
-                box-shadow: var(--shadow-3);
-                overflow: hidden;
-
-                li {
-                    a.active {
-                        border: none;
-                        border-left: 5px solid $highlight_blue;
-                    }
-                }
-
-                li {
-                    display: block;
-
-                    a,
-                    button {
-                        padding: 8px 20px 8px 8px !important;
-                        font-size: 0.8em;
-                        line-height: 18px;
-                        display: block;
-                        margin: 0;
-                        border-radius: 0;
-                        border-left: 4px solid transparent;
-                        white-space: nowrap;
-                        transition: background-color var(--motion-fast) var(--ease-standard),
-                            border-color var(--motion-fast) var(--ease-standard);
-
-                        &:hover {
-                            background: rgba(255, 255, 255, 0.12);
-                            border-left-color: $highlight_blue;
-                        }
-                    }
-                }
             }
 
-            button {
-                background: none;
-                text-align: left;
-                border: none;
-                width: 100%;
-                border-radius: 0;
-                height: auto;
-            }
-
-            &:hover>ul,
-            &:active>ul,
-            &:focus>ul {
-                display: block !important;
-            }
-
-            &.home-nav-element a:hover {
-                border-bottom: 0;
-                padding-top: 0;
-                padding-bottom: 0;
-                background: transparent;
+            &.active {
+                background: rgba(255, 255, 255, 0.10);
+                box-shadow: inset 3px 0 0 $highlight_blue;
             }
         }
     }
+}
 
-    .nav-divider {
-        width: 1px;
-        vertical-align: middle;
-        padding-left: 3px;
-        display: inline-block;
+// ---------------------------------------------------------------------------
+// Right cluster (#user-links)
+// ---------------------------------------------------------------------------
+#user-links {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-left: auto;
+    padding-right: var(--space-1);
+    color: #fff;
+    white-space: nowrap;
+
+    a {
+        color: #fff;
+    }
+
+    li {
+        text-transform: none;
+    }
+
+    // Report-issue + flag icons: give them a consistent round hit area.
+    > a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
         height: 32px;
-        margin-right: 1px;
-        border-right: 3px solid rgba(255, 255, 255, 0.15);
+        padding: 0 var(--space-1);
+        border-radius: var(--radius-pill);
+        margin: 0 !important;
+        transition: background-color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        img {
+            display: block;
+        }
+    }
+
+    // Authenticated user menu (avatar + name, with a dropdown).
+    > ul {
+        display: block;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        > li {
+            position: relative;
+
+            > a {
+                display: flex;
+                align-items: center;
+                height: 36px;
+                padding: 0;
+                border-radius: var(--radius-pill);
+                transition: background-color var(--motion-fast) var(--ease-standard);
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.14);
+                }
+
+                > span {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: var(--space-2);
+                    padding: 0 var(--space-3) 0 4px;
+                    font-size: 0.85rem;
+                    white-space: nowrap;
+
+                    > img {
+                        border-radius: var(--radius-pill);
+                        border: 2px solid rgba(255, 255, 255, 0.35);
+                    }
+
+                    > span {
+                        color: #fff;
+                    }
+                }
+            }
+
+            // Right-aligned dropdown so it never overflows the viewport.
+            > ul {
+                left: auto;
+                right: 0;
+            }
+        }
     }
 }
 
+// Anonymous log-in / sign-up cluster.
+#user-links .anon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.85rem;
+
+    a {
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-pill);
+        transition: background-color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.16);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Desktop: show dropdown on hover of the owning item
+// ---------------------------------------------------------------------------
+@media not all and (max-width: 760px) {
+    #nav-list li:hover > ul,
+    #user-links li:hover > ul {
+        display: block;
+    }
+
+    // The mobile-only "Home" text item is hidden on desktop (logo covers it).
+    #nav-list li.home-menu-item {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile hamburger + drawer
+// ---------------------------------------------------------------------------
 #navicon {
     display: none;
 }
 
 @media (max-width: 760px) {
     #navigation {
-        height: 36px;
+        height: 44px;
     }
 
     #navicon {
-        transition-duration: 0.25s;
-        display: block;
-        line-height: 26px;
-        font-size: 2em;
-        color: #FFF;
-        padding: 0 0.25em;
-        margin: 4px 0.25em;
-        white-space: nowrap;
-        float: left;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin: 2px var(--space-1);
+        font-size: 1.5em;
+        color: #fff;
+        border-radius: var(--radius-md);
+        transition: background-color var(--motion-fast) var(--ease-standard),
+            color var(--motion-fast) var(--ease-standard);
 
-        &.hover {
-            color: #4db7fe;
-            text-shadow: 0 0 5px $highlight_blue;
-            transition-duration: 0.25s;
+        &.hover,
+        &:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
         }
     }
 
+    // Slide-in drawer for the left menu.
     #nav-list {
         display: none;
-        padding: 0;
-        margin: 0;
         position: fixed;
-        top: 36px;
-        background: $color_navbar_bg;
-        bottom: 0;
-        width: 8em;
+        top: 44px;
         left: 0;
+        bottom: 0;
+        width: min(78vw, 18rem);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: var(--space-2);
+        overflow-y: auto;
+        background: color.adjust($color_navbar_bg, $lightness: 2%);
+        box-shadow: var(--shadow-3);
 
         &.show-list {
-            display: block;
+            display: flex;
         }
 
-        li {
+        > li {
             display: block;
+            height: auto;
+            width: 100%;
 
-            a {
-                display: block;
+            > a,
+            > button {
+                width: 100%;
+                height: auto;
+                padding: var(--space-3);
+                border-radius: var(--radius-md);
+                justify-content: flex-start;
 
-                .nav-expand {
-                    float: right;
-                    display: block;
-                    height: inherit;
-                    margin: (-13px) -7px;
-                    padding: inherit;
+                &.active::after {
+                    display: none;
+                }
+
+                &.active {
+                    box-shadow: inset 3px 0 0 $highlight_blue;
                 }
             }
 
-            ul {
-                left: 8em;
-                top: 0px;
-
-                &.show-list {
-                    display: block;
-                }
+            // The chevron floats right and is the tap target that expands the
+            // nested list (wired in common.js).
+            .nav-expand {
+                float: right;
+                margin-left: auto;
+                padding: 0 var(--space-1);
             }
 
             &.home-nav-element {
                 display: none;
             }
         }
-    }
 
-    #user-links>ul>li>a>span {
-        padding: 6px 8px;
-    }
-}
+        // Nested lists render inline (stacked) inside the drawer.
+        li ul {
+            position: static;
+            display: none;
+            min-width: 0;
+            margin: 0 !important;
+            padding: 0 0 0 var(--space-3);
+            background: transparent;
+            border: none;
+            box-shadow: none;
 
-@media not all and (max-width: 760px) {
-    #nav-list {
-        li {
-            &.home-menu-item {
-                display: none;
-            }
-
-            &:not(:hover)>ul {
-                display: none !important;
-            }
-
-            ul {
-                left: 0 !important;
+            &.show-list {
+                display: block;
             }
         }
     }
