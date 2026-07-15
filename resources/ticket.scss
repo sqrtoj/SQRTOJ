@@ -127,15 +127,17 @@ div.ticket-title {
     margin: 5px 0 10px;
 }
 
+// Flat token buttons (Phase 7): the close/upvote action uses the brand accent,
+// the open/reopen action the danger color. Replaces the legacy glossy gradients
+// so ticket controls are theme-aware and match the site-wide button primitive.
 .close-ticket, .vote-good {
     display: block;
     width: 100%;
-    background: linear-gradient(to bottom, #4bad00 0%, #278811 100%);
-    border-color: #24710e;
+    background: var(--color-accent);
     font-weight: 600;
 
     &:hover {
-        background: #24710e;
+        background: var(--color-accent-hover);
     }
 
     &:focus-visible {
@@ -147,12 +149,11 @@ div.ticket-title {
 .open-ticket, .vote-norm {
     display: block;
     width: 100%;
-    background: linear-gradient(to bottom, #ff130f, #b03d17);
-    border-color: #853011;
+    background: var(--color-danger-fg);
     font-weight: 600;
 
     &:hover {
-        background: #853011;
+        filter: brightness(0.92);
     }
 
     &:focus-visible {

@@ -75,25 +75,25 @@
         </a>
         <span class="contest-tags">
             {% if not contest.is_visible %}
-                <span style="background-color: #000000; color: #ffffff" class="contest-tag">
+                <span class="contest-tag contest-tag--hidden">
                     <i class="fa fa-eye-slash"></i> {{ _('hidden') }}
                 </span>
             {% endif %}
             {% if contest.is_organization_private %}
                 {% for org in contest.organizations.all() %}
-                    <span style="background-color: #cccccc" class="contest-tag">
-                        <a href="{{ org.get_absolute_url() }}" style="color: #000000">
+                    <span class="contest-tag contest-tag--organization">
+                        <a href="{{ org.get_absolute_url() }}">
                             <i class="fa fa-lock"></i> {{ org.name }}
                         </a>
                     </span>
                 {% endfor %}
             {% elif contest.is_private %}
-                <span style="background-color: #666666; color: #ffffff" class="contest-tag">
+                <span class="contest-tag contest-tag--private">
                     <i class="fa fa-lock"></i> {{ _('private') }}
                 </span>
             {% endif %}
             {% if contest.is_rated %}
-                <span style="background-color: #e54c14; color: #ffffff" class="contest-tag">
+                <span class="contest-tag contest-tag--rated">
                     <i class="fa fa-bar-chart"></i> {{ _('rated') }}
                 </span>
             {% endif %}
@@ -169,7 +169,7 @@
     <td>
         {% if request.profile not in contest.authors.all() and request.profile not in contest.curators.all() and request.profile not in contest.testers.all() %}
             {% if request.profile and contest.id in request.profile.registered_contest_ids %}
-                <span style="color: #87ab69"><b>Already registered</b></span>
+                <span class="contest-registered-label"><b>Already registered</b></span>
             {% elif not contest.can_register %}
                 {% if contest.time_before_register %}
                     <span class="time">{{ _('Registration opens in %(countdown)s', countdown=as_countdown(contest.time_before_register)) }}</span>
@@ -179,7 +179,7 @@
             {% else %}
                 <form action="{{ url('contest_register', contest.key) }}" method="post">
                     {% csrf_token %}
-                    <input type="submit" class="unselectable button full participate-button register-warning" style="background: linear-gradient(to bottom, #87ab69 0, #4b6043 100%) repeat-x"
+                    <input type="submit" class="unselectable button full participate-button register-warning"
                             value="{{ _('Register') }}">
                 </form>
             {% endif %}

@@ -104,6 +104,11 @@
             <div class="sidebox-content" style="border: unset;">
                 {% for post in posts %}
                     {% include "blog/blog-post.html" %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="empty-state-icon fa fa-newspaper-o" aria-hidden="true"></i>
+                        <div class="empty-state-message">{{ _('No posts here yet.') }}</div>
+                    </div>
                 {% endfor %}
             </div>
             {% if page_obj.has_other_pages() %}

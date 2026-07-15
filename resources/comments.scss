@@ -16,7 +16,11 @@ a {
 }
 
 .no-comments-message {
-    margin: 10px 0 15px 2.75em;
+    margin: var(--space-4) 0 var(--space-5);
+    padding: var(--space-5) var(--space-4);
+    text-align: center;
+    color: var(--color-text-muted);
+    font-style: italic;
 }
 
 .comment-header-space {
@@ -48,8 +52,30 @@ a {
         color: var(--color-text);
     }
 
+    // Interactive action icons (link/reply/edit/vote/hide). Padded hit area plus
+    // hover/focus affordance so the dense action row reads as interactive.
+    a {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-sm);
+        color: var(--color-text-secondary);
+        transition: background-color var(--motion-fast) var(--ease-standard),
+            color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-surface-alt);
+            color: var(--color-text);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
+        }
+    }
+
     a + a {
-        padding-left: 2px;
+        padding-left: var(--space-2);
     }
 }
 
@@ -61,7 +87,7 @@ a {
 }
 
 .comment-edit-form {
-    min-width: 60em;
+    max-width: 100%;
 }
 
 .comment-post-wrapper {

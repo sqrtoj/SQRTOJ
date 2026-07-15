@@ -70,23 +70,23 @@ span.organization {
 .users-table,
 .organization-table {
     tr {
-        transition: background-color linear .2s;
+        transition: background-color var(--motion-fast) var(--ease-standard);
 
         &:hover {
-            background: rgba($color_primary100, 0.05);
+            background: var(--color-surface-alt);
         }
 
         &.highlight {
-            background: rgba($color_link200, 0.2);
+            background: var(--color-focus-ring-soft);
         }
     }
 
     th a {
-        color: #ccc;
+        color: var(--color-text-inverse);
 
         &:link,
         &:visited {
-            color: #ccc;
+            color: var(--color-text-inverse);
         }
     }
 }
@@ -139,8 +139,12 @@ span.organization {
 }
 
 .user-sidebar {
-    width: 150px;
-    padding-left: 15px;
+    width: 200px;
+    flex: 0 0 200px;
+    padding-left: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
 }
 
 img.user-gravatar {
@@ -149,6 +153,77 @@ img.user-gravatar {
     background-color: white;
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-1);
+}
+
+// Profile sidebar (Phase 7): avatar + rating badge in a card, then a tokenized
+// definition-list of stats. Replaces the legacy <br>-separated label:value stack.
+.user-profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+
+    .user-gravatar {
+        width: 135px;
+        height: 135px;
+    }
+}
+
+.user-rating-badge {
+    text-align: center;
+    font-weight: var(--weight-bold);
+    font-size: 0.95em;
+}
+
+.user-stat-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+
+    .user-stat {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-3);
+
+        dt {
+            color: var(--color-text-muted);
+            font-size: var(--text-sm);
+        }
+
+        dd {
+            margin: 0;
+            color: var(--color-text);
+            font-weight: var(--weight-semibold);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        &-break dd, dd.user-stat-break {
+            word-break: break-all;
+            font-weight: var(--weight-regular);
+            text-align: right;
+        }
+    }
+
+    .user-stat-heading {
+        font-weight: var(--weight-semibold);
+        color: var(--color-text);
+        padding-bottom: var(--space-1);
+        border-bottom: 1px solid var(--color-border);
+    }
+}
+
+.user-sidebar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 }
 
 .user-content {
@@ -213,16 +288,18 @@ img.user-gravatar {
 #rating-tooltip {
     display: none;
     position: absolute;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 3px;
-    border-radius: 3px;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2);
     transition: all .1s ease;
     pointer-events: none;
     transform: translate(-50%, 0);
 
     .rate-group {
-        color: white;
+        color: var(--color-text);
     }
 }
 

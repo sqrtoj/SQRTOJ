@@ -57,7 +57,7 @@ $is_light_theme: true;
 
         // Numeric columns are center-aligned
         &.solved, &.points, &.ac-rate, &.editorial, &.users {
-            padding: 0 10px;
+            padding: 0 var(--space-3);
             white-space: nowrap;
         }
 
@@ -67,20 +67,7 @@ $is_light_theme: true;
     }
 
     th a {
-        @if $is_light_theme {
-            color: var(--color-text-inverse);
-        } 
-        @else {
-            color: #ccc;
-        }
-    }
-
-    tr {
-        transition: background-color linear 0.2s;
-
-        &:hover {
-            background: rgba(vars.$color_primary100, 0.05);
-        }
+        color: var(--color-text-inverse);
     }
 }
 

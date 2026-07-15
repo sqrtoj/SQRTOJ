@@ -146,11 +146,11 @@ label[for="language"], label[for="status"], label[for="organization"] {
 }
 
 #statistics-table tr:not(:first-child) td {
-    border-top: 1px solid white !important;
+    border-top: 1px solid var(--color-border) !important;
 }
 
 #statistics-table tr:not(:last-child) td:not(:last-child) {
-    border-right: 1px solid white;
+    border-right: 1px solid var(--color-border);
 }
 
 #statistics-table {
@@ -279,7 +279,7 @@ label[for="language"], label[for="status"], label[for="organization"] {
         padding-left: 1em;
         padding-bottom: 3px;
         padding-top: 3px;
-        border: 1px solid #2980b9;
+        border: 1px solid var(--color-info-fg);
         border-left-width: .5em;
         border-radius: var(--radius-sm);
         color: var(--color-text);
@@ -314,27 +314,27 @@ label[for="language"], label[for="status"], label[for="organization"] {
 }
 
 .case-AC {
-    color: green;
+    color: var(--verdict-ac-bg);
     font-weight: bold;
 }
 
 .case-_AC {
-    color: #BBCC00;
+    color: var(--verdict-partial-bg);
     font-weight: bold;
 }
 
 .case-WA {
-    color: red;
+    color: var(--verdict-wa-bg);
     font-weight: bold;
 }
 
 .case-TLE, .case-SC {
-    color: gray;
+    color: var(--verdict-tle-bg);
     font-weight: bold;
 }
 
 .case-MLE, .case-OLE, .case-RTE, .case-IR {
-    color: orange;
+    color: var(--verdict-ole-bg);
     font-weight: bold;
 }
 
@@ -362,7 +362,7 @@ label[for="language"], label[for="status"], label[for="organization"] {
     }
 
     a:active .line .highlighter {
-        background: rgba(255, 212, 0, 0.48);
+        background: var(--color-focus-ring-soft);
     }
 }
 

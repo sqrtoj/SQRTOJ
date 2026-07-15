@@ -379,6 +379,11 @@
                             {% include "submission/row.html" %}
                         {% endwith %}
                     </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="empty-state-icon fa fa-inbox" aria-hidden="true"></i>
+                        <div class="empty-state-message">{{ _('No submissions to display.') }}</div>
+                    </div>
                 {% endfor %}
             </div>
         </div>

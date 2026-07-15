@@ -165,16 +165,53 @@ $is_light_theme: true;
 
 .contest-tag {
     box-shadow: inset 0 -0.1em 0 rgba(0, 0, 0, 0.12);
-    padding: 0.15em 0.3em;
-    border-radius: 0.15em;
+    padding: 0.15em 0.4em;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     margin-right: 0.45em;
     position: relative;
+    background: var(--color-surface-alt);
+    color: var(--color-text-secondary);
+
+    a {
+        color: inherit;
+    }
+
+    .fa {
+        margin-right: 0.15em;
+    }
+
+    // Semantic tag variants (replace per-tag inline hex in contest/list.html).
+    &--hidden {
+        background: var(--color-text);
+        color: var(--color-text-inverse);
+    }
+
+    &--private {
+        background: var(--color-text-secondary);
+        color: var(--color-text-inverse);
+    }
+
+    &--organization {
+        background: var(--color-surface-alt);
+        color: var(--color-text-secondary);
+    }
+
+    &--rated {
+        background: var(--color-accent);
+        color: var(--color-accent-contrast);
+    }
 }
 
 .contest-list-title {
     font-size: 18px;
     font-weight: 600;
+}
+
+// "Already registered" confirmation label (was inline sage-green hex).
+.contest-registered-label {
+    color: var(--color-success-fg);
+    font-weight: var(--weight-semibold);
 }
 
 form.contest-join-pseudotab {
@@ -242,18 +279,12 @@ form.contest-join-pseudotab {
         outline-offset: 2px;
     }
 
-    /* Make problem table headers green on hover */
     th a:hover {
-        color: #0F0;
+        color: var(--color-accent-2);
     }
 
     th a, th a:link, th a:visited {
-        @if $is_light_theme {
-            color: #fff;
-        }
-        @else {
-            color: #ccc;
-        }
+        color: var(--color-text-inverse);
     }
 
     .rank {
@@ -286,7 +317,7 @@ form.contest-join-pseudotab {
     }
 
     .virtual-participation {
-        color: grey;
+        color: var(--color-text-muted);
         float: right
     }
 
@@ -303,7 +334,9 @@ form.contest-join-pseudotab {
 #org-check-list-wrapper {
     display: none;
     background: var(--color-surface);
-    border: 1px solid gray;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2);
     padding: 10px;
 
     right: auto;
@@ -316,7 +349,7 @@ form.contest-join-pseudotab {
     }
 
     #org-check-list {
-        border-bottom: 1px solid gray;
+        border-bottom: 1px solid var(--color-border);
         color: var(--color-text);
         text-align: left;
         font-weight: normal;

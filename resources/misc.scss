@@ -10,13 +10,13 @@
     }
 
     .version-latest {
-        background: #af3c;
-        color: black;
+        background: var(--color-success-bg);
+        color: var(--color-success-fg);
     }
 
     .version-outdated {
-        background: #f00c;
-        color: white;
+        background: var(--color-danger-bg);
+        color: var(--color-danger-fg);
     }
 
     tr:first-child {

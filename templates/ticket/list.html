@@ -204,6 +204,15 @@
                     <tbody>
                     {% for ticket in tickets %}
                         {% include "ticket/row.html" %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="empty-state-icon fa fa-ticket" aria-hidden="true"></i>
+                                    <div class="empty-state-message">{{ _('There are no tickets to display.') }}</div>
+                                </div>
+                            </td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>
