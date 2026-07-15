@@ -6,15 +6,15 @@
 .home-hero {
     position: relative;
     overflow: hidden;
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-5);
-    padding: clamp(var(--space-5), 5vw, var(--space-7)) clamp(var(--space-4), 5vw, var(--space-7));
+    border-radius: clamp(var(--radius-lg), 2vw, 22px);
+    margin-bottom: var(--space-6);
+    padding: clamp(var(--space-6), 6vw, calc(var(--space-8) + var(--space-2))) clamp(var(--space-5), 5vw, var(--space-7));
     background:
-        radial-gradient(circle at 82% -10%, rgba(255, 255, 255, 0.28), transparent 45%),
-        radial-gradient(circle at 12% 120%, rgba(0, 0, 0, 0.22), transparent 42%),
+        radial-gradient(circle at 82% -10%, rgba(255, 255, 255, 0.30), transparent 46%),
+        radial-gradient(circle at 12% 120%, rgba(0, 0, 0, 0.24), transparent 44%),
         linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
     color: var(--color-accent-contrast);
-    box-shadow: var(--shadow-2);
+    box-shadow: var(--shadow-3);
 
     // Decorative dotted texture overlay for depth.
     &::before {
@@ -23,8 +23,19 @@
         inset: 0;
         background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1.4px, transparent 1.4px);
         background-size: 22px 22px;
-        opacity: 0.6;
+        opacity: 0.55;
         pointer-events: none;
+        z-index: 0;
+    }
+
+    // Soft diagonal sheen sweeping across the top for a glossy, premium feel.
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.18) 0%, transparent 32%);
+        pointer-events: none;
+        z-index: 0;
     }
 
     &__bg {
@@ -151,12 +162,14 @@
         }
     }
 
-    // Stats sit in a horizontal row below the action buttons.
+    // Stats sit in a horizontal row below the action buttons, each a subtle
+    // glass tile so the numbers read as distinct, tappable-looking facts.
     &__stats {
         display: flex;
         flex-wrap: wrap;
-        gap: clamp(var(--space-4), 5vw, var(--space-7));
-        padding-top: var(--space-4);
+        gap: var(--space-3);
+        padding-top: var(--space-5);
+        margin-top: var(--space-1);
         border-top: 1px solid rgba(255, 255, 255, 0.22);
     }
 }
@@ -214,18 +227,32 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(6px);
+    min-width: 7rem;
+    transition: background-color var(--motion-base) var(--ease-standard),
+        transform var(--motion-base) var(--ease-standard);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
 
     &__value {
-        font-size: clamp(1.4rem, 3vw, 2rem);
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
         font-weight: var(--weight-bold);
         line-height: 1.05;
+        letter-spacing: -0.01em;
         font-variant-numeric: tabular-nums;
     }
 
     &__label {
         font-size: var(--text-sm);
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         opacity: 0.9;
     }
 }
@@ -239,8 +266,13 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3);
-    margin-bottom: var(--space-5);
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
 
     &__chips {
         display: flex;
@@ -261,10 +293,16 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
-    background: var(--color-surface);
+    background: var(--color-surface-alt);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-pill);
-    box-shadow: var(--shadow-1);
+    transition: border-color var(--motion-fast) var(--ease-standard),
+        transform var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        border-color: var(--color-accent);
+        transform: translateY(-1px);
+    }
 
     &__icon {
         color: var(--color-accent);
