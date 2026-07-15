@@ -25,6 +25,27 @@
     }
 }
 
+// Date-range picker button (OJ status stats). Tokenized so it matches the
+// surface/border in both themes instead of a hardcoded white box.
+.daterange-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    transition: border-color var(--motion-fast) var(--ease-standard),
+        background-color var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        background: var(--color-surface-alt);
+        border-color: var(--color-border-strong);
+    }
+}
+
 .django-as-table {
     text-align: left;
 
