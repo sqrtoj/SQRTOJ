@@ -223,22 +223,50 @@
 
 // Registration page: wrap the existing multi-field form in a centered card for
 // visual consistency with login, without restructuring its fields.
+.auth-page--wide {
+    align-items: flex-start;
+}
+
 #center-float {
     max-width: 620px;
-    margin: var(--space-6) auto var(--space-8);
+    width: 100%;
+    margin: 0 auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-3);
+    overflow: hidden;
+    box-sizing: border-box;
 
+    // The branded accent band spans the full card width.
+    > .auth-brand {
+        margin: 0 0 var(--space-5);
+    }
+
+    // Inner form no longer looks like a separate box; the card owns the chrome.
     #edit-form.form-area {
         display: block;
         width: 100%;
         box-sizing: border-box;
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-2);
-        padding: var(--space-6);
+        background: none;
+        border: 0;
+        box-shadow: none;
+        padding: 0 var(--space-6) var(--space-6);
     }
 
     .block-header {
         color: var(--color-text) !important;
+    }
+
+    // OAuth + TOS sit inside the card padding.
+    .auth-oauth,
+    .tos-section {
+        padding: 0 var(--space-6);
+    }
+
+    .tos-section {
+        display: block;
+        padding-bottom: var(--space-6);
+        color: var(--color-text-secondary);
     }
 }
