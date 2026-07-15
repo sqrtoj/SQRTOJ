@@ -51,41 +51,6 @@
         </aside>
     </section>
 
-    {# Quick-action launchpad into the main sections. #}
-    <nav class="home-quicknav" aria-label="{{ _('Quick navigation') }}">
-        <a class="card card--interactive home-quicknav__card" href="{{ url('problem_list') }}">
-            <span class="home-quicknav__icon"><i class="fa fa-code" aria-hidden="true"></i></span>
-            <span class="home-quicknav__label">{{ _('Problems') }}</span>
-            <span class="home-quicknav__desc">{{ _('Browse and solve') }}</span>
-        </a>
-        <a class="card card--interactive home-quicknav__card" href="{{ url('contest_list') }}">
-            <span class="home-quicknav__icon"><i class="fa fa-trophy" aria-hidden="true"></i></span>
-            <span class="home-quicknav__label">{{ _('Contests') }}</span>
-            <span class="home-quicknav__desc">{{ _('Compete live') }}</span>
-        </a>
-        <a class="card card--interactive home-quicknav__card" href="{{ url('user_list') }}">
-            <span class="home-quicknav__icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span>
-            <span class="home-quicknav__label">{{ _('Ranking') }}</span>
-            <span class="home-quicknav__desc">{{ _('Top coders') }}</span>
-        </a>
-        <a class="card card--interactive home-quicknav__card" href="{{ url('problem_random') }}">
-            <span class="home-quicknav__icon"><i class="fa fa-random" aria-hidden="true"></i></span>
-            <span class="home-quicknav__label">{{ _('Random') }}</span>
-            <span class="home-quicknav__desc">{{ _('Surprise me') }}</span>
-        </a>
-        <a class="card card--interactive home-quicknav__card" href="{{ url('status_all') }}">
-            <span class="home-quicknav__icon"><i class="fa fa-server" aria-hidden="true"></i></span>
-            <span class="home-quicknav__label">{{ _('Status') }}</span>
-            <span class="home-quicknav__desc">{{ _('Judge health') }}</span>
-        </a>
-        {% if not request.user.is_authenticated %}
-        <a class="card card--interactive home-quicknav__card" href="{{ url('registration_register') }}">
-            <span class="home-quicknav__icon"><i class="fa fa-user-plus" aria-hidden="true"></i></span>
-            <span class="home-quicknav__label">{{ _('Sign up') }}</span>
-            <span class="home-quicknav__desc">{{ _('Join us') }}</span>
-        </a>
-        {% endif %}
-    </nav>
     {% if misc_config.home_page_top %}
         {{ render_django(misc_config.home_page_top, request=request, user_count=user_count, problem_count=problem_count, submission_count=submission_count, language_count=language_count, perms=perms) }}
     {% endif %}

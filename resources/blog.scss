@@ -169,46 +169,6 @@
     }
 }
 
-// Quick-action launchpad: a responsive card grid linking the main sections.
-.home-quicknav {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
-
-    &__card {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-1);
-        padding: var(--space-4);
-        text-align: left;
-        color: var(--color-text);
-    }
-
-    &__icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.4rem;
-        height: 2.4rem;
-        margin-bottom: var(--space-2);
-        border-radius: var(--radius-md);
-        background: var(--color-surface-alt);
-        color: var(--color-accent);
-        font-size: 1.15rem;
-    }
-
-    &__label {
-        font-weight: var(--weight-semibold);
-        font-size: var(--text-md);
-    }
-
-    &__desc {
-        font-size: var(--text-sm);
-        color: var(--color-text-muted);
-    }
-}
-
 .blog-content {
     padding-right: 0em;
     flex: 1 1 0;
