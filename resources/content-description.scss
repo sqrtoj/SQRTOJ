@@ -90,6 +90,34 @@
     }
 }
 
+// About page: give the stored markdown a more editorial feel -- section
+// headings get an accent underline, the first paragraph reads as a lead, and
+// links stand out. Content in the DB is untouched; this is presentation only.
+.flatpage-about {
+    .flatpage-body.content-description {
+        > h2, > h3 {
+            margin-top: var(--space-6);
+            padding-bottom: var(--space-2);
+            border-bottom: 2px solid var(--color-accent);
+            display: inline-block;
+        }
+
+        > p:first-of-type {
+            font-size: var(--text-lg);
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+        }
+
+        > blockquote {
+            margin: var(--space-5) 0;
+            padding: var(--space-3) var(--space-4);
+            border-left: 4px solid var(--color-accent);
+            background: var(--color-surface-alt);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+    }
+}
+
 // Shop-specific: pricing tables read as emphasized tiers.
 .flatpage-shop {
     .flatpage-body.content-description table tbody tr:hover td {
