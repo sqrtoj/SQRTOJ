@@ -351,48 +351,44 @@ textarea:focus {
     }
 }
 
-// Bootstrap-y pagination
-ul.pagination a:hover {
+// Pill hover only for real, non-active/disabled page links.
+ul.pagination > li:not(.active-page):not(.disabled-page) > a:hover {
     background: var(--color-surface-alt);
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
 }
 
+// Modern pagination: separated rounded pills with a small gap instead of the
+// old glued-together bootstrap strip.
 ul.pagination {
-    display: inline-block;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
     padding-left: 0;
     margin: 0;
 
     > {
         li {
-            display: inline;
-
-            &:first-child > {
-                a, span {
-                    margin-left: 0;
-                    border-top-left-radius: $widget_border_radius;
-                    border-bottom-left-radius: $widget_border_radius;
-                }
-            }
-
-            &:last-child > {
-                a, span {
-                    border-top-right-radius: $widget_border_radius;
-                    border-bottom-right-radius: $widget_border_radius;
-                }
-            }
+            display: inline-flex;
 
             > {
                 a, span {
                     position: relative;
-                    float: left;
-                    padding: 6px 13px;
-                    line-height: 1.42857;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 2.1em;
+                    padding: var(--space-1) var(--space-3);
+                    line-height: 1.5;
                     text-decoration: none;
                     color: var(--color-link);
                     background-color: var(--color-surface);
                     border: 1px solid var(--color-border);
-                    margin-left: -1px;
+                    border-radius: var(--radius-md);
+                    font-variant-numeric: tabular-nums;
                     transition: background-color var(--motion-fast) var(--ease-standard),
-                        color var(--motion-fast) var(--ease-standard);
+                        color var(--motion-fast) var(--ease-standard),
+                        border-color var(--motion-fast) var(--ease-standard);
                 }
             }
         }
@@ -400,6 +396,8 @@ ul.pagination {
         .disabled-page > {
             a, span {
                 color: var(--color-text-muted);
+                background: var(--color-surface-alt);
+                cursor: default;
             }
         }
 
@@ -410,6 +408,7 @@ ul.pagination {
                 background-color: var(--color-accent);
                 border-color: transparent;
                 cursor: default;
+                font-weight: var(--weight-semibold);
             }
         }
     }
