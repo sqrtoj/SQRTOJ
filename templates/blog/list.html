@@ -21,59 +21,11 @@
                 count_down($(this));
             });
 
-            // Newsfeed post collapsing. State is remembered per-post in
-            // localStorage so a reader's collapsed posts stay collapsed on reload.
-            var COLLAPSE_KEY = 'newsfeed_collapsed_posts';
-            function readCollapsed() {
-                try {
-                    return JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || {};
-                } catch (e) {
-                    return {};
-                }
-            }
-            function writeCollapsed(state) {
-                try {
-                    localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state));
-                } catch (e) { /* storage unavailable; collapse still works per-session */ }
-            }
-
-            function setCollapsed($post, collapsed) {
-                var $toggle = $post.find('.blog-collapse-toggle').first();
-                var $icon = $toggle.find('i');
-                $post.toggleClass('collapsed', collapsed);
-                $toggle.attr('aria-expanded', collapsed ? 'false' : 'true');
-                $toggle.attr('title', collapsed ? gettext('Expand') : gettext('Collapse'));
-                $icon.toggleClass('fa-chevron-up', !collapsed);
-                $icon.toggleClass('fa-chevron-down', collapsed);
-            }
-
-            var collapsedState = readCollapsed();
-            $('.post').each(function () {
-                var id = this.id;
-                if (collapsedState[id]) {
-                    setCollapsed($(this), true);
-                }
-            });
-
-            $(document).on('click', '.blog-collapse-toggle', function (e) {
-                e.preventDefault();
-                var $post = $(this).closest('.post');
-                var collapsed = !$post.hasClass('collapsed');
-                setCollapsed($post, collapsed);
-                var state = readCollapsed();
-                if (collapsed) {
-                    state[$post.attr('id')] = true;
-                } else {
-                    delete state[$post.attr('id')];
-                }
-                writeCollapsed(state);
-            });
-
-            // "Collapse all" / "Expand all" toolbar button. Collapses every post if
-            // any is still open, otherwise expands them all, and syncs localStorage.
+            // Per-post collapsing lives in blog/media-js.html (shared with the
+            // user blog tab). Here we only wire the newsfeed "collapse/expand all"
+            // toolbar button and keep its label in sync.
             function refreshCollapseAllButton() {
-                var $posts = $('.post');
-                var anyOpen = $posts.not('.collapsed').length > 0;
+                var anyOpen = $('.post').not('.collapsed').length > 0;
                 var $btn = $('#collapse-all-posts');
                 var $icon = $btn.find('i');
                 var $label = $btn.find('.newsfeed-toolbar__label');
@@ -90,21 +42,12 @@
 
             $('#collapse-all-posts').on('click', function (e) {
                 e.preventDefault();
-                var $posts = $('.post');
-                var collapseThemAll = $posts.not('.collapsed').length > 0;
-                var state = readCollapsed();
-                $posts.each(function () {
-                    var $post = $(this);
-                    setCollapsed($post, collapseThemAll);
-                    if (collapseThemAll) {
-                        state[$post.attr('id')] = true;
-                    } else {
-                        delete state[$post.attr('id')];
-                    }
-                });
-                writeCollapsed(state);
+                var collapseThemAll = $('.post').not('.collapsed').length > 0;
+                if (window.blogCollapse) window.blogCollapse.setAll(collapseThemAll);
                 refreshCollapseAllButton();
             });
+
+            $(document).on('click', '.blog-collapse-toggle', refreshCollapseAllButton);
 
             refreshCollapseAllButton();
 
