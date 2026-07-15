@@ -6,6 +6,43 @@
     width: 20%;
 }
 
+// Submission filter/statistics: unbox the sidebar so the controls read as a
+// plain, open panel instead of a bordered surface card. Scoped to the
+// submission page's #content-right so the shared .sidebox look is untouched
+// elsewhere.
+#content-right.submission {
+    .sidebox {
+        background: none;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
+        padding: 0 !important;
+    }
+
+    .sidebox h3 {
+        background: none;
+        border-radius: 0;
+        padding: 0;
+        margin: 0 0 var(--space-3);
+        color: var(--color-text);
+        font-weight: var(--weight-semibold);
+
+        .fa {
+            color: var(--color-accent);
+        }
+    }
+
+    .sidebox-content {
+        border: none;
+        padding: 0;
+    }
+
+    #statistics-table {
+        margin-top: var(--space-5);
+        padding-top: 0;
+    }
+}
+
 #submissions-table {
     background: rgba($color_primary100, .01);
 }
