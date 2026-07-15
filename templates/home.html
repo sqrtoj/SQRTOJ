@@ -1,9 +1,45 @@
 {% extends "blog/list.html" %}
 {% block before_posts %}
-    {# Autumn hero slot (artwork A-1). Renders only when the hero asset is present,
-       so there is no layout shift or broken image while the asset is pending.
-       Drop the file at static/autumn/hero.webp to activate. #}
-    <div id="autumn-hero" class="autumn-hero" role="presentation"></div>
+    {# Home hero band (Phase 6c). The autumn artwork (A-1) fills the background via the
+       --hero-image token and collapses gracefully when no asset is set. #}
+    <section class="home-hero{% if request.user.is_authenticated %} home-hero--compact{% endif %}">
+        <div class="home-hero__bg" role="presentation"></div>
+        <div class="home-hero__content">
+            {% if request.user.is_authenticated %}
+                <h1 class="home-hero__title">
+                    {{ _('Welcome back, %(name)s', name=request.user.username) }}
+                </h1>
+                <p class="home-hero__pitch">{{ _('Ready to solve something today?') }}</p>
+                <div class="home-hero__actions">
+                    <a class="button" href="{{ url('problem_list') }}">{{ _('Solve problems') }}</a>
+                    <a class="button btn-secondary" href="{{ url('contest_list') }}">{{ _('Contests') }}</a>
+                </div>
+            {% else %}
+                <h1 class="home-hero__title">{{ SITE_LONG_NAME }}</h1>
+                <p class="home-hero__pitch">
+                    {{ _('Practice competitive programming, join contests, and climb the ranks.') }}
+                </p>
+                <div class="home-hero__actions">
+                    <a class="button" href="{{ url('problem_list') }}">{{ _('Solve problems') }}</a>
+                    <a class="button btn-secondary" href="{{ url('contest_list') }}">{{ _('Join a contest') }}</a>
+                </div>
+            {% endif %}
+            <div class="home-hero__stats">
+                <div class="hero-stat">
+                    <span class="hero-stat__value">{{ user_count }}</span>
+                    <span class="hero-stat__label">{{ _('Users') }}</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat__value">{{ problem_count }}</span>
+                    <span class="hero-stat__label">{{ _('Problems') }}</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat__value">{{ submission_count }}</span>
+                    <span class="hero-stat__label">{{ _('Submissions') }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
     {% if misc_config.home_page_top %}
         {{ render_django(misc_config.home_page_top, request=request, user_count=user_count, problem_count=problem_count, submission_count=submission_count, language_count=language_count, perms=perms) }}
     {% endif %}

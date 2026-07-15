@@ -1,5 +1,113 @@
 @import "vars";
 
+// Home hero band (Phase 6c, docs/design-system/10-modern-ui-overhaul.md §3.1). The
+// autumn artwork (A-1) fills the background via the --hero-image token and collapses
+// gracefully to the accent gradient when no asset is set.
+.home-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-5);
+    padding: clamp(var(--space-5), 5vw, var(--space-8)) clamp(var(--space-4), 4vw, var(--space-7));
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+    color: var(--color-accent-contrast);
+    box-shadow: var(--shadow-1);
+
+    &--compact {
+        padding: clamp(var(--space-4), 3vw, var(--space-6)) clamp(var(--space-4), 4vw, var(--space-7));
+    }
+
+    &__bg {
+        position: absolute;
+        inset: 0;
+        background-image: var(--hero-image, none);
+        background-size: cover;
+        background-position: center;
+        // Scrim keeps text AA-legible over whatever art lands.
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+        }
+    }
+
+    &__content {
+        position: relative;
+        z-index: 1;
+        max-width: 40rem;
+    }
+
+    &__title {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        font-weight: var(--weight-bold);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin: 0 0 var(--space-2);
+        color: var(--color-accent-contrast);
+    }
+
+    &__pitch {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        margin: 0 0 var(--space-4);
+        opacity: 0.95;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin-bottom: var(--space-5);
+
+        .button {
+            display: inline-block;
+            width: auto;
+        }
+
+        // Secondary CTA reads as a translucent glass button on the accent band.
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--color-accent-contrast) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.28);
+            }
+        }
+    }
+
+    &__stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(var(--space-4), 4vw, var(--space-7));
+    }
+}
+
+.hero-stat {
+    display: flex;
+    flex-direction: column;
+
+    &__value {
+        font-size: clamp(1.4rem, 3vw, 2rem);
+        font-weight: var(--weight-bold);
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__label {
+        font-size: var(--text-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        opacity: 0.9;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-hero__stats {
+        gap: var(--space-4);
+    }
+}
+
 .blog-content {
     padding-right: 0em;
     flex: 1 1 0;
