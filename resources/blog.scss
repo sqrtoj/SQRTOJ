@@ -610,6 +610,31 @@
             transition: background-color var(--motion-fast) var(--ease-standard);
         }
 
+        // Vote column: a centered stack so the up-arrow, score, and down-arrow
+        // sit on one axis with equal gaps. Without this the icon glyph metrics
+        // and the score's own padding make the two gaps look uneven.
+        .vote {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-1);
+
+            .upvote-link, .downvote-link {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 1.6em;
+                height: 1.6em;
+                line-height: 1;
+            }
+
+            .comment-score {
+                padding: 0;
+                line-height: 1;
+            }
+        }
+
         // The title/meta block is the click target for expand/collapse, so give
         // it a pointer and a subtle hover cue.
         .post-header-main {
@@ -665,11 +690,11 @@
         &.collapsed {
             .blog-body {
                 position: relative;
-                max-height: 7em;
+                max-height: 13em;
                 overflow: hidden;
                 // Fade the preview into the surface so the cut looks intentional.
-                -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent 100%);
-                mask-image: linear-gradient(to bottom, #000 50%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
             }
 
             .meta {
@@ -702,7 +727,9 @@
             border-radius: var(--radius-pill);
             border: 1px solid var(--color-border);
             background: var(--color-surface);
-            color: var(--color-text-secondary);
+            // Global `button` rule forces accent-contrast (white) with !important,
+            // which would be white-on-white here; re-assert the text color.
+            color: var(--color-text-secondary) !important;
             font-size: var(--text-sm);
             font-weight: var(--weight-medium);
             cursor: pointer;
@@ -713,7 +740,7 @@
             &:hover {
                 background: var(--color-surface-alt);
                 border-color: var(--color-border-strong);
-                color: var(--color-text);
+                color: var(--color-text) !important;
             }
 
             &:focus-visible {
