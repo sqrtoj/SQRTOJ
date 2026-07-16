@@ -340,6 +340,42 @@ hr {
 
 html {
     position: relative;
+    // Smooth in-page anchor jumps; disabled under reduced-motion (base.scss top).
+    scroll-behavior: smooth;
+    // Themed Firefox scrollbar.
+    scrollbar-color: var(--color-border-strong) transparent;
+}
+
+// Themed WebKit/Blink scrollbar so the chrome matches the warm surfaces instead
+// of the stark browser default.
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border: 3px solid var(--color-canvas);
+    border-radius: var(--radius-pill);
+
+    &:hover {
+        background: var(--color-text-muted);
+    }
+}
+
+// Warm text selection using the brand accent.
+::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+}
+
+// In-page anchor targets clear the fixed navbar instead of hiding beneath it.
+:target {
+    scroll-margin-top: 64px;
 }
 
 a {

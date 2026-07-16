@@ -51,7 +51,7 @@ $is_light_theme: true;
 
     &:hover {
         background: var(--color-accent-hover);
-        box-shadow: var(--shadow-2);
+        box-shadow: var(--shadow-2), 0 4px 14px var(--color-focus-ring-soft);
         transform: translateY(-1px);
     }
 
@@ -95,6 +95,25 @@ $is_light_theme: true;
         opacity: 0.55;
         cursor: not-allowed;
     }
+
+    // Fully-rounded variant for hero CTAs and compact toolbar actions.
+    &.btn-pill {
+        border-radius: var(--radius-pill);
+    }
+
+    // Low-emphasis text button: no fill until hovered. Reads as accent-colored
+    // text so it recedes next to a solid primary action.
+    &.btn-ghost {
+        background: transparent;
+        color: var(--color-accent) !important;
+        box-shadow: none;
+
+        &:hover, &:active {
+            background: var(--color-focus-ring-soft);
+            box-shadow: none;
+            transform: none;
+        }
+    }
 }
 
 .inline-button {
@@ -110,6 +129,9 @@ $is_light_theme: true;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--card-pad);
+    // A soft resting shadow by default so cards separate from the canvas and the
+    // canvas -> card -> raised -> popover elevation hierarchy reads clearly.
+    box-shadow: var(--shadow-1);
 
     &.card-flat {
         box-shadow: none;

@@ -74,4 +74,12 @@
     .button:active {
         transform: translateY(1px);
     }
+
+    // A single-shot entrance for the main content block so pages settle in
+    // instead of snapping. Deliberately not applied to table rows: live
+    // scoreboard/submission tables replace <tr>s via websocket and would
+    // re-animate on every tick. Ends fully visible.
+    #content-body {
+        animation: ui-fade-up var(--motion-base) var(--ease-standard) both;
+    }
 }

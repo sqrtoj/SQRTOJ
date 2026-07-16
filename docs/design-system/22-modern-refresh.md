@@ -48,11 +48,10 @@ Grounded in the current SCSS:
 - Warmer, clearer hover + zebra striping using surface tokens.
 - Preserve the rounded, clipped outer frame and `tabular-nums` on numeric columns.
 
-### T2 — Input & select polish
-- Slightly larger radius, token border, and a soft focus glow
-  (`--color-focus-ring-soft` ring) plus border color shift on focus.
-- Consistent hover border. Applies to text inputs, textareas, and select2 to keep
-  the search/filter controls coherent.
+### T2 — Input & select polish — ALREADY SATISFIED
+- On audit, `widgets.scss` inputs and textareas already carry the token border,
+  `--radius-md`, a `--color-border-strong` hover border, and the soft focus glow
+  (`0 0 0 3px var(--color-focus-ring-soft)` + accent border). No change needed.
 
 ### T3 — Button refinement
 - Keep the accent primary. Add an optional `.btn-pill` radius and a `.btn-ghost`
@@ -65,9 +64,10 @@ Grounded in the current SCSS:
 - Popover/dropdown elevation already handled in the navbar pass; align tokens.
 
 ### T5 — Motion extension
-- Add a gentle entrance to primary content blocks and staggered rows for list/
-  table bodies on first paint, all under `prefers-reduced-motion: no-preference`
-  and ending visible.
+- Add a gentle single-shot entrance to the main `#content-body` block on first
+  paint under `prefers-reduced-motion: no-preference`, ending visible.
+- Deliberately NOT applied to table rows: live scoreboard/submission tables swap
+  `<tr>`s via websocket and would re-animate on every tick.
 
 ### T6 — Themed chrome details
 - Themed scrollbar (webkit + Firefox) using surface/border tokens.
