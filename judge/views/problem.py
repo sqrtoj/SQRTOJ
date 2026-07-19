@@ -392,6 +392,8 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
         return queryset.search(query, queryset.BOOLEAN).extra(order_by=['-relevance'])
 
     def get_filter(self):
+        if self.in_contest:
+            return Q(contests__contest=self.contest)
         _filter = Q(is_public=True) & Q(is_organization_private=False)
         if self.profile is not None:
             _filter = Problem.q_add_author_curator_tester(_filter, self.profile)

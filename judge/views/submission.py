@@ -401,7 +401,7 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
 
     @cached_property
     def in_contest(self):
-        return False
+        return self.request.in_contest
 
     @cached_property
     def contest(self):
