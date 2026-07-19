@@ -580,8 +580,11 @@ class ConditionalUserTabMixin(object):
 
 
 class AllUserSubmissions(ConditionalUserTabMixin, UserMixin, SubmissionsListBase):
+    def _get_base_id_queryset(self):
+        return super(AllUserSubmissions, self)._get_base_id_queryset().filter(user_id=self.profile.id)
+
     def get_queryset(self):
-        return super(AllUserSubmissions, self).get_queryset().filter(user_id=self.profile.id)
+        return self._get_base_id_queryset().values_list('id', flat=True)
 
     def get_title(self):
         if self.is_own:
@@ -624,7 +627,13 @@ class ProblemSubmissionsBase(SubmissionsListBase):
     def get_queryset(self):
         if self.in_contest and not self.contest.contest_problems.filter(problem_id=self.problem.id).exists():
             raise Http404()
-        return super(ProblemSubmissionsBase, self).get_queryset().filter(problem_id=self.problem.id)
+        return self._get_base_id_queryset().values_list('id', flat=True)
+
+    def _get_base_id_queryset(self):
+        queryset = super(ProblemSubmissionsBase, self)._get_base_id_queryset()
+        if self.in_contest and not self.contest.contest_problems.filter(problem_id=self.problem.id).exists():
+            raise Http404()
+        return queryset.filter(problem_id=self.problem.id)
 
     def get_title(self):
         return _('All submissions for %s') % self.problem_name
