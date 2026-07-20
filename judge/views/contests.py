@@ -1277,7 +1277,7 @@ class CombinedContestRankingView(TitleMixin, DetailView):
             ContestProblem.objects
             .filter(contest_id__in=contest_ids)
             .select_related('contest', 'problem')
-            .order_by('contest__start_time', 'contest__key', 'order')
+            .order_by('contest__start_time', 'contest__key', 'order'),
         )
         problems_by_contest = defaultdict(list)
         for problem in contest_problems:
