@@ -218,6 +218,31 @@
 
 {% block body %}
     <div class="content-description">
+        {% if tag_filter_options %}
+            <form id="contest-filter-form" class="contest-filter-bar" method="get">
+                <label for="contest-tag-filter">{{ _('Filter by contest tag:') }}</label>
+                <select id="contest-tag-filter" name="tag">
+                    <option value="">{{ _('All contest tags') }}</option>
+                    {% for tag in tag_filter_options %}
+                        <option value="{{ tag.name }}"{% if tag_filter == tag.name %} selected{% endif %}>
+                            {{ tag.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if search_query %}
+                    <input type="hidden" name="search" value="{{ search_query }}">
+                {% endif %}
+                {% if request.GET.get('order') %}
+                    <input type="hidden" name="order" value="{{ request.GET.get('order') }}">
+                {% endif %}
+                {% if request.GET.get('hide_private_contests') %}
+                    <input type="hidden" name="hide_private_contests"
+                           value="{{ request.GET.get('hide_private_contests') }}">
+                {% endif %}
+                <button type="submit" class="button">{{ _('Apply') }}</button>
+            </form>
+        {% endif %}
+
         {% if active_participations %}
             <h4 class="contest-section-toggle" data-target="active-contests-section" role="button" tabindex="0" aria-expanded="true">
                 <i class="fa fa-chevron-down contest-section-toggle__chevron" aria-hidden="true"></i> {{ _('Active contests') }}
@@ -359,6 +384,9 @@
                     <form id="search-form" name="form" action="" method="get">
                         <input id="search" type="text" name="search" value="{{ search_query or '' }}"
                             placeholder="{{ _('Search contest...') }}">
+                        {% if tag_filter %}
+                            <input type="hidden" name="tag" value="{{ tag_filter }}">
+                        {% endif %}
                     </form>
                 </div>
             </div>

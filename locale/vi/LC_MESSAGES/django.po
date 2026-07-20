@@ -5915,6 +5915,14 @@ msgstr "hoặc để trống để không giới hạn."
 msgid "\"The %(SITE_NAME)s's contest list - past, present, and future.\""
 msgstr "\"Danh sách kỳ thi %(SITE_NAME)s - quá khứ, hiện tại, và tương lai.\""
 
+#: templates/contest/list.html
+msgid "Filter by contest tag:"
+msgstr "Lọc theo tag kỳ thi:"
+
+#: templates/contest/list.html
+msgid "All contest tags"
+msgstr "Tất cả tag kỳ thi"
+
 #: templates/contest/list.html:18 templates/contest/media-js.html:10
 #: templates/contest/media-js.html:17
 msgid "Are you sure you want to join?"

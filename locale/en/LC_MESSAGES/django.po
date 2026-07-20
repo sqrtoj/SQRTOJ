@@ -5725,6 +5725,14 @@ msgstr ""
 msgid "\"The %(SITE_NAME)s's contest list - past, present, and future.\""
 msgstr ""
 
+#: templates/contest/list.html
+msgid "Filter by contest tag:"
+msgstr ""
+
+#: templates/contest/list.html
+msgid "All contest tags"
+msgstr ""
+
 #: templates/contest/list.html:18 templates/contest/media-js.html:10
 #: templates/contest/media-js.html:17
 msgid "Are you sure you want to join?"
