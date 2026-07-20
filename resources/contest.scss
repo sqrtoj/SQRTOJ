@@ -313,7 +313,7 @@ $is_light_theme: true;
     // Semantic tag variants (replace per-tag inline hex in contest/list.html).
     &--hidden {
         background: var(--color-warning-bg);
-        border-color: var(--color-warning-fg);
+        border: 1px solid var(--color-warning-fg);
         color: var(--color-warning-fg);
     }
 

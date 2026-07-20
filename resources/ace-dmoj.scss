@@ -4,10 +4,6 @@
     display: inline-block;
     position: relative;
     overflow: hidden;
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-md);
-    background: var(--color-surface-raised);
-    box-shadow: var(--shadow-1);
     > div {
         position: absolute;
         top: 0;
@@ -76,6 +72,11 @@
 
 .django-ace-editor {
     position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-1);
 
     .ace_editor {
         border-radius: 0 0 var(--radius-md) var(--radius-md);
