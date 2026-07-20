@@ -15,7 +15,8 @@ from django.views.decorators.http import require_POST
 from reversion.admin import VersionAdmin
 
 from django_ace import AceWidget
-from judge.models import Contest, ContestAnnouncement, ContestProblem, ContestSubmission, Profile, Rating, Submission
+from judge.models import CombinedContestRanking, Contest, ContestAnnouncement, ContestProblem, ContestSubmission, Profile, \
+    Rating, Submission
 from judge.ratings import rate_contest
 from judge.utils.views import NoBatchDeleteMixin
 from judge.widgets import AdminHeavySelect2MultipleWidget, AdminHeavySelect2Widget, AdminMartorWidget, \
@@ -55,6 +56,20 @@ class ContestTagAdmin(admin.ModelAdmin):
         if obj is not None:
             form.base_fields['contests'].initial = obj.contests.all()
         return form
+
+
+class CombinedContestRankingForm(ModelForm):
+    contests = ModelMultipleChoiceField(
+        label=_('Included contests'),
+        queryset=Contest.objects.all(),
+        widget=AdminHeavySelect2MultipleWidget(data_view='contest_select2'))
+
+
+class CombinedContestRankingAdmin(admin.ModelAdmin):
+    fields = ('key', 'name', 'is_visible', 'contests')
+    list_display = ('key', 'name', 'is_visible')
+    search_fields = ('key', 'name')
+    form = CombinedContestRankingForm
 
 
 class ContestProblemInlineForm(ModelForm):

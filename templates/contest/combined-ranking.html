@@ -1,0 +1,139 @@
+{% extends "user/base-users.html" %}
+
+{% block users_js_media %}
+    <script>
+        $.fn.ignore = function (sel) {
+            return this.clone().find(sel || '>*').remove().end();
+        };
+
+        function download_combined_ranking_as_csv() {
+            function clean_text(text) {
+                text = text.replace(/(\r\n|\n|\r)/gm, '').trim();
+                text = text.replace(/"/g, '""');
+                return '"' + text + '"';
+            }
+
+            var csv = [];
+
+            $('#combined-ranking-table thead tr').each(function () {
+                var header = [];
+                $(this).find('th').each(function () {
+                    var $col = $(this);
+
+                    if ($col.hasClass('rank')) {
+                        header.push(clean_text($col.text()));
+                    } else if ($col.hasClass('username')) {
+                        header.push(clean_text({{ _('Username')|htmltojs }}));
+                        header.push(clean_text({{ _('Full Name')|htmltojs }}));
+                    } else {
+                        header.push(clean_text($col.text()));
+                    }
+                });
+                csv.push(header.join(','));
+            });
+
+            $('#combined-ranking-table tbody tr').each(function () {
+                if ($(this).is(':hidden')) {
+                    return;
+                }
+
+                var row_data = [];
+                $(this).find('td').each(function () {
+                    var $col = $(this);
+
+                    if ($col.hasClass('user-name')) {
+                        row_data.push(clean_text($col.find('a').first().text()));
+                        row_data.push(clean_text($col.find('.personal-info').first().text()));
+                    } else {
+                        row_data.push(clean_text($col.ignore('.solving-time').text()));
+                    }
+                });
+                csv.push(row_data.join(','));
+            });
+
+            var csv_string = csv.join('\n');
+            var filename = 'combined_ranking_{{ ranking.key }}_' + moment().format('YYYY-MM-DD-HH-mm-ss') + '.csv';
+            var link = document.createElement('a');
+            link.style.display = 'none';
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv_string));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+{% endblock %}
+
+{% block users_media %}
+    {% include "contest/media-css.html" %}
+{% endblock %}
+
+{% block before_users_table %}
+    <div style="margin-bottom: 1.25em">
+        <a href="#" onclick="download_combined_ranking_as_csv(); return false;" style="float: right;">
+            {{ _('Download as CSV') }}
+        </a>
+    </div>
+{% endblock %}
+
+{% block users_table %}
+    <table id="combined-ranking-table" class="users-table table striped">
+        <thead>
+            <tr>
+                <th class="header rank" style="width: 5%;">{{ _('Rank') }}</th>
+                <th class="header username">{{ _('Username') }}</th>
+                <th class="header points">{{ _('Total') }}</th>
+                {% if show_penalty %}
+                    <th class="header penalty">{{ _('Penalty') }}</th>
+                {% endif %}
+                {% for contest in contests %}
+                    <th class="header points">
+                        <a href="{{ url('contest_ranking', contest.key) }}">{{ contest.name }}</a>
+                    </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for rank, user in users %}
+                <tr id="user-{{ user.user.username }}">
+                    <td>{{ rank }}</td>
+                    <td class="user-name">
+                        <div>
+                            <div style="float:left">
+                                {{ link_user(user) }}
+                                <div class="personal-info">
+                                    <span>{{ user.user.first_name }}</span>
+                                </div>
+                            </div>
+                            <div style="float:right">
+                                <div class="personal-info" style="text-align: right;">
+                                    <em>
+                                        {% for organization in user.organizations.all() %}
+                                            <a href="{{ organization.get_absolute_url() }}">{{ organization.name }}</a>{% if not loop.last %} | {% endif %}
+                                        {% endfor %}
+                                    </em>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td title="{{ user.total_score|floatformat(3) }}" class="user-points">
+                        {{ user.total_score|floatformat }}
+                    </td>
+                    {% if show_penalty %}
+                        <td class="penalty">{{ user.total_cumtime }}</td>
+                    {% endif %}
+                    {% for contest in contests %}
+                        <td class="user-points">
+                            {{ user.contest_scores.get(contest.id, 0)|floatformat }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="{{ contests|length + 3 + (1 if show_penalty else 0) }}">{{ _('No participants found.') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
