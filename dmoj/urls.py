@@ -226,7 +226,7 @@ urlpatterns = [
     path('contests.ics', contests.ContestICal.as_view(), name='contest_ical'),
     path('contests/<int:year>/<int:month>/', contests.ContestCalendar.as_view(), name='contest_calendar'),
     path('contests/new', contests.CreateContest.as_view(), name='contest_new'),
-    path('combined-rankings/<str:ranking>/', contests.CombinedContestRankingView.as_view(),
+    path('rankings/<str:ranking>/', contests.CombinedContestRankingView.as_view(),
          name='combined_contest_ranking'),
     re_path(r'^contests/tag/(?P<name>[a-z-]+)', include([
         path('', contests.ContestTagDetail.as_view(), name='contest_tag'),

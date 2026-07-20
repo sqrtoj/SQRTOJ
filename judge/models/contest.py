@@ -76,7 +76,7 @@ class CombinedContestRanking(models.Model):
                            validators=[RegexValidator('^[a-z0-9_]+$', _('Ranking id must be ^[a-z0-9_]+$'))])
     name = models.CharField(max_length=100, verbose_name=_('ranking name'))
     contests = models.ManyToManyField('Contest', verbose_name=_('contests'), related_name='combined_rankings',
-                                      help_text=_('Contests included in this combined ranking.'))
+                                      help_text=_('Contests included in this ranking.'))
     is_visible = models.BooleanField(verbose_name=_('publicly visible'), default=False)
 
     def __str__(self):
@@ -86,8 +86,8 @@ class CombinedContestRanking(models.Model):
         return reverse('combined_contest_ranking', args=[self.key])
 
     class Meta:
-        verbose_name = _('combined contest ranking')
-        verbose_name_plural = _('combined contest rankings')
+        verbose_name = _('ranking')
+        verbose_name_plural = _('rankings')
 
 
 class Contest(models.Model):

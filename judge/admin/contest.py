@@ -59,9 +59,9 @@ class ContestTagAdmin(admin.ModelAdmin):
 
 class CombinedContestRankingForm(ModelForm):
     contests = ModelMultipleChoiceField(
-        label=_('Included contests'),
+        label=_('Contests'),
         queryset=Contest.objects.all(),
-        widget=AdminHeavySelect2MultipleWidget(data_view='contest_select2'))
+        widget=AdminHeavySelect2MultipleWidget(data_view='contest_select2', attrs={'style': 'width: 100%;'}))
 
 
 class CombinedContestRankingAdmin(admin.ModelAdmin):

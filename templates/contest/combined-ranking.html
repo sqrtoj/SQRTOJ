@@ -24,7 +24,6 @@
                         header.push(clean_text($col.text()));
                     } else if ($col.hasClass('username')) {
                         header.push(clean_text({{ _('Username')|htmltojs }}));
-                        header.push(clean_text({{ _('Full Name')|htmltojs }}));
                     } else {
                         header.push(clean_text($col.text()));
                     }
@@ -42,8 +41,7 @@
                     var $col = $(this);
 
                     if ($col.hasClass('user-name')) {
-                        row_data.push(clean_text($col.find('a').first().text()));
-                        row_data.push(clean_text($col.find('.personal-info').first().text()));
+                        row_data.push(clean_text($col.data('username')));
                     } else {
                         row_data.push(clean_text($col.ignore('.solving-time').text()));
                     }
@@ -52,7 +50,7 @@
             });
 
             var csv_string = csv.join('\n');
-            var filename = 'combined_ranking_{{ ranking.key }}_' + moment().format('YYYY-MM-DD-HH-mm-ss') + '.csv';
+            var filename = 'ranking_{{ ranking.key }}_' + moment().format('YYYY-MM-DD-HH-mm-ss') + '.csv';
             var link = document.createElement('a');
             link.style.display = 'none';
             link.setAttribute('target', '_blank');
@@ -87,9 +85,11 @@
                 {% if show_penalty %}
                     <th class="header penalty">{{ _('Penalty') }}</th>
                 {% endif %}
-                {% for contest in contests %}
+                {% for problem in problems %}
                     <th class="header points">
-                        <a href="{{ url('contest_ranking', contest.key) }}">{{ contest.name }}</a>
+                        <a href="{{ url('problem_detail', problem.problem.code) }}" title="{{ problem.contest.name }}">
+                            {{- problem.problem.code -}}
+                        </a>
                     </th>
                 {% endfor %}
             </tr>
@@ -98,7 +98,7 @@
             {% for rank, user in users %}
                 <tr id="user-{{ user.user.username }}">
                     <td>{{ rank }}</td>
-                    <td class="user-name">
+                    <td class="user-name" data-username="{{ user.user.username }}">
                         <div>
                             <div style="float:left">
                                 {{ link_user(user) }}
@@ -123,15 +123,16 @@
                     {% if show_penalty %}
                         <td class="penalty">{{ user.total_cumtime }}</td>
                     {% endif %}
-                    {% for contest in contests %}
+                    {% for problem in problems %}
                         <td class="user-points">
-                            {{ user.contest_scores.get(contest.id, 0)|floatformat }}
+                            {% set score = user.problem_scores.get(problem.id, '') %}
+                            {% if score != '' %}{{ score|floatformat }}{% endif %}
                         </td>
                     {% endfor %}
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="{{ contests|length + 3 + (1 if show_penalty else 0) }}">{{ _('No participants found.') }}</td>
+                    <td colspan="{{ problems|length + 3 + (1 if show_penalty else 0) }}">{{ _('No participants found.') }}</td>
                 </tr>
             {% endfor %}
         </tbody>
