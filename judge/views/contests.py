@@ -39,8 +39,8 @@ from judge.contest_format import ICPCContestFormat
 from judge.contest_format import IOIContestFormat
 from judge.forms import ContestAnnouncementForm, ContestCloneForm, ContestDownloadDataForm, ContestForm, \
     ProposeContestProblemFormSet
-from judge.models import Contest, ContestAnnouncement, ContestMoss, ContestParticipation, ContestProblem, ContestTag, \
-    Language, Organization, Problem, ProblemClarification, Submission
+from judge.models import CombinedContestRanking, Contest, ContestAnnouncement, ContestMoss, ContestParticipation, \
+    ContestProblem, ContestTag, Language, Organization, Problem, ProblemClarification, Submission
 from judge.tasks import on_new_contest, prepare_contest_data, run_moss
 from judge.utils.celery import redirect_to_task_status, task_status_by_id, task_status_url_by_id
 from judge.utils.cms import parse_csv_ranking
@@ -52,8 +52,8 @@ from judge.utils.stats import get_bar_chart, get_pie_chart, get_stacked_bar_char
 from judge.utils.views import DiggPaginatorMixin, QueryStringSortMixin, SingleObjectFormView, TitleMixin, \
     add_file_response, generic_message
 
-__all__ = ['ContestList', 'ContestDetail', 'ContestRanking', 'ContestJoin', 'ContestLeave', 'ContestCalendar',
-           'ContestClone', 'ContestStats', 'ContestMossView', 'ContestMossDelete',
+__all__ = ['CombinedContestRankingView', 'ContestList', 'ContestDetail', 'ContestRanking', 'ContestJoin',
+           'ContestLeave', 'ContestCalendar', 'ContestClone', 'ContestStats', 'ContestMossView', 'ContestMossDelete',
            'ContestParticipationDisqualify', 'get_contest_ranking_list',
            'base_contest_ranking_list']
 
@@ -1260,6 +1260,93 @@ class ContestOfficialRanking(ContestRankingBase):
             return redirect(self.object.csv_ranking)
 
         return super().get(request, *args, **kwargs)
+
+
+class CombinedContestRankingView(TitleMixin, DetailView):
+    model = CombinedContestRanking
+    context_object_name = 'ranking'
+    slug_url_kwarg = 'ranking'
+    slug_field = 'key'
+    template_name = 'contest/combined-ranking.html'
+
+    def get_title(self):
+        return _('%s Rankings') % self.object.name
+
+    def get_content_title(self):
+        return self.object.name
+
+    def get_object(self, queryset=None):
+        ranking = super().get_object(queryset)
+        if not ranking.is_visible and not self.request.user.has_perm('judge.change_combinedcontestranking'):
+            raise Http404()
+        return ranking
+
+    def get_ranking_data(self):
+        contests = list(self.object.contests.order_by('start_time', 'key'))
+        show_penalty = bool(contests) and all(contest.format.name == ICPCContestFormat.name for contest in contests)
+        contest_ids = [contest.id for contest in contests]
+        contest_problems = list(
+            ContestProblem.objects
+            .filter(contest_id__in=contest_ids)
+            .select_related('contest', 'problem')
+            .order_by('contest__start_time', 'contest__key', 'order'),
+        )
+        problems_by_contest = defaultdict(list)
+        for problem in contest_problems:
+            problems_by_contest[problem.contest_id].append(problem)
+
+        profiles = {}
+        scores = defaultdict(float)
+        problem_scores = defaultdict(dict)
+        cumtimes = defaultdict(int)
+        tiebreakers = defaultdict(float)
+
+        participations = (
+            ContestParticipation.objects
+            .filter(contest_id__in=contest_ids, virtual=ContestParticipation.LIVE, is_disqualified=False)
+            .select_related('user__user', 'user__display_badge')
+            .prefetch_related(Prefetch(
+                'user__organizations',
+                queryset=Organization.objects.filter(is_unlisted=False).defer('about'),
+            ))
+        )
+
+        for participation in participations:
+            profile = participation.user
+            profiles[profile.id] = profile
+            scores[profile.id] += participation.score
+            for contest_problem in problems_by_contest[participation.contest_id]:
+                format_data = (participation.format_data or {}).get(str(contest_problem.id))
+                if format_data is not None:
+                    problem_scores[profile.id][contest_problem.id] = format_data.get('points', 0)
+            cumtimes[profile.id] += participation.cumtime
+            tiebreakers[profile.id] += participation.tiebreaker
+
+        rows = []
+        for profile_id, profile in profiles.items():
+            profile.problem_scores = problem_scores[profile_id]
+            profile.total_score = scores[profile_id]
+            profile.total_cumtime = cumtimes[profile_id]
+            profile.total_tiebreaker = tiebreakers[profile_id]
+            rows.append(profile)
+
+        if show_penalty:
+            rank_key = attrgetter('total_score', 'total_cumtime', 'total_tiebreaker')
+            rows.sort(key=lambda profile: (-profile.total_score, profile.total_cumtime, profile.total_tiebreaker))
+        else:
+            rank_key = attrgetter('total_score')
+            rows.sort(key=lambda profile: -profile.total_score)
+        rows = ranker(rows, key=rank_key)
+        return contests, contest_problems, rows, show_penalty
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        contests, problems, users, show_penalty = self.get_ranking_data()
+        context['contests'] = contests
+        context['problems'] = problems
+        context['users'] = users
+        context['show_penalty'] = show_penalty
+        return context
 
 
 class ContestResolverMixin(ContestMixin):

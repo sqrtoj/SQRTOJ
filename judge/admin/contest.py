@@ -57,6 +57,31 @@ class ContestTagAdmin(admin.ModelAdmin):
         return form
 
 
+class CombinedContestRankingForm(ModelForm):
+    contests = ModelMultipleChoiceField(
+        label=_('Contests'),
+        queryset=Contest.objects.all(),
+        widget=AdminHeavySelect2MultipleWidget(data_view='contest_select2', attrs={'style': 'width: 100%;'}))
+
+
+class CombinedContestRankingAdmin(admin.ModelAdmin):
+    fields = ('key', 'name', 'is_visible', 'contests')
+    list_display = ('key', 'name', 'is_visible')
+    readonly_fields = ('ranking_link',)
+    search_fields = ('key', 'name')
+    form = CombinedContestRankingForm
+
+    @admin.display(description=_('Ranking URL'))
+    def ranking_link(self, obj):
+        return format_html('<a href="{0}" target="_blank">{0}</a>', obj.get_absolute_url())
+
+    def get_fields(self, request, obj=None):
+        fields = list(super().get_fields(request, obj))
+        if obj is not None:
+            return fields + ['ranking_link']
+        return fields
+
+
 class ContestProblemInlineForm(ModelForm):
     class Meta:
         widgets = {

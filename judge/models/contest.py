@@ -17,13 +17,24 @@ from moss import MOSS_LANG_C, MOSS_LANG_CC, MOSS_LANG_JAVA, MOSS_LANG_PASCAL, MO
 
 from judge import contest_format, event_poster as event
 from judge.models.problem import Problem
-from judge.models.profile import Organization, Profile
+from judge.models.profile import (
+    Organization,
+    Profile,
+)
 from judge.models.submission import Submission
 from judge.ratings import rate_contest
 from judge.utils.unicode import utf8bytes
 
-__all__ = ['Contest', 'ContestTag', 'ContestAnnouncement', 'ContestParticipation', 'ContestProblem',
-           'ContestSubmission', 'Rating']
+__all__ = [
+    'CombinedContestRanking',
+    'Contest',
+    'ContestTag',
+    'ContestAnnouncement',
+    'ContestParticipation',
+    'ContestProblem',
+    'ContestSubmission',
+    'Rating',
+]
 
 
 class MinValueOrNoneValidator(MinValueValidator):
@@ -58,6 +69,25 @@ class ContestTag(models.Model):
     class Meta:
         verbose_name = _('contest tag')
         verbose_name_plural = _('contest tags')
+
+
+class CombinedContestRanking(models.Model):
+    key = models.CharField(max_length=32, verbose_name=_('ranking id'), unique=True,
+                           validators=[RegexValidator('^[a-z0-9_]+$', _('Ranking id must be ^[a-z0-9_]+$'))])
+    name = models.CharField(max_length=100, verbose_name=_('ranking name'))
+    contests = models.ManyToManyField('Contest', verbose_name=_('contests'), related_name='combined_rankings',
+                                      help_text=_('Contests included in this ranking.'))
+    is_visible = models.BooleanField(verbose_name=_('publicly visible'), default=False)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('combined_contest_ranking', args=[self.key])
+
+    class Meta:
+        verbose_name = _('ranking')
+        verbose_name_plural = _('rankings')
 
 
 class Contest(models.Model):

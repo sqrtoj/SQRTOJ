@@ -4,7 +4,8 @@ from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.db.models import Count, FilteredRelation, Prefetch, Q
 from django.db.models.expressions import F, Value
@@ -38,6 +39,16 @@ __all__ = ['OrganizationList', 'OrganizationHome', 'OrganizationUsers', 'Organiz
            'JoinOrganization', 'LeaveOrganization', 'EditOrganization', 'RequestJoinOrganization',
            'OrganizationRequestDetail', 'OrganizationRequestView', 'OrganizationRequestLog',
            'KickUserWidgetView']
+
+
+def get_organization_admin_group():
+    group, _ = Group.objects.get_or_create(name=settings.GROUP_PERMISSION_FOR_ORG_ADMIN)
+    permission = Permission.objects.get(
+        codename='organization_admin',
+        content_type=ContentType.objects.get_for_model(Organization),
+    )
+    group.permissions.add(permission)
+    return group
 
 
 class OrganizationMixin(object):
@@ -387,7 +398,7 @@ class CreateOrganization(PermissionRequiredMixin, TitleMixin, CreateView):
             org.short_name = org.slug[:20]
             org.save()
             all_admins = org.admins.all()
-            g, _created = Group.objects.get_or_create(name=settings.GROUP_PERMISSION_FOR_ORG_ADMIN)
+            g = get_organization_admin_group()
             for admin in all_admins:
                 admin.user.groups.add(g)
 
