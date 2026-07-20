@@ -345,14 +345,15 @@
                             if (isICPC) {
                                 displayScore = formatICPCScore(problemIsSolved, problemIsFailed, problemIsPending, problemTries);
                             } else {
+                                // Non-ICPC formats are scored on points alone, so the
+                                // notification shows only the score and hides the
+                                // submission attempt number.
                                 var ptsBase = ptsStr;
                                 if (maxPoints && !isNaN(ptsStr) && !isNaN(maxPoints)) {
                                     ptsBase = ptsStr + '/' + maxPoints;
                                 }
-                                var submissionNotifFormat = {{ _('%(points)s points - submission #%(tries)s', points='%(points)s', tries='%(tries)s')|htmltojs }};
-                                displayScore = submissionNotifFormat
-                                    .replace('%(points)s', ptsBase)
-                                    .replace('%(tries)s', problemTries);
+                                var pointsNotifFormat = {{ _('%(points)s points', points='%(points)s')|htmltojs }};
+                                displayScore = pointsNotifFormat.replace('%(points)s', ptsBase);
                             }
                             if (problemResult) {
                                 var innerText = problemResult;

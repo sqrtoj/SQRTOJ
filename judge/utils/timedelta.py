@@ -52,6 +52,17 @@ def nice_repr(timedelta, display='long', sep=', '):
         else:
             return pgettext('time format without day', '%h:%m:%s') \
                 .replace('%h', '%02d' % hours).replace('%m', '%02d' % minutes).replace('%s', '%02d' % seconds)
+    elif display == 'localized-countdown':
+        days += weeks * 7
+        result = []
+        if days:
+            result.append(ngettext('%d day', '%d days', days) % days)
+        result.extend((
+            ngettext('%d hour', '%d hours', hours) % hours,
+            ngettext('%d minute', '%d minutes', minutes) % minutes,
+            ngettext('%d second', '%d seconds', seconds) % seconds,
+        ))
+        return ', '.join(result)
     elif display == 'localized-no-seconds':
         days += weeks * 7
         if days:

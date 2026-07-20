@@ -203,8 +203,8 @@
                         <th><i class="fa fa-check"></i></th>
                     {% endif %}
                     <th>{{ _('Problem') }}</th>
-                    <th>{{ _('TL') }}</th>
-                    <th>{{ _('ML') }}</th>
+                    <th><abbr title="{{ _('Time limit') }}">{{ _('TL') }}</abbr></th>
+                    <th><abbr title="{{ _('Memory limit') }}">{{ _('ML') }}</abbr></th>
                     {% if not is_ICPC_format %}
                         <th>{{ _('Points') }}</th>
                     {% endif %}

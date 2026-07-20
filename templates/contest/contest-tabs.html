@@ -38,7 +38,10 @@
     {% if perms.judge.clone_contest and can_edit %}
         {{ make_tab('clone', 'fa-copy', url('contest_clone', contest.key), _('Clone')) }}
     {% endif %}
+{% endblock %}
 
+{% block tab_actions %}
+    <div class="contest-tab-actions">
     {% if request.user.is_authenticated %}
         {% if contest.can_join or contest.require_registration or is_editor or is_tester %}
             {% if contest.ended %}
@@ -104,4 +107,5 @@
             <input type="submit" value="{{ _('Log in to participate') }}">
         </form>
     {% endif %}
+    </div>
 {% endblock %}

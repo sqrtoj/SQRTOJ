@@ -374,9 +374,7 @@
                     <th>
                         <a href="{{ sort_links.user_count }}" class="contest-sort-link">{{ _('Users') }}{{ sort_order.user_count }}</a>
                     </th>
-                    {% if not request.in_contest %}
-                        <th style="width:15%"></th>
-                    {% endif %}
+                    <th style="width:15%"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -391,17 +389,18 @@
                         <td>
                             {{ user_count(contest, request.user) }}
                         </td>
-                        {% if not request.in_contest %}
-                            {% if not contest.disallow_virtual %}
-                                <td><form action="{{ url('contest_join', contest.key) }}" method="post">
+                        <td>
+                            {% if request.in_contest and contest.key == request.participation.contest.key %}
+                                <span>{{ _('Already joined') }}</span>
+                            {% elif not contest.disallow_virtual %}
+                                <form action="{{ url('contest_join', contest.key) }}" method="post">
                                     {% csrf_token %}
-                                    <input type="submit" class="unselectable button full participate-button"
+                                    <input type="submit"
+                                           class="unselectable button full participate-button join-warning"
                                            value="{{ _('Virtual join') }}">
-                                </form></td>
-                            {% else %}
-                                <td></td>
+                                </form>
                             {% endif %}
-                        {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

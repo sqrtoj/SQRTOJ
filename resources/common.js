@@ -173,13 +173,12 @@ function count_down(label) {
     var initial = parseInt(label.attr('data-secs'));
     var start = Date.now();
 
-    function format(num) {
-        var s = "0" + num;
-        return s.substr(s.length - 2);
+    function formatUnit(value, singular, plural) {
+        return ngettext(singular, plural, value).replace('%s', value);
     }
 
     var timer = setInterval(function () {
-        var time = Math.round(initial - (Date.now() - start) / 1000);
+        var time = Math.max(0, Math.round(initial - (Date.now() - start) / 1000));
         if (time <= 0) {
             clearInterval(timer);
             setTimeout(function() {
@@ -190,12 +189,13 @@ function count_down(label) {
         var h = Math.floor(time % 86400 / 3600);
         var m = Math.floor(time % 3600 / 60);
         var s = time % 60;
+        var parts = [];
         if (d > 0)
-            label.text(npgettext('time format with day', '%d day %h:%m:%s', '%d days %h:%m:%s', d)
-                .replace('%d', d).replace('%h', format(h)).replace('%m', format(m)).replace('%s', format(s)));
-        else
-            label.text(pgettext('time format without day', '%h:%m:%s')
-                .replace('%h', format(h)).replace('%m', format(m)).replace('%s', format(s)));
+            parts.push(formatUnit(d, '%s day', '%s days'));
+        parts.push(formatUnit(h, '%s hour', '%s hours'));
+        parts.push(formatUnit(m, '%s minute', '%s minutes'));
+        parts.push(formatUnit(s, '%s second', '%s seconds'));
+        label.text(parts.join(', '));
     }, 1000);
 }
 

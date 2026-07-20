@@ -312,8 +312,9 @@ $is_light_theme: true;
 
     // Semantic tag variants (replace per-tag inline hex in contest/list.html).
     &--hidden {
-        background: var(--color-text);
-        color: var(--color-text-inverse);
+        background: var(--color-warning-bg);
+        border-color: var(--color-warning-fg);
+        color: var(--color-warning-fg);
     }
 
     &--private {
@@ -343,6 +344,13 @@ $is_light_theme: true;
     font-weight: var(--weight-semibold);
 }
 
+.contest-tab-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+    margin-left: var(--space-2);
+}
+
 form.contest-join-pseudotab {
     display: inline;
     padding: 6px 8px !important;
@@ -357,6 +365,14 @@ form.contest-join-pseudotab {
         padding: 0;
         background: none;
         font-weight: 600;
+    }
+}
+
+@media (max-width: 800px) {
+    .contest-tab-actions {
+        flex-basis: 100%;
+        justify-content: flex-end;
+        margin: var(--space-2) 0 0;
     }
 }
 

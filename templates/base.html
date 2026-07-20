@@ -238,6 +238,12 @@
     <nav id="navigation" class="unselectable">
         <div id="nav-container">
             <a id="navicon" href="javascript:void(0)"><i class="fa fa-bars"></i></a>
+            {% if request.organization is not defined %}
+            <a id="mobile-nav-logo" href="{{ url('home') }}">{% include "site-logo-fragment.html" %}</a>
+            {% else %}
+            <a id="mobile-nav-logo" href="{{ url('organization_home', request.organization.slug) }}">{% include
+                    "site-logo-fragment.html" %}</a>
+            {% endif %}
             <ul id="nav-list">
                 {% if request.organization is not defined %}
                 <li class="home-nav-element"><a href="{{ url('home') }}">{% include "site-logo-fragment.html" %}</a>

@@ -318,6 +318,29 @@ nav {
                 left: auto;
                 right: 0;
                 max-width: calc(100vw - var(--space-4));
+
+                form {
+                    margin: 0;
+                }
+
+                form button {
+                    display: block;
+                    width: 100%;
+                    padding: var(--space-2) var(--space-3);
+                    border: 0;
+                    border-radius: var(--radius-sm);
+                    background: transparent;
+                    color: #fff;
+                    font: inherit;
+                    text-align: left;
+                    cursor: pointer;
+
+                    &:hover,
+                    &:focus-visible {
+                        background: rgba(255, 255, 255, 0.14);
+                        color: #fff;
+                    }
+                }
             }
         }
     }
@@ -376,6 +399,21 @@ nav {
     display: none;
 }
 
+#mobile-nav-logo {
+    display: none;
+    align-items: center;
+    flex: 0 0 auto;
+    height: 44px;
+    padding: 0 var(--space-1);
+
+    img {
+        display: block;
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+    }
+}
+
 @media (max-width: 760px) {
     #navigation {
         height: 44px;
@@ -405,6 +443,10 @@ nav {
             background: rgba(255, 255, 255, 0.14);
             color: #fff;
         }
+    }
+
+    #mobile-nav-logo {
+        display: inline-flex;
     }
 
     // Slide-in drawer for the left menu.

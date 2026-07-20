@@ -3512,6 +3512,27 @@ msgctxt "time format without day"
 msgid "%h:%m:%s"
 msgstr ""
 
+#: judge/utils/timedelta.py:58
+#, python-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: judge/utils/timedelta.py:59
+#, python-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: judge/utils/timedelta.py:60
+#, python-format
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] ""
+msgstr[1] ""
+
 #: judge/utils/timedelta.py:59
 msgctxt "time format no seconds with day"
 msgid "%d day %h:%m"

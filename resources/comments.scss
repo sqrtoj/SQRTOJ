@@ -210,8 +210,17 @@ a {
 
     .vote {
         margin-right: 1em;
-        height: 75px;
         padding-top: 0.4em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.1em;
+
+        // The vote arrows are anchors that emit a trailing <br>; collapse those
+        // line breaks so the flex column controls spacing evenly.
+        br {
+            display: none;
+        }
     }
 
     @media (max-width: 760px) {

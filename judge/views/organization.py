@@ -387,7 +387,7 @@ class CreateOrganization(PermissionRequiredMixin, TitleMixin, CreateView):
             org.short_name = org.slug[:20]
             org.save()
             all_admins = org.admins.all()
-            g = Group.objects.get(name=settings.GROUP_PERMISSION_FOR_ORG_ADMIN)
+            g, _created = Group.objects.get_or_create(name=settings.GROUP_PERMISSION_FOR_ORG_ADMIN)
             for admin in all_admins:
                 admin.user.groups.add(g)
 

@@ -24,8 +24,29 @@ form .martor-preview {
 }
 
 .ace_editor {
-    font-size: 13px;
-    font-family: 'Liberation Mono', monospace !important;
+    min-height: 400px;
+    font-size: 14px;
+    font-family: var(--font-mono) !important;
+    line-height: 1.55;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+
+    .ace_gutter {
+        background: var(--color-surface-alt);
+        color: var(--color-text-muted);
+        border-right: 1px solid var(--color-border);
+    }
+
+    .ace_print-margin {
+        background: var(--color-border);
+    }
+
+    .ace_cursor {
+        color: var(--color-accent);
+    }
+
+    .ace_marker-layer .ace_active-line {
+        background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    }
 }
 
 .section-martor {
@@ -37,8 +58,40 @@ form .martor-preview {
         display: none !important;
     }
 
-    .tab-martor-menu a.item {
-        font-size: 0.8rem;
+    .tab-martor-menu {
+        display: flex;
+        align-items: center;
+        min-height: 42px;
+        margin: 0 !important;
+        padding: 0 var(--space-2);
+        border: 1px solid var(--color-border) !important;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        background: var(--color-surface-alt) !important;
+
+        a.item {
+            align-self: stretch;
+            display: inline-flex !important;
+            align-items: center;
+            gap: var(--space-1);
+            margin: 0 !important;
+            padding: 0 var(--space-3) !important;
+            border: 0 !important;
+            border-bottom: 2px solid transparent !important;
+            color: var(--color-text-secondary) !important;
+            font-size: var(--text-sm);
+
+            &.active {
+                border-bottom-color: var(--color-accent) !important;
+                color: var(--color-text) !important;
+                background: var(--color-surface) !important;
+            }
+
+            &:hover,
+            &:focus-visible {
+                color: var(--color-text) !important;
+                background: var(--color-surface) !important;
+            }
+        }
     }
 
     .martor-toolbar {
@@ -49,6 +102,9 @@ form .martor-preview {
 
     .martor-field {
         height: 400px;
+        border: 1px solid var(--color-border);
+        border-top: 0;
+        background: var(--color-surface-raised);
     }
 
     .ui.tabular.menu + .attached:not(.top).segment,
@@ -70,7 +126,9 @@ form .martor-preview {
     }
 
     .ui.bottom.attached.segment {
-        border-color: $color_primary25 !important;
+        border-color: var(--color-border) !important;
+        background: var(--color-surface) !important;
+        color: var(--color-text);
     }
 
     @if not $is_light_theme {
@@ -129,13 +187,39 @@ form .martor-preview {
 }
 
 .main-martor {
+    .section-martor {
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-1);
+    }
+
+    .martor-toolbar .ui.basic.icon.buttons,
+    .martor-toolbar .ui.basic.icon.buttons .button {
+        border-color: transparent !important;
+        background: transparent !important;
+    }
+
+    .martor-toolbar .ui.basic.icon.buttons .button,
+    .martor-toolbar .ui.basic.icon.button {
+        min-width: 30px;
+        min-height: 30px;
+        padding: var(--space-1) !important;
+        border-radius: var(--radius-sm) !important;
+        color: var(--color-text-secondary) !important;
+        transition: background-color var(--motion-fast) var(--ease-standard),
+            color var(--motion-fast) var(--ease-standard);
+
+        &:hover,
+        &:focus-visible {
+            background: var(--color-surface) !important;
+            color: var(--color-accent) !important;
+        }
+    }
+
     @if not $is_light_theme {
-        // Keep toolbar icons readable on dark background.
-        .martor-toolbar .ui.basic.icon.buttons .button,
-        .martor-toolbar .ui.basic.icon.button,
+        // Keep toolbar icons and labels readable on dark surfaces.
         .martor-toolbar .ui.basic.icon.buttons .button > .icon,
         .martor-toolbar .ui.basic.icon.button > .icon {
-            color: $color_primary100 !important;
+            color: var(--color-text) !important;
             opacity: 1;
         }
     }
