@@ -62,7 +62,7 @@
     height: 26px;
     padding: 0;
     border-radius: var(--radius-sm);
-    background: url($path_to_root + '/ace/img/expand.png') center / 16px 16px no-repeat;
+    background: url($path_to_root + '/django_ace/img/expand.png') center / 16px 16px no-repeat;
     @include vars-img;
 
     &:hover {
@@ -95,7 +95,7 @@
     z-index: 1000;
 
     .django-ace-max_min {
-        background-image: url($path_to_root + '/ace/img/contract.png');
+        background-image: url($path_to_root + '/django_ace/img/contract.png');
         @include vars-img;
     }
 }
