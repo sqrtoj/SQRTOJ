@@ -17,13 +17,24 @@ from moss import MOSS_LANG_C, MOSS_LANG_CC, MOSS_LANG_JAVA, MOSS_LANG_PASCAL, MO
 
 from judge import contest_format, event_poster as event
 from judge.models.problem import Problem
-from judge.models.profile import Organization, Profile
+from judge.models.profile import (
+    Organization,
+    Profile,
+)
 from judge.models.submission import Submission
 from judge.ratings import rate_contest
 from judge.utils.unicode import utf8bytes
 
-__all__ = ['CombinedContestRanking', 'Contest', 'ContestTag', 'ContestAnnouncement', 'ContestParticipation', 'ContestProblem',
-           'ContestSubmission', 'Rating']
+__all__ = [
+    'CombinedContestRanking',
+    'Contest',
+    'ContestTag',
+    'ContestAnnouncement',
+    'ContestParticipation',
+    'ContestProblem',
+    'ContestSubmission',
+    'Rating',
+]
 
 
 class MinValueOrNoneValidator(MinValueValidator):

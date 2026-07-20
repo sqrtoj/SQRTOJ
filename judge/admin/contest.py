@@ -15,8 +15,7 @@ from django.views.decorators.http import require_POST
 from reversion.admin import VersionAdmin
 
 from django_ace import AceWidget
-from judge.models import CombinedContestRanking, Contest, ContestAnnouncement, ContestProblem, ContestSubmission, Profile, \
-    Rating, Submission
+from judge.models import Contest, ContestAnnouncement, ContestProblem, ContestSubmission, Profile, Rating, Submission
 from judge.ratings import rate_contest
 from judge.utils.views import NoBatchDeleteMixin
 from judge.widgets import AdminHeavySelect2MultipleWidget, AdminHeavySelect2Widget, AdminMartorWidget, \
