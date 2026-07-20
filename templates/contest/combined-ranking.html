@@ -1,0 +1,244 @@
+{% extends "user/base-users.html" %}
+
+{% block users_js_media %}
+    <script>
+        $.fn.ignore = function (sel) {
+            return this.clone().find(sel || '>*').remove().end();
+        };
+
+        $(function () {
+            var ranking_key = '{{ ranking.key }}';
+            var filter_key = `ranking-filter-selected-orgs-${ranking_key}`;
+            var other = {{ _('Other')|htmltojs }};
+
+            $('#show-personal-info-checkbox').click(function () {
+                $('.personal-info').toggle();
+                localStorage.setItem('show-personal-info', $('.personal-info').is(':visible') ? 'true' : 'false');
+            });
+
+            if (localStorage.getItem('show-personal-info') == 'true') {
+                $('.personal-info').show();
+                $('#show-personal-info-checkbox').prop('checked', true);
+            }
+
+            $('#org-check-list').select2({
+                theme: '{{ DMOJ_SELECT2_THEME }}',
+                multiple: true,
+                closeOnSelect: false,
+                placeholder: {{ _('Search organizations')|htmltojs }},
+            });
+
+            $('#filter-by-organization-button').click(function () {
+                $('#org-check-list-wrapper').toggle();
+                $('#org-check-list').select2('open');
+            });
+
+            var orgs = new Set();
+            $('#combined-ranking-table > tbody > tr[id]').each(function () {
+                let org_anchor = $(this).find('.organization > a')[0];
+                orgs.add(org_anchor ? org_anchor.text : other);
+            });
+            Array.from(orgs).sort().forEach(function (org) {
+                $('#org-check-list').append(`<option value="${org}">${org}</option>`);
+            });
+
+            function extractCurrentAbsRank(row_text) {
+                let match = row_text.match(/\(([^)]+)\)/);
+                return match !== null ? match[1] : row_text;
+            }
+
+            function applyRankingFilter() {
+                let selected_orgs = localStorage.getItem(filter_key) || '';
+                let counter = 0;
+                let previous_abs_rank = -1;
+
+                $('#combined-ranking-table > tbody > tr[id]').each(function () {
+                    let row = $(this);
+                    let org_anchor = $(this).find('.organization > a')[0];
+                    let org = org_anchor ? org_anchor.text : other;
+                    let current_abs_rank = extractCurrentAbsRank(row.find('td')[0].innerText);
+
+                    row.find('td')[0].innerHTML = current_abs_rank;
+                    if (selected_orgs.length && !selected_orgs.split(',').includes(org.trim())) {
+                        row.hide();
+                        return;
+                    }
+
+                    row.show();
+                    if (previous_abs_rank == -1 || previous_abs_rank != current_abs_rank) {
+                        ++counter;
+                    }
+                    if (selected_orgs.length) {
+                        row.find('td')[0].innerHTML = `${counter}<br>(${current_abs_rank})`;
+                    }
+                    previous_abs_rank = current_abs_rank;
+                });
+            }
+
+            $('#apply-organization-filter').click(function () {
+                $('#org-check-list-wrapper').hide();
+                localStorage.setItem(filter_key, $('#org-check-list').val().map(x => x.trim()));
+                applyRankingFilter();
+            });
+
+            $('#clear-organization-filter').click(function () {
+                $('#org-check-list').val(null).trigger('change');
+                $('#apply-organization-filter').click();
+            });
+
+            let saved_orgs = localStorage.getItem(filter_key) || '';
+            if (saved_orgs.length) {
+                $('#org-check-list').val(saved_orgs.split(',')).trigger('change');
+            }
+            applyRankingFilter();
+        });
+
+        function download_combined_ranking_as_csv() {
+            function clean_text(text) {
+                text = text.replace(/(\r\n|\n|\r)/gm, '').trim();
+                text = text.replace(/"/g, '""');
+                return '"' + text + '"';
+            }
+
+            var csv = [];
+
+            $('#combined-ranking-table thead tr').each(function () {
+                var header = [];
+                $(this).find('th').each(function () {
+                    var $col = $(this);
+
+                    if ($col.hasClass('rank')) {
+                        header.push(clean_text($col.text()));
+                    } else if ($col.hasClass('username')) {
+                        header.push(clean_text({{ _('Username')|htmltojs }}));
+                    } else {
+                        header.push(clean_text($col.text()));
+                    }
+                });
+                csv.push(header.join(','));
+            });
+
+            $('#combined-ranking-table tbody tr').each(function () {
+                if ($(this).is(':hidden')) {
+                    return;
+                }
+
+                var row_data = [];
+                $(this).find('td').each(function () {
+                    var $col = $(this);
+
+                    if ($col.hasClass('user-name')) {
+                        row_data.push(clean_text($col.data('username')));
+                    } else {
+                        row_data.push(clean_text($col.ignore('.solving-time').text()));
+                    }
+                });
+                csv.push(row_data.join(','));
+            });
+
+            var csv_string = csv.join('\n');
+            var filename = 'ranking_{{ ranking.key }}_' + moment().format('YYYY-MM-DD-HH-mm-ss') + '.csv';
+            var link = document.createElement('a');
+            link.style.display = 'none';
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv_string));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+    {% include "contest/media-js.html" %}
+{% endblock %}
+
+{% block users_media %}
+    {% include "contest/media-css.html" %}
+{% endblock %}
+
+{% block before_users_table %}
+    <div style="padding: 0.75em 0 1.25em; clear: both;">
+        <div id="org-dropdown-check-list">
+            <button id="filter-by-organization-button" class="inline-button">
+                <i class="tab-icon fa fa-filter"></i>
+                <b>{{ _('Filter') }}</b>
+            </button>
+
+            <div id="org-check-list-wrapper">
+                <div>
+                    <button id="apply-organization-filter" class="inline-button filter-checklist-button">{{ _('Apply') }}</button>
+                    <button id="clear-organization-filter" class="inline-button filter-checklist-button">{{ _('Clear') }}</button>
+                </div>
+                <select id="org-check-list" name="orgs[]" multiple="multiple"></select>
+            </div>
+        </div>
+        <input id="show-personal-info-checkbox" type="checkbox" style="vertical-align: bottom">
+        <label for="show-personal-info-checkbox" style="vertical-align: bottom">{{ _('Show full name/organization') }}</label>
+        <a href="#" onclick="download_combined_ranking_as_csv(); return false;" style="float: right;">
+            {{ _('Download as CSV') }}
+        </a>
+    </div>
+{% endblock %}
+
+{% block users_table %}
+    <table id="combined-ranking-table" class="users-table table striped">
+        <thead>
+            <tr>
+                <th class="header rank" style="width: 5%;">{{ _('Rank') }}</th>
+                <th class="header username">{{ _('Username') }}</th>
+                <th class="header points">{{ _('Total') }}</th>
+                {% if show_penalty %}
+                    <th class="header penalty">{{ _('Penalty') }}</th>
+                {% endif %}
+                {% for problem in problems %}
+                    <th class="header points">
+                        <a href="{{ url('problem_detail', problem.problem.code) }}" title="{{ problem.contest.name }}">
+                            {{- problem.problem.code -}}
+                        </a>
+                    </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for rank, user in users %}
+                <tr id="user-{{ user.user.username }}">
+                    <td>{{ rank }}</td>
+                    <td class="user-name" data-username="{{ user.user.username }}">
+                        <div>
+                            <div style="float:left">
+                                {{ link_user(user) }}
+                                <div class="personal-info">
+                                    <span>{{ user.user.first_name }}</span>
+                                </div>
+                            </div>
+                            <div style="float:right">
+                                <div class="personal-info" style="text-align: right;">
+                                    <em class="organization">
+                                        {% for organization in user.organizations.all() %}
+                                            <a href="{{ organization.get_absolute_url() }}">{{ organization.name }}</a>{% if not loop.last %} | {% endif %}
+                                        {% endfor %}
+                                    </em>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td title="{{ user.total_score|floatformat(3) }}" class="user-points">
+                        {{ user.total_score|floatformat }}
+                    </td>
+                    {% if show_penalty %}
+                        <td class="penalty">{{ user.total_cumtime }}</td>
+                    {% endif %}
+                    {% for problem in problems %}
+                        <td class="user-points">
+                            {% set score = user.problem_scores.get(problem.id, '') %}
+                            {% if score != '' %}{{ score|floatformat }}{% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="{{ problems|length + 3 + (1 if show_penalty else 0) }}">{{ _('No participants found.') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -6142,7 +6142,7 @@ msgstr "Thời gian tham gia đã kết thúc."
 
 #: templates/contest/ranking-table.html:60
 msgid "Penalty"
-msgstr ""
+msgstr "Phạt"
 
 #: templates/contest/ranking.html:210
 msgid "pt"
@@ -8416,6 +8416,46 @@ msgstr "Số bài"
 #: templates/widgets/select_all.html:8
 msgid "Check all"
 msgstr "Chọn tất cả"
+
+#: judge/models/contest.py:75
+msgid "ranking id"
+msgstr "mã bảng xếp hạng"
+
+#: judge/models/contest.py:76
+msgid "Ranking id must be ^[a-z0-9_]+$"
+msgstr "Mã bảng xếp hạng phải có dạng ^[a-z0-9_]+$"
+
+#: judge/models/contest.py:77
+msgid "ranking name"
+msgstr "tên bảng xếp hạng"
+
+#: judge/models/contest.py:79
+msgid "Contests included in this ranking."
+msgstr "Các kỳ thi được tính trong bảng xếp hạng này."
+
+#: judge/models/contest.py:89
+msgid "ranking"
+msgstr "bảng xếp hạng"
+
+#: judge/models/contest.py:90
+msgid "rankings"
+msgstr "bảng xếp hạng"
+
+#: judge/admin/contest.py:73
+msgid "Ranking URL"
+msgstr "Liên kết bảng xếp hạng"
+
+#: templates/contest/combined-ranking.html:178
+msgid "Total"
+msgstr "Tổng"
+
+#: templates/contest/combined-ranking.html:228
+msgid "No participants found."
+msgstr "Không tìm thấy thí sinh nào."
+
+#: templates/contest/combined-ranking.html:12
+msgid "Other"
+msgstr "Khác"
 
 #~ msgid "IOI"
 #~ msgstr "IOI"
