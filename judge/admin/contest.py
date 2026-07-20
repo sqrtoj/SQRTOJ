@@ -57,6 +57,20 @@ class ContestTagAdmin(admin.ModelAdmin):
         return form
 
 
+class CombinedContestRankingForm(ModelForm):
+    contests = ModelMultipleChoiceField(
+        label=_('Included contests'),
+        queryset=Contest.objects.all(),
+        widget=AdminHeavySelect2MultipleWidget(data_view='contest_select2'))
+
+
+class CombinedContestRankingAdmin(admin.ModelAdmin):
+    fields = ('key', 'name', 'is_visible', 'contests')
+    list_display = ('key', 'name', 'is_visible')
+    search_fields = ('key', 'name')
+    form = CombinedContestRankingForm
+
+
 class ContestProblemInlineForm(ModelForm):
     class Meta:
         widgets = {
