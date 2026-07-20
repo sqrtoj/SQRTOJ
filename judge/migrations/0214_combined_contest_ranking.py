@@ -20,14 +20,14 @@ class Migration(migrations.Migration):
                 ('is_visible', models.BooleanField(default=False, verbose_name='publicly visible')),
             ],
             options={
-                'verbose_name': 'combined contest ranking',
-                'verbose_name_plural': 'combined contest rankings',
+                'verbose_name': 'ranking',
+                'verbose_name_plural': 'rankings',
             },
         ),
         migrations.AddField(
             model_name='combinedcontestranking',
             name='contests',
-            field=models.ManyToManyField(help_text='Contests included in this combined ranking.',
+            field=models.ManyToManyField(help_text='Contests included in this ranking.',
                                          related_name='combined_rankings', to='judge.contest',
                                          verbose_name='contests'),
         ),

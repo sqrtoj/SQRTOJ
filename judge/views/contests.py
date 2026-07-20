@@ -1273,8 +1273,19 @@ class CombinedContestRankingView(TitleMixin, DetailView):
         contests = list(self.object.contests.order_by('start_time', 'key'))
         show_penalty = bool(contests) and all(contest.format.name == ICPCContestFormat.name for contest in contests)
         contest_ids = [contest.id for contest in contests]
+        contest_problems = list(
+            ContestProblem.objects
+            .filter(contest_id__in=contest_ids)
+            .select_related('contest', 'problem')
+            .order_by('contest__start_time', 'contest__key', 'order')
+        )
+        problems_by_contest = defaultdict(list)
+        for problem in contest_problems:
+            problems_by_contest[problem.contest_id].append(problem)
+
         profiles = {}
-        scores = defaultdict(lambda: {contest.id: 0 for contest in contests})
+        scores = defaultdict(float)
+        problem_scores = defaultdict(dict)
         cumtimes = defaultdict(int)
         tiebreakers = defaultdict(float)
 
@@ -1291,14 +1302,18 @@ class CombinedContestRankingView(TitleMixin, DetailView):
         for participation in participations:
             profile = participation.user
             profiles[profile.id] = profile
-            scores[profile.id][participation.contest_id] = participation.score
+            scores[profile.id] += participation.score
+            for contest_problem in problems_by_contest[participation.contest_id]:
+                format_data = (participation.format_data or {}).get(str(contest_problem.id))
+                if format_data is not None:
+                    problem_scores[profile.id][contest_problem.id] = format_data.get('points', 0)
             cumtimes[profile.id] += participation.cumtime
             tiebreakers[profile.id] += participation.tiebreaker
 
         rows = []
         for profile_id, profile in profiles.items():
-            profile.contest_scores = scores[profile_id]
-            profile.total_score = sum(profile.contest_scores.values())
+            profile.problem_scores = problem_scores[profile_id]
+            profile.total_score = scores[profile_id]
             profile.total_cumtime = cumtimes[profile_id]
             profile.total_tiebreaker = tiebreakers[profile_id]
             rows.append(profile)
@@ -1310,12 +1325,13 @@ class CombinedContestRankingView(TitleMixin, DetailView):
             rank_key = attrgetter('total_score')
             rows.sort(key=lambda profile: -profile.total_score)
         rows = ranker(rows, key=rank_key)
-        return contests, rows, show_penalty
+        return contests, contest_problems, rows, show_penalty
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        contests, users, show_penalty = self.get_ranking_data()
+        contests, problems, users, show_penalty = self.get_ranking_data()
         context['contests'] = contests
+        context['problems'] = problems
         context['users'] = users
         context['show_penalty'] = show_penalty
         return context
