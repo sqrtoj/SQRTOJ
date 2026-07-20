@@ -61,68 +61,70 @@
         </section>
 
         <section class="profile-section">
-        <h4 id="submission-activity-header" class="profile-section__title"></h4>
-        <div id="submission-activity" style="display: none;">
-            <div id="submission-activity-actions">
-                <a href="javascript:void(0)" id="prev-year-action">&laquo;</a>
-                &nbsp;<span id="year"></span>&nbsp;
-                <a href="javascript:void(0)" id="next-year-action">&raquo;</a>
-            </div>
-            <div id="submission-activity-display">
-                <table id="submission-activity-table">
-                    <tr id="submission-0">
-                        <th class="submission-date-col info-text">
-                            {{ _('Sun') }}
-                        </th>
-                    </tr>
-                    <tr id="submission-1">
-                        <th class="submission-date-col info-text">
-                            {{ _('Mon') }}
-                        </th>
-                    </tr>
-                    <tr id="submission-2">
-                        <th class="submission-date-col info-text">
-                            {{ _('Tues') }}
-                        </th>
-                    </tr>
-                    <tr id="submission-3">
-                        <th class="submission-date-col info-text">
-                            {{ _('Wed') }}
-                        </th>
-                    </tr>
-                    <tr id="submission-4">
-                        <th class="submission-date-col info-text">
-                            {{ _('Thurs') }}
-                        </th>
-                    </tr>
-                    <tr id="submission-5">
-                        <th class="submission-date-col info-text">
-                            {{ _('Fri') }}
-                        </th>
-                    </tr>
-                    <tr id="submission-6">
-                        <th class="submission-date-col info-text">
-                            {{ _('Sat') }}
-                        </th>
-                    </tr>
-                </table>
-                <div class="info-bar">
-                    <span id="submission-total-count" class="info-text">
-                    </span>
-                    <table class="info-table">
-                        <tr>
-                            <th class="info-table-text info-text">{{ _('Less') }}</th>
-                            <td class="activity-0"><div></div></td>
-                            <td class="activity-1"><div></div></td>
-                            <td class="activity-2"><div></div></td>
-                            <td class="activity-3"><div></div></td>
-                            <td class="activity-4"><div></div></td>
-                            <th class="info-table-text info-text">{{ _('More') }}</th>
-                        <tr>
-                    </table>
+            <h4 id="submission-activity-header" class="profile-section__title"></h4>
+            <div id="submission-activity" style="display: none;">
+                <div id="submission-activity-actions">
+                    <a href="javascript:void(0)" id="prev-year-action">&laquo;</a>
+                    &nbsp;<span id="year"></span>&nbsp;
+                    <a href="javascript:void(0)" id="next-year-action">&raquo;</a>
+                </div>
+                <div id="submission-activity-display">
+                    <div class="submission-activity-scroll">
+                        <table id="submission-activity-table">
+                            <tr id="submission-0">
+                                <th class="submission-date-col info-text">
+                                    {{ _('Sun') }}
+                                </th>
+                            </tr>
+                            <tr id="submission-1">
+                                <th class="submission-date-col info-text">
+                                    {{ _('Mon') }}
+                                </th>
+                            </tr>
+                            <tr id="submission-2">
+                                <th class="submission-date-col info-text">
+                                    {{ _('Tues') }}
+                                </th>
+                            </tr>
+                            <tr id="submission-3">
+                                <th class="submission-date-col info-text">
+                                    {{ _('Wed') }}
+                                </th>
+                            </tr>
+                            <tr id="submission-4">
+                                <th class="submission-date-col info-text">
+                                    {{ _('Thurs') }}
+                                </th>
+                            </tr>
+                            <tr id="submission-5">
+                                <th class="submission-date-col info-text">
+                                    {{ _('Fri') }}
+                                </th>
+                            </tr>
+                            <tr id="submission-6">
+                                <th class="submission-date-col info-text">
+                                    {{ _('Sat') }}
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="info-bar">
+                        <span id="submission-total-count" class="info-text">
+                        </span>
+                        <table class="info-table">
+                            <tr>
+                                <th class="info-table-text info-text">{{ _('Less') }}</th>
+                                <td class="activity-0"><div></div></td>
+                                <td class="activity-1"><div></div></td>
+                                <td class="activity-2"><div></div></td>
+                                <td class="activity-3"><div></div></td>
+                                <td class="activity-4"><div></div></td>
+                                <th class="info-table-text info-text">{{ _('More') }}</th>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
         </section>
 
         {% if rating %}

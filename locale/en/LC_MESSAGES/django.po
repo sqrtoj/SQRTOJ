@@ -141,6 +141,14 @@ msgstr ""
 msgid "Problems"
 msgstr ""
 
+#: templates/base.html
+msgid "Explore"
+msgstr ""
+
+#: templates/base.html
+msgid "Community"
+msgstr ""
+
 #: judge/admin/contest.py:85 judge/admin/submission.py:249
 #: templates/admin/judge/submission/change_form.html:14
 #: templates/admin/judge/submission/change_form.html:17

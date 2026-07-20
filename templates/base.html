@@ -392,18 +392,33 @@
         <footer class="site-footer">
             <div class="site-footer__inner">
                 <div class="site-footer__brand">
-                    <a class="site-footer__logo" href="{{ url('home') }}">{{ SITE_NAME }}</a>
+                    <a class="site-footer__identity" href="{{ url('home') }}">
+                        <span class="site-footer__mark" aria-hidden="true"><i class="fa fa-code"></i></span>
+                        <span class="site-footer__logo">{{ SITE_NAME }}</span>
+                    </a>
                     <p class="site-footer__tagline">{{ SITE_LONG_NAME }}</p>
                     <div class="site-footer__social">
-                        <a href="https://www.facebook.com/sqrtoj" title="Facebook" aria-label="Facebook"><i class="fa fa-facebook-official" aria-hidden="true"></i></a>
+                        <a href="https://www.facebook.com/sqrtoj" title="Facebook" aria-label="Facebook">
+                            <i class="fa fa-facebook-official" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
-                <nav class="site-footer__nav" aria-label="{{ _('Footer navigation') }}">
-                    <a href="{{ url('problem_list') }}">{{ _('Problems') }}</a>
-                    <a href="{{ url('contest_list') }}">{{ _('Contests') }}</a>
-                    <a href="{{ url('user_list') }}">{{ _('Leaderboard') }}</a>
-                    <a href="{{ url('status_all') }}">{{ _('Status') }}</a>
-                </nav>
+                <div class="site-footer__links">
+                    <div class="site-footer__section">
+                        <h2 class="site-footer__section-title">{{ _('Explore') }}</h2>
+                        <nav class="site-footer__nav" aria-label="{{ _('Explore') }}">
+                            <a href="{{ url('problem_list') }}">{{ _('Problems') }}</a>
+                            <a href="{{ url('contest_list') }}">{{ _('Contests') }}</a>
+                        </nav>
+                    </div>
+                    <div class="site-footer__section">
+                        <h2 class="site-footer__section-title">{{ _('Community') }}</h2>
+                        <nav class="site-footer__nav" aria-label="{{ _('Community') }}">
+                            <a href="{{ url('user_list') }}">{{ _('Leaderboard') }}</a>
+                            <a href="{{ url('status_all') }}">{{ _('Status') }}</a>
+                        </nav>
+                    </div>
+                </div>
             </div>
             <div class="site-footer__bar">
                 <span class="site-footer__credit">
