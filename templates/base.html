@@ -250,9 +250,6 @@
                 <li>
                     <a href="{{ node.path }}" class="nav-{{ node.key }}{% if node.key in nav_tab %} active{% endif %}">
                         {{ _(node.label) }}
-                        {% if not node.is_leaf_node() %}
-                        <span class="nav-expand" aria-hidden="true">›</span>
-                        {% endif %}
                     </a>
                     {% with children=node.get_children() %}
                     {% if children %}<ul>{{ loop(children) }}</ul>{% endif %}
