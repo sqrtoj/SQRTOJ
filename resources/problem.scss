@@ -71,6 +71,15 @@ $is_light_theme: true;
     }
 }
 
+// The problem list is a data-dense two-column page. Give this page a little
+// more of the viewport than prose pages so the table and filter card do not
+// feel unnecessarily compressed on desktop displays.
+@media (min-width: 700px) {
+    #content:has(#problem-table) {
+        width: 94%;
+    }
+}
+
 #filter-form {
     vertical-align: top;
     margin-bottom: 0.5em;
