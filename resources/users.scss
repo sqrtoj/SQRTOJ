@@ -529,6 +529,11 @@ img.user-gravatar {
             border-collapse: separate;
             border-spacing: 2px;
 
+            @media (min-width: 900px) {
+                width: 960px !important;
+                flex: 0 0 960px;
+            }
+
             th.submission-date-col {
                 width: 3.5rem;
                 padding: 0 var(--space-1);

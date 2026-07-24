@@ -23,6 +23,13 @@ form .martor-preview {
     z-index: 99999 !important;
 }
 
+.main-martor:not(.main-martor-fullscreen) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
 .ace_editor {
     min-height: 400px;
     font-size: 14px;
@@ -65,6 +72,7 @@ form .martor-preview {
     .tab-martor-menu {
         display: flex;
         align-items: center;
+        flex-wrap: nowrap;
         width: 100%;
         max-width: 100%;
         min-height: 42px;
@@ -73,6 +81,8 @@ form .martor-preview {
         border: 1px solid var(--color-border) !important;
         border-radius: var(--radius-md) var(--radius-md) 0 0;
         background: var(--color-surface-alt) !important;
+        overflow-x: auto;
+        overflow-y: hidden;
 
         a.item {
             align-self: stretch;
@@ -106,10 +116,10 @@ form .martor-preview {
         display: flex !important;
         align-items: center;
         margin-left: auto !important;
-        min-width: 0;
-        flex: 0 1 auto !important;
-        overflow-x: auto;
-        overflow-y: hidden;
+        min-width: max-content;
+        flex: 0 0 auto !important;
+        float: none !important;
+        overflow: visible;
 
         .ui.basic.icon.buttons,
         .ui.basic.icon.buttons .button,
