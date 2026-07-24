@@ -209,3 +209,75 @@
         opacity: 0.5;
     }
 }
+
+// The date-range plugin ships with a fixed white palette. Its popup is used on
+// the OJ statistics page, so map every visible surface to our theme tokens.
+// This also keeps the calendar legible in the dark palettes.
+.daterangepicker {
+    color: var(--color-text) !important;
+    background: var(--color-surface-raised) !important;
+    border-color: var(--color-border) !important;
+    font-family: var(--font-ui) !important;
+
+    &::before {
+        border-bottom-color: var(--color-border) !important;
+    }
+
+    &::after {
+        border-bottom-color: var(--color-surface-raised) !important;
+    }
+
+    &.drop-up::before {
+        border-top-color: var(--color-border) !important;
+    }
+
+    &.drop-up::after {
+        border-top-color: var(--color-surface-raised) !important;
+    }
+
+    .calendar-table,
+    td.off,
+    td.off.in-range,
+    td.off.start-date,
+    td.off.end-date {
+        background: var(--color-surface-raised) !important;
+        border-color: var(--color-border) !important;
+        color: var(--color-text-muted) !important;
+    }
+
+    .calendar-table .next span,
+    .calendar-table .prev span {
+        border-color: var(--color-text) !important;
+    }
+
+    td.available:hover,
+    th.available:hover,
+    .ranges li:hover,
+    select.hourselect,
+    select.minuteselect,
+    select.secondselect,
+    select.ampmselect {
+        background: var(--color-surface-alt) !important;
+        border-color: var(--color-border-strong) !important;
+        color: var(--color-text) !important;
+    }
+
+    td.in-range {
+        background: var(--color-accent-soft) !important;
+        color: var(--color-text) !important;
+    }
+
+    td.active,
+    td.active:hover,
+    .ranges li.active {
+        background: var(--color-accent) !important;
+        color: var(--color-accent-contrast) !important;
+    }
+
+    select,
+    .drp-buttons {
+        background: var(--color-surface-raised) !important;
+        border-color: var(--color-border) !important;
+        color: var(--color-text) !important;
+    }
+}
