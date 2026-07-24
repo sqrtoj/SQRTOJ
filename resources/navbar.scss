@@ -8,7 +8,7 @@
     z-index: 1000;
     width: 100%;
     height: var(--nav-height);
-    background: linear-gradient(180deg, #973307, #7a2906);
+    background: linear-gradient(180deg, var(--color-navbar-gradient-start), var(--color-navbar-gradient-end));
 }
 
 #nav-container {
@@ -21,7 +21,7 @@
     padding: 0 clamp(var(--space-3), 3vw, var(--space-6));
     box-sizing: border-box;
     color: var(--color-text-inverse);
-    background: linear-gradient(180deg, #973307, #7a2906);
+    background: linear-gradient(180deg, var(--color-navbar-gradient-start), var(--color-navbar-gradient-end));
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
