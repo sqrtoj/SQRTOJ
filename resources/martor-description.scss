@@ -50,6 +50,10 @@ form .martor-preview {
 }
 
 .section-martor {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
     div[data-tab^="editor-tab-"] {
         padding: 0;
     }
@@ -61,6 +65,8 @@ form .martor-preview {
     .tab-martor-menu {
         display: flex;
         align-items: center;
+        width: 100%;
+        max-width: 100%;
         min-height: 42px;
         margin: 0 !important;
         padding: 0 var(--space-2);
@@ -83,7 +89,8 @@ form .martor-preview {
             &.active {
                 border-bottom-color: var(--color-accent) !important;
                 color: var(--color-text) !important;
-                background: var(--color-surface) !important;
+                background: transparent !important;
+                font-weight: var(--weight-semibold);
             }
 
             &:hover,
@@ -99,6 +106,7 @@ form .martor-preview {
         display: flex !important;
         align-items: center;
         margin-left: auto !important;
+        min-width: 0;
         flex: 0 1 auto !important;
         overflow-x: auto;
         overflow-y: hidden;
@@ -134,9 +142,20 @@ form .martor-preview {
         color: var(--color-text);
     }
 
+    .main-martor,
+    .ui.bottom.attached.segment,
+    form .martor-preview {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
     .ui.tabular.menu + .attached:not(.top).segment,
     .ui.tabular.menu + .attached:not(.top).segment + .attached:not(.top).segment {
-        width: auto !important;
+        width: 100% !important;
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .resizable .resizable-b {
@@ -156,6 +175,7 @@ form .martor-preview {
         border-color: var(--color-border) !important;
         background: var(--color-surface) !important;
         color: var(--color-text);
+        padding: var(--space-4) !important;
     }
 
     @if not $is_light_theme {

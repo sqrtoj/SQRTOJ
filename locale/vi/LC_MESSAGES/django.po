@@ -5383,6 +5383,8 @@ msgid ""
 "A community-run online judge for competitive programming. Practice problems, "
 "join contests, and climb the ranks."
 msgstr ""
+"Nền tảng chấm bài trực tuyến do cộng đồng vận hành dành cho lập trình thi đấu. "
+"Luyện bài, tham gia kỳ thi và chinh phục bảng xếp hạng."
 
 #: templates/base.html:410 templates/blog/list.html:81
 msgid "Blog"
@@ -5404,7 +5406,7 @@ msgstr "Cộng đồng"
 
 #: templates/base.html:434 templates/base.html:435
 msgid "Support"
-msgstr ""
+msgstr "Hỗ trợ"
 
 #: templates/base.html:436
 #, fuzzy
@@ -5424,7 +5426,7 @@ msgstr ""
 
 #: templates/base.html:448
 msgid "All rights reserved."
-msgstr ""
+msgstr "Bảo lưu mọi quyền."
 
 #: templates/base.html:451
 #, python-format
@@ -6618,46 +6620,36 @@ msgid "Language AC Rate"
 msgstr "Tỉ lệ AC theo ngôn ngữ"
 
 #: templates/home.html:18
-#, fuzzy, python-format
-#| msgid "Hello, %(username)s."
 msgid "Welcome back, %(name)s"
-msgstr "Xin chào, %(username)s."
+msgstr "Chào mừng trở lại, %(name)s"
 
 #: templates/home.html:20
 msgid "Ready to solve something today?"
-msgstr ""
+msgstr "Sẵn sàng giải một bài hôm nay chứ?"
 
 #: templates/home.html:22 templates/home.html:31
-#, fuzzy
-#| msgid "New problems"
 msgid "Solve problems"
-msgstr "Bài mới"
+msgstr "Luyện bài"
 
 #: templates/home.html:28
 msgid "Practice competitive programming, join contests, and climb the ranks."
-msgstr ""
+msgstr "Luyện lập trình thi đấu, tham gia kỳ thi và chinh phục bảng xếp hạng."
 
 #: templates/home.html:32
-#, fuzzy
-#| msgid "Join contest"
 msgid "Join a contest"
-msgstr "Tham gia kỳ thi"
+msgstr "Tham gia một kỳ thi"
 
 #: templates/home.html:54
-#, fuzzy
-#| msgid "Track progress"
 msgid "Your progress"
-msgstr "Theo dõi quá trình"
+msgstr "Tiến độ của bạn"
 
 #: templates/home.html:77 templates/user/user-base.html:84
-#, fuzzy
-#| msgid "Contributors"
 msgid "Contribution"
 msgstr "Đóng góp"
 
 #: templates/home.html:82
 msgid "I'm feeling lucky"
-msgstr ""
+msgstr "Thử vận may"
 
 #: templates/home.html:96
 #, fuzzy

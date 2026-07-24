@@ -479,6 +479,11 @@ img.user-gravatar {
             overflow-x: auto;
             padding: var(--space-3);
             box-sizing: border-box;
+
+            @media (min-width: 900px) {
+                display: flex;
+                justify-content: center;
+            }
         }
 
         .info-bar {
@@ -515,8 +520,9 @@ img.user-gravatar {
         }
 
         #submission-activity-table {
-            width: 100%;
+            width: 100% !important;
             min-width: 720px;
+            max-width: 960px;
             margin: 0 auto;
             padding: 0;
             table-layout: fixed;
