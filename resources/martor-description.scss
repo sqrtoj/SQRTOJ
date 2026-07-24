@@ -72,7 +72,7 @@ form .martor-preview {
     .tab-martor-menu {
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         width: 100%;
         max-width: 100%;
         min-height: 42px;
@@ -85,10 +85,10 @@ form .martor-preview {
         overflow: hidden;
 
         a.item {
-            order: 1;
             align-self: stretch;
             display: inline-flex !important;
             align-items: center;
+            flex: 0 0 auto;
             gap: var(--space-1);
             margin: 0 !important;
             padding: 0 var(--space-3) !important;
@@ -113,17 +113,16 @@ form .martor-preview {
     }
 
     .martor-toolbar {
-        order: 2;
         align-self: stretch;
         display: flex !important;
         align-items: center;
-        width: 100%;
-        max-width: 100%;
+        width: auto;
+        max-width: none;
         min-width: 0;
-        margin: 0 !important;
-        padding: var(--space-1) var(--space-2) !important;
+        margin: 0 0 0 auto !important;
+        padding: 0 0 0 var(--space-2) !important;
         box-sizing: border-box;
-        flex: 1 0 100% !important;
+        flex: 1 1 auto !important;
         float: none !important;
         overflow-x: auto;
         overflow-y: hidden;
@@ -132,7 +131,7 @@ form .martor-preview {
             display: flex !important;
             width: max-content;
             min-width: max-content;
-            margin: 0 auto !important;
+            margin: 0 0 0 auto !important;
         }
 
         .ui.basic.icon.buttons,
