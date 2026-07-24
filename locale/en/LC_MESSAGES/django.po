@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-24 16:45+0700\n"
+"POT-Creation-Date: 2026-07-24 19:04+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Banned User"
 msgstr ""
 
-#: dmoj/settings.py:75 templates/base.html:311 templates/comments/list.html:102
+#: dmoj/settings.py:75 templates/base.html:309 templates/comments/list.html:102
 #: templates/contest/contest-list-tabs.html:34
 #: templates/contest/ranking-table.html:28
 #: templates/problem/problem-list-tabs.html:15
@@ -89,7 +89,7 @@ msgstr ""
 msgid "Password reset sent"
 msgstr ""
 
-#: dmoj/urls.py:104 templates/base.html:248 templates/organization/tabs.html:15
+#: dmoj/urls.py:104 templates/base.html:249 templates/organization/tabs.html:15
 msgid "Home"
 msgstr ""
 
@@ -128,8 +128,8 @@ msgstr ""
 msgid "Included contests"
 msgstr ""
 
-#: judge/admin/contest.py:62 judge/views/contests.py:99 templates/base.html:277
-#: templates/base.html:420 templates/home.html:23 templates/home.html:92
+#: judge/admin/contest.py:62 judge/views/contests.py:99 templates/base.html:275
+#: templates/base.html:418 templates/home.html:23 templates/home.html:92
 #: templates/home.html:94
 msgid "Contests"
 msgstr ""
@@ -145,7 +145,7 @@ msgstr ""
 msgid "Problem"
 msgstr ""
 
-#: judge/admin/contest.py:96 templates/base.html:419
+#: judge/admin/contest.py:96 templates/base.html:417
 #: templates/contest/contest.html:192 templates/contest/edit.html:108
 #: templates/contest/edit.html:116 templates/home.html:42
 msgid "Problems"
@@ -269,7 +269,7 @@ msgstr[1] ""
 msgid "username"
 msgstr ""
 
-#: judge/admin/contest.py:450 templates/base.html:351
+#: judge/admin/contest.py:450 templates/base.html:349
 msgid "virtual"
 msgstr ""
 
@@ -525,12 +525,12 @@ msgstr ""
 msgid "Comment body"
 msgstr ""
 
-#: judge/comments.py:45 judge/views/blog.py:50 judge/views/comment.py:44
+#: judge/comments.py:45 judge/views/blog.py:49 judge/views/comment.py:44
 #: judge/views/ticket.py:55
 msgid " Reason: "
 msgstr ""
 
-#: judge/comments.py:46 judge/views/blog.py:51 judge/views/comment.py:45
+#: judge/comments.py:46 judge/views/blog.py:50 judge/views/comment.py:45
 #: judge/views/ticket.py:56 judge/views/user.py:433
 msgid "Your part is silent, little toad."
 msgstr ""
@@ -718,11 +718,11 @@ msgstr ""
 msgid "Your password can't be entirely numeric."
 msgstr ""
 
-#: judge/custom_translations.py:24 templates/base.html:274
+#: judge/custom_translations.py:24 templates/base.html:272
 msgid "PRoblems"
 msgstr ""
 
-#: judge/custom_translations.py:25 templates/blog/blog-post.html:33
+#: judge/custom_translations.py:25 templates/blog/blog-post.html:34
 #, python-brace-format
 msgid "posted {time}"
 msgstr ""
@@ -1014,7 +1014,7 @@ msgid ""
 "don't set the contest time too high if you don't really need it."
 msgstr ""
 
-#: judge/jinja2/datetime.py:29 templates/blog/content.html:58
+#: judge/jinja2/datetime.py:29 templates/blog/content.html:57
 #: templates/submission/info-base.html:6
 msgid "N j, Y, g:i a"
 msgstr ""
@@ -3708,67 +3708,67 @@ msgstr ""
 msgid "The uploaded ZIP file is invalid."
 msgstr ""
 
-#: judge/views/blog.py:36 judge/views/comment.py:30
+#: judge/views/blog.py:35 judge/views/comment.py:30
 msgid "Messing around, are we?"
 msgstr ""
 
-#: judge/views/blog.py:45 judge/views/comment.py:39
+#: judge/views/blog.py:44 judge/views/comment.py:39
 #, python-format
 msgid "You must solve at least %d problems before you can vote."
 msgstr ""
 
-#: judge/views/blog.py:61
-msgid "Blog post not found."
-msgstr ""
-
-#: judge/views/blog.py:64
+#: judge/views/blog.py:65
 msgid "You cannot vote your own blog"
 msgstr ""
 
-#: judge/views/blog.py:82 judge/views/comment.py:75
+#: judge/views/blog.py:76 judge/views/comment.py:75
 msgid "You cannot vote twice."
 msgstr ""
 
-#: judge/views/blog.py:142
+#: judge/views/blog.py:83
+msgid "Blog post not found."
+msgstr ""
+
+#: judge/views/blog.py:135
 #, python-format
 msgid "Page %d of Posts"
 msgstr ""
 
-#: judge/views/blog.py:335 judge/views/blog.py:338
+#: judge/views/blog.py:328 judge/views/blog.py:331
 msgid "Creating new blog post"
 msgstr ""
 
-#: judge/views/blog.py:353 judge/views/contests.py:1580
+#: judge/views/blog.py:346 judge/views/contests.py:1580
 #: judge/views/organization.py:392 judge/views/organization.py:707
 #: judge/views/organization.py:731 judge/views/problem.py:866
 #: judge/views/problem.py:906 judge/views/tag.py:182
 msgid "Created on site"
 msgstr ""
 
-#: judge/views/blog.py:366 judge/views/blog.py:404 judge/views/contests.py:308
+#: judge/views/blog.py:359 judge/views/blog.py:397 judge/views/contests.py:308
 #: judge/views/contests.py:1364 judge/views/contests.py:1591
 #: judge/views/problem.py:1128
 msgid "Permission denied"
 msgstr ""
 
-#: judge/views/blog.py:367
+#: judge/views/blog.py:360
 #, python-format
 msgid ""
 "You cannot create blog post.\n"
 "Note: You need to solve at least %d problems to create new blog post."
 msgstr ""
 
-#: judge/views/blog.py:380 judge/views/blog.py:383
+#: judge/views/blog.py:373 judge/views/blog.py:376
 msgid "Updating blog post"
 msgstr ""
 
-#: judge/views/blog.py:398 judge/views/comment.py:142
+#: judge/views/blog.py:391 judge/views/comment.py:142
 #: judge/views/contests.py:1652 judge/views/organization.py:438
 #: judge/views/problem.py:1064
 msgid "Edited from site"
 msgstr ""
 
-#: judge/views/blog.py:405
+#: judge/views/blog.py:398
 msgid "You cannot edit blog post."
 msgstr ""
 
@@ -4086,7 +4086,7 @@ msgstr ""
 msgid "corrupt page %s"
 msgstr ""
 
-#: judge/views/language.py:12 templates/base.html:430
+#: judge/views/language.py:12 templates/base.html:428
 #: templates/status/judge-status-table.html:44
 #: templates/status/status-tabs.html:6
 msgid "Runtimes"
@@ -4130,7 +4130,7 @@ msgid "You are not allowed to edit this organization."
 msgstr ""
 
 #: judge/views/organization.py:157 judge/views/register.py:36
-#: templates/base.html:421 templates/blog/top-rating.html:28
+#: templates/base.html:419 templates/blog/top-rating.html:28
 #: templates/user/user-list-tabs.html:6
 msgid "Organizations"
 msgstr ""
@@ -4647,7 +4647,7 @@ msgstr ""
 msgid "New Problems"
 msgstr ""
 
-#: judge/views/status.py:25 templates/base.html:429
+#: judge/views/status.py:25 templates/base.html:427
 #: templates/submission/list.html:320
 msgid "Status"
 msgstr ""
@@ -4858,11 +4858,11 @@ msgstr ""
 msgid "Perform Two-factor Authentication"
 msgstr ""
 
-#: judge/views/user.py:98
+#: judge/views/user.py:98 judge/views/user.py:610
 msgid "No such user"
 msgstr ""
 
-#: judge/views/user.py:98
+#: judge/views/user.py:98 judge/views/user.py:610
 #, python-format
 msgid "No user handle \"%s\"."
 msgstr ""
@@ -4926,7 +4926,7 @@ msgid "Updated on site"
 msgstr ""
 
 #: judge/views/user.py:475 templates/admin/auth/user/change_form.html:14
-#: templates/admin/auth/user/change_form.html:17 templates/base.html:313
+#: templates/admin/auth/user/change_form.html:17 templates/base.html:311
 #: templates/user/user-base.html:46 templates/user/user-tabs.html:31
 msgid "Edit profile"
 msgstr ""
@@ -4943,7 +4943,7 @@ msgstr ""
 msgid "Generated scratch codes for user"
 msgstr ""
 
-#: judge/views/user.py:517 templates/base.html:428
+#: judge/views/user.py:517 templates/base.html:426
 #: templates/user/user-list-tabs.html:4
 msgid "Leaderboard"
 msgstr ""
@@ -4954,15 +4954,23 @@ msgstr ""
 msgid "Contributors"
 msgstr "Contrib."
 
-#: judge/views/user.py:637
+#: judge/views/user.py:605 templates/blog/list.html:160
+msgid "Find user"
+msgstr ""
+
+#: judge/views/user.py:605 templates/blog/list.html:165
+msgid "Enter a handle..."
+msgstr ""
+
+#: judge/views/user.py:641
 msgid "You have been successfully logged out."
 msgstr ""
 
-#: judge/views/user.py:645
+#: judge/views/user.py:649
 msgid "Password reset"
 msgstr ""
 
-#: judge/views/user.py:655
+#: judge/views/user.py:659
 msgid "You have sent too many password reset requests. Please try again later."
 msgstr ""
 
@@ -5151,103 +5159,103 @@ msgstr ""
 msgid "Edit user"
 msgstr ""
 
-#: templates/base.html:234
+#: templates/base.html:235
 msgid "Open navigation menu"
 msgstr ""
 
-#: templates/base.html:278 templates/contest/list.html:252
+#: templates/base.html:276 templates/contest/list.html:252
 #: templates/contest/list.html:298 templates/contest/list.html:399
 #: templates/home.html:38 templates/organization/tabs.html:16
 msgid "Users"
 msgstr ""
 
-#: templates/base.html:286
+#: templates/base.html:284
 msgid "Report issue"
 msgstr ""
 
-#: templates/base.html:290
+#: templates/base.html:288
 msgid "Switch language to Vietnamese"
 msgstr ""
 
-#: templates/base.html:294
+#: templates/base.html:292
 msgid "Switch language to English"
 msgstr ""
 
-#: templates/base.html:309
+#: templates/base.html:307
 msgid "Profile"
 msgstr ""
 
-#: templates/base.html:315
+#: templates/base.html:313
 msgid "Stop impersonating"
 msgstr ""
 
-#: templates/base.html:320
+#: templates/base.html:318
 msgid "Log out"
 msgstr ""
 
-#: templates/base.html:331 templates/registration/registration_form.html:214
+#: templates/base.html:329 templates/registration/registration_form.html:214
 msgid "or"
 msgstr ""
 
-#: templates/base.html:332
+#: templates/base.html:330
 msgid "Sign up"
 msgstr ""
 
-#: templates/base.html:345
+#: templates/base.html:343
 msgid "spectating"
 msgstr ""
 
-#: templates/base.html:357
+#: templates/base.html:355
 msgid "Go to Rankings"
 msgstr ""
 
-#: templates/base.html:364
+#: templates/base.html:362
 msgid "This site works best with JavaScript enabled."
 msgstr ""
 
-#: templates/base.html:399
+#: templates/base.html:397
 msgid ""
 "A community-run online judge for competitive programming. Practice problems, "
 "join contests, and climb the ranks."
 msgstr ""
 
-#: templates/base.html:410 templates/blog/list.html:81
+#: templates/base.html:408 templates/blog/list.html:81
 msgid "Blog"
 msgstr ""
 
-#: templates/base.html:417 templates/base.html:418
+#: templates/base.html:415 templates/base.html:416
 msgid "Explore"
 msgstr ""
 
-#: templates/base.html:422
+#: templates/base.html:420
 msgid "Random problem"
 msgstr ""
 
-#: templates/base.html:426 templates/base.html:427
+#: templates/base.html:424 templates/base.html:425
 msgid "Community"
 msgstr ""
 
-#: templates/base.html:434 templates/base.html:435
+#: templates/base.html:432 templates/base.html:433
 msgid "Support"
 msgstr ""
 
-#: templates/base.html:436
+#: templates/base.html:434
 msgid "Tickets"
 msgstr ""
 
-#: templates/base.html:438
+#: templates/base.html:436
 msgid "Discord"
 msgstr ""
 
-#: templates/base.html:440
+#: templates/base.html:438
 msgid "Facebook"
 msgstr ""
 
-#: templates/base.html:448
+#: templates/base.html:446
 msgid "All rights reserved."
 msgstr ""
 
-#: templates/base.html:451
+#: templates/base.html:449
 #, python-format
 msgid "proudly powered by %(dmoj)s and %(vnoi)s"
 msgstr ""
@@ -5260,51 +5268,51 @@ msgstr ""
 msgid "Blogs"
 msgstr ""
 
-#: templates/blog/blog-post.html:10 templates/blog/blog-post.html:18
-#: templates/blog/content.html:22 templates/blog/content.html:31
+#: templates/blog/blog-post.html:15 templates/blog/blog-post.html:23
+#: templates/blog/content.html:39 templates/blog/content.html:47
 #: templates/comments/list.html:36 templates/comments/list.html:45
 #: templates/user/comment.html:42 templates/user/comment.html:51
 msgid "Please log in to vote"
 msgstr ""
 
-#: templates/blog/blog-post.html:27
+#: templates/blog/blog-post.html:28
 msgid "Sticky"
 msgstr ""
 
-#: templates/blog/blog-post.html:33
+#: templates/blog/blog-post.html:34
 #, python-brace-format
 msgid "posted on {time}"
 msgstr ""
 
-#: templates/blog/blog-post.html:39 templates/blog/media-js.html:5
+#: templates/blog/blog-post.html:41 templates/blog/media-js.html:5
 msgid "Expand"
 msgstr ""
 
-#: templates/blog/blog-post.html:39
+#: templates/blog/blog-post.html:41
 msgid "Expand post"
 msgstr ""
 
-#: templates/blog/blog-post.html:48
+#: templates/blog/blog-post.html:50
 msgid "Continue reading..."
 msgstr ""
 
-#: templates/blog/blog-post.html:53
+#: templates/blog/blog-post.html:55
 msgid "Read more"
 msgstr ""
 
-#: templates/blog/blog-post.html:59
+#: templates/blog/blog-post.html:61
 #, python-brace-format
 msgid "on {time}"
 msgstr ""
 
-#: templates/blog/content.html:49 templates/comments/list.html:94
+#: templates/blog/content.html:31 templates/comments/list.html:94
 #: templates/comments/list.html:110 templates/contest/contest-tabs.html:36
 #: templates/contest/tag-title.html:9 templates/flatpages/admin_link.html:3
 #: templates/license.html:10 templates/problem/editorial.html:14
 msgid "Edit"
 msgstr ""
 
-#: templates/blog/content.html:58
+#: templates/blog/content.html:57
 #, python-format
 msgid "posted on %(time)s"
 msgstr ""
@@ -5380,23 +5388,15 @@ msgstr ""
 msgid "New tickets"
 msgstr ""
 
-#: templates/blog/list.html:160
-msgid "Find user"
-msgstr ""
-
-#: templates/blog/list.html:165
-msgid "Enter a handle..."
-msgstr ""
-
 #: templates/blog/list.html:165
 msgid "Find a user by handle"
 msgstr ""
 
-#: templates/blog/list.html:166
+#: templates/blog/list.html:167
 msgid "Find"
 msgstr ""
 
-#: templates/blog/list.html:178
+#: templates/blog/list.html:179
 msgid "Comment stream"
 msgstr ""
 
