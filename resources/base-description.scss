@@ -224,11 +224,15 @@
     }
 
     table {
-        display: block;
+        display: table;
+        width: 100%;
         max-width: 100%;
-        overflow-x: auto;
-        overscroll-behavior-x: contain;
-        -webkit-overflow-scrolling: touch;
+        table-layout: auto;
+    }
+
+    th,
+    td {
+        overflow-wrap: anywhere;
     }
 
     td {
