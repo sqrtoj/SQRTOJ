@@ -243,7 +243,7 @@ class PostList(PostListBase):
             Contest.get_visible_contests(self.request.user)
             .filter(Q(start_time__gt=now) | Q(start_time__lte=now, end_time__gt=now), is_visible=True)
             .only('key', 'name', 'start_time', 'end_time')
-            .order_by('start_time')
+            .order_by('start_time'),
         )
 
         context['current_contests'] = [contest for contest in visible_contests if contest.start_time <= now]

@@ -5,10 +5,10 @@ import warnings
 from unittest.mock import patch
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, ZipInfo
 
+from PIL import Image
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase, override_settings
-from PIL import Image
 from pypdf import PdfWriter
 
 from judge.utils.upload_security import MalwareFound, MalwareScannerUnavailable, scan_upload, validate_image_upload, \

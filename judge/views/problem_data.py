@@ -21,8 +21,8 @@ from judge.highlight_code import highlight_code
 from judge.models import Problem, ProblemData, ProblemTestCase, Submission, problem_data_storage
 from judge.models.problem_data import CUSTOM_CHECKERS, IO_METHODS
 from judge.utils.problem_data import ProblemDataCompiler
-from judge.utils.upload_security import get_zip_names, validate_zip_upload
 from judge.utils.unicode import utf8text
+from judge.utils.upload_security import get_zip_names, validate_zip_upload
 from judge.utils.views import TitleMixin, add_file_response, generic_message
 from judge.views.problem import ProblemMixin
 from judge.widgets import Select2Widget

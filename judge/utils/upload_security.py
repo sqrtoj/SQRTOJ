@@ -5,12 +5,12 @@ import stat
 import struct
 import time
 from pathlib import PurePosixPath
-from zipfile import ZIP_BZIP2, ZIP_DEFLATED, ZIP_LZMA, ZIP_STORED, BadZipFile, ZipFile
+from zipfile import BadZipFile, ZIP_BZIP2, ZIP_DEFLATED, ZIP_LZMA, ZIP_STORED, ZipFile
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from PIL import Image, UnidentifiedImageError
+from django.utils.translation import gettext_lazy as _
 from pypdf import PdfReader
 from pypdf.errors import PyPdfError
 
@@ -123,8 +123,9 @@ def scan_upload(upload, surface='upload', user_id=None):
     except MalwareScannerUnavailable as error:
         if mode == 'required':
             raise ValidationError(_('The malware scanner is temporarily unavailable.'))
+        error_message = str(error)
         logger.warning('ClamAV scan unavailable; accepting upload surface=%s user_id=%s name=%r size=%s error=%r',
-                       surface, user_id, os.path.basename(upload.name), getattr(upload, 'size', None), str(error))
+                       surface, user_id, os.path.basename(upload.name), getattr(upload, 'size', None), error_message)
     finally:
         _rewind(upload)
 
