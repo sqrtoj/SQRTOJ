@@ -415,6 +415,26 @@ $is_light_theme: true;
     margin-left: var(--space-2);
 }
 
+// Contest navigation can expose many management tabs. Keep its title, tabs and
+// participation action on one horizontal rail; when space runs out the rail
+// scrolls instead of placing controls on a second line.
+.tabs.contest-tabs {
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+
+    > h2,
+    > ul,
+    > .contest-tab-actions {
+        flex-shrink: 0;
+    }
+
+    > h2 {
+        white-space: nowrap;
+    }
+}
+
 form.contest-join-pseudotab {
     display: inline;
     padding: 6px 8px !important;
@@ -439,6 +459,11 @@ form.contest-join-pseudotab {
         flex-basis: 100%;
         justify-content: flex-end;
         margin: var(--space-2) 0 0;
+    }
+
+    .tabs.contest-tabs .contest-tab-actions {
+        flex-basis: auto;
+        margin: 0 0 0 var(--space-2);
     }
 }
 

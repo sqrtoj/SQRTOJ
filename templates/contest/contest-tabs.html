@@ -1,5 +1,7 @@
 {% extends "tabs-base.html" %}
 
+{% block tabs_class %} contest-tabs{% endblock %}
+
 {% block tabs %}
     {% if can_access_resolver %}
         {% set resolver_url = url('contest_resolver', contest.key) %}
