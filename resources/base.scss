@@ -242,7 +242,7 @@ hr {
     border-top: 1px solid var(--color-border);
     background:
         radial-gradient(circle at 88% -40%, var(--footer-glow), transparent 60%),
-        var(--color-surface-alt);
+        linear-gradient(135deg, var(--color-footer-gradient-start), var(--color-footer-gradient-end));
     color: var(--color-text-secondary);
     // Dark builds get a bright-green footer per design feedback; the warm/summer
     // light builds keep their muted neutral tone.

@@ -38,6 +38,8 @@ $is_summer: false !default;
             --color-navbar: #045c20;
             --color-navbar-gradient-start: #0a7c32;
             --color-navbar-gradient-end: #045c20;
+            --color-footer-gradient-start: #f4fcf6;
+            --color-footer-gradient-end: #d9f2e1;
 
             --color-link: #1958c1;
             --color-link-hover: #0645ad;
@@ -72,6 +74,8 @@ $is_summer: false !default;
             --color-navbar: #0f1214;
             --color-navbar-gradient-start: #174c2b;
             --color-navbar-gradient-end: #0f1214;
+            --color-footer-gradient-start: #1d3425;
+            --color-footer-gradient-end: #0f1214;
 
             --color-link: #6bb0f5;
             --color-link-hover: #8fc4ff;
@@ -108,6 +112,8 @@ $is_summer: false !default;
             --color-navbar: #a84210; // Adjusted for a prettier orange/autumn look
             --color-navbar-gradient-start: #973307;
             --color-navbar-gradient-end: #7a2906;
+            --color-footer-gradient-start: #fbf3e8;
+            --color-footer-gradient-end: #ead8c2;
             --bg-texture: url('#{$path_to_root}/autumn/seamless-light.webp');
 
             // Links use the warm sienna family (not teal) to match the autumn
@@ -155,6 +161,8 @@ $is_summer: false !default;
             --color-navbar: #100b07;
             --color-navbar-gradient-start: #2f180c;
             --color-navbar-gradient-end: #100b07;
+            --color-footer-gradient-start: #2c2018;
+            --color-footer-gradient-end: #140f0a;
 
             // Links use the warm pumpkin/gold family (not teal) to match autumn.
             --color-link: #f2985a;
