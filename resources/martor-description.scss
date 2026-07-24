@@ -95,9 +95,35 @@ form .martor-preview {
     }
 
     .martor-toolbar {
+        align-self: stretch;
+        display: flex !important;
+        align-items: center;
+        margin-left: auto !important;
         flex: 0 1 auto !important;
         overflow-x: auto;
         overflow-y: hidden;
+
+        .ui.basic.icon.buttons,
+        .ui.basic.icon.buttons .button,
+        .ui.basic.icon.button {
+            background: transparent !important;
+            border-color: transparent !important;
+            color: var(--color-text-secondary) !important;
+        }
+
+        .ui.basic.icon.buttons .button > .icon,
+        .ui.basic.icon.button > .icon {
+            color: currentColor !important;
+            opacity: 1;
+        }
+
+        .ui.basic.icon.buttons .button:hover,
+        .ui.basic.icon.buttons .button:focus-visible,
+        .ui.basic.icon.button:hover,
+        .ui.basic.icon.button:focus-visible {
+            background: var(--color-surface) !important;
+            color: var(--color-accent) !important;
+        }
     }
 
     .martor-field {
@@ -105,6 +131,7 @@ form .martor-preview {
         border: 1px solid var(--color-border);
         border-top: 0;
         background: var(--color-surface-raised);
+        color: var(--color-text);
     }
 
     .ui.tabular.menu + .attached:not(.top).segment,
@@ -215,13 +242,10 @@ form .martor-preview {
         }
     }
 
-    @if not $is_light_theme {
-        // Keep toolbar icons and labels readable on dark surfaces.
-        .martor-toolbar .ui.basic.icon.buttons .button > .icon,
-        .martor-toolbar .ui.basic.icon.button > .icon {
-            color: var(--color-text) !important;
-            opacity: 1;
-        }
+    .ace_editor,
+    .ace_editor .ace_scroller {
+        background: var(--color-surface-raised) !important;
+        color: var(--color-text);
     }
 }
 

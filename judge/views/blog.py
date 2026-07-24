@@ -6,9 +6,9 @@ from django.db import IntegrityError
 from django.db.models import Count, FilteredRelation, Max, Prefetch, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
-from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
+from django.http import (Http404, HttpResponseBadRequest,
                          HttpResponseForbidden, HttpResponseNotFound,
-                         HttpResponseRedirect)
+                         HttpResponseRedirect, JsonResponse)
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -78,11 +78,18 @@ def vote_blog(request, delta):
                 except BlogVote.DoesNotExist:
                     # We must continue racing in case this is exploited to manipulate votes.
                     continue
-                return HttpResponseBadRequest(_('You cannot vote twice.'), content_type='text/plain')
+                if vote.score == delta:
+                    return HttpResponseBadRequest(_('You cannot vote twice.'), content_type='text/plain')
+                score_delta = delta - vote.score
+                vote.score = delta
+                vote.save(update_fields=['score'])
         else:
-            BlogPost.objects.get(id=blog_id).vote(delta)
+            score_delta = delta
         break
-    return HttpResponse('success', content_type='text/plain')
+
+    blog = BlogPost.objects.get(id=blog_id)
+    blog.vote(score_delta)
+    return JsonResponse({'score': blog.score, 'vote_score': vote.score})
 
 
 def upvote_blog(request):

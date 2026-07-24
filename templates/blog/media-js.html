@@ -2,6 +2,9 @@
 {% compress js %}
     <script type="text/javascript">
         $(document).ready(function () {
+            var expandLabel = {{ _('Expand')|htmltojs }};
+            var collapseLabel = {{ _('Collapse')|htmltojs }};
+
             function ajax_vote(url, id, delta, on_success) {
                 return $.ajax({
                     url: url,
@@ -11,12 +14,12 @@
                     },
                     success: function (data, textStatus, jqXHR) {
                         var score = $('#post-' + id + ' #post-score').first();
-                        score.text(parseInt(score.text()) + delta);
+                        score.text(data.score);
                         if (typeof on_success !== 'undefined')
-                            on_success();
+                            on_success(data.vote_score);
                     },
                     error: function (data, textStatus, jqXHR) {
-                        alert('Could not vote: ' + data.responseText);
+                        alert({{ _('Could not vote: {error}')|htmltojs }}.replace('{error}', data.responseText));
                     }
                 });
             }
@@ -32,20 +35,16 @@
             window.blog_upvote = function (id) {
                 ajax_vote('{{ url('blog_upvote') }}', id, 1, function () {
                     var $votes = get_$votes(id);
-                    if ($votes.downvote.hasClass('voted'))
-                        $votes.downvote.removeClass('voted');
-                    else
-                        $votes.upvote.addClass('voted');
+                    $votes.downvote.removeClass('voted');
+                    $votes.upvote.addClass('voted');
                 });
             };
 
             window.blog_downvote = function (id) {
                 ajax_vote('{{ url('blog_downvote') }}', id, -1, function () {
                     var $votes = get_$votes(id);
-                    if ($votes.upvote.hasClass('voted'))
-                        $votes.upvote.removeClass('voted');
-                    else
-                        $votes.downvote.addClass('voted');
+                    $votes.upvote.removeClass('voted');
+                    $votes.downvote.addClass('voted');
                 });
             };
 
@@ -76,7 +75,7 @@
                 var $icon = $toggle.find('i');
                 $post.toggleClass('collapsed', collapsed);
                 $toggle.attr('aria-expanded', collapsed ? 'false' : 'true');
-                $toggle.attr('title', collapsed ? gettext('Expand') : gettext('Collapse'));
+                $toggle.attr('title', collapsed ? expandLabel : collapseLabel);
                 $icon.toggleClass('fa-chevron-down', collapsed);
                 $icon.toggleClass('fa-chevron-up', !collapsed);
             }

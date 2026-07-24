@@ -17,6 +17,9 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var collapseAllLabel = {{ _('Collapse all')|htmltojs }};
+            var expandAllLabel = {{ _('Expand all')|htmltojs }};
+
             $('.time-remaining').each(function () {
                 count_down($(this));
             });
@@ -30,11 +33,11 @@
                 var $icon = $btn.find('i');
                 var $label = $btn.find('.newsfeed-toolbar__label');
                 if (anyOpen) {
-                    $label.text(gettext('Collapse all'));
+                    $label.text(collapseAllLabel);
                     $icon.removeClass('fa-expand').addClass('fa-compress');
                     $btn.attr('aria-pressed', 'false');
                 } else {
-                    $label.text(gettext('Expand all'));
+                    $label.text(expandAllLabel);
                     $icon.removeClass('fa-compress').addClass('fa-expand');
                     $btn.attr('aria-pressed', 'true');
                 }
