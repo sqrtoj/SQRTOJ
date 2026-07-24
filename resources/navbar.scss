@@ -155,6 +155,17 @@
     color: var(--color-text);
     z-index: 1100;
 
+    // Bridge the visual spacing below the trigger so a pointer can travel into
+    // the menu without briefly leaving its parent's hover area.
+    &::before {
+        content: "";
+        position: absolute;
+        top: calc(var(--space-1) * -1);
+        right: 0;
+        left: 0;
+        height: var(--space-1);
+    }
+
     &.show-list {
         display: block;
     }
@@ -195,6 +206,14 @@
     ul {
         top: 0;
         left: calc(100% + var(--space-1));
+
+        &::before {
+            top: 0;
+            right: auto;
+            left: calc(var(--space-1) * -1);
+            width: var(--space-1);
+            height: 100%;
+        }
     }
 }
 
