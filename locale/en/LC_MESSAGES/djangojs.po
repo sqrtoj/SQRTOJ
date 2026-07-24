@@ -29,3 +29,31 @@ msgstr[1] ""
 msgctxt "time format without day"
 msgid "%h:%m:%s"
 msgstr ""
+
+#: resources/common.js:194
+#, javascript-format
+msgid "%s day"
+msgid_plural "%s days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: resources/common.js:195
+#, javascript-format
+msgid "%s hour"
+msgid_plural "%s hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: resources/common.js:196
+#, javascript-format
+msgid "%s minute"
+msgid_plural "%s minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: resources/common.js:197
+#, javascript-format
+msgid "%s second"
+msgid_plural "%s seconds"
+msgstr[0] ""
+msgstr[1] ""

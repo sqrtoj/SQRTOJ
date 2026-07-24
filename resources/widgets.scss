@@ -24,44 +24,95 @@ $is_light_theme: true;
     float: right;
 }
 
-// Bootstrap-y buttons
+// Buttons (design-system primitive). Default variant is the brand accent; see
+// docs/design-system/05-component-specs.md §5.2. Colors come from tokens so both
+// palettes (Warm Harvest / Summer) and both themes stay in sync.
 .button, button, input[type=submit] {
-    color: white !important;
+    color: var(--color-accent-contrast) !important;
     text-decoration: none !important;
     cursor: pointer;
     vertical-align: middle;
     white-space: nowrap;
-    font-weight: 400;
+    font-weight: var(--weight-medium);
     line-height: 1.4;
-    background: rgb(51, 122, 183) none repeat scroll 0 (0% / auto) padding-box border-box;
-    background: -webkit-linear-gradient(top, #337ab7 0, #265a88 100%) repeat-x;
-    background: linear-gradient(to bottom, #337ab7 0, #265a88 100%) repeat-x;
-    border-radius: $widget_border_radius;
-    padding: 6px 12px;
+    background: var(--color-accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-4);
     display: block;
     border: 0;
     text-align: center;
+    box-shadow: var(--shadow-1);
+    transition: background-color var(--motion-fast) var(--ease-standard),
+        box-shadow var(--motion-fast) var(--ease-standard),
+        transform var(--motion-fast) var(--ease-standard);
 
     // 4k hack
     font-size: $base_font_size;
 
     &:hover {
-        background: #265a88;
+        background: var(--color-accent-hover);
+        box-shadow: var(--shadow-2), 0 4px 14px var(--color-focus-ring-soft);
+        transform: translateY(-1px);
     }
 
     &:active {
-        border-color: #245580;
-        background: #265a88;
+        background: var(--color-accent-hover);
+        box-shadow: var(--shadow-1);
+        transform: translateY(0);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
     }
 
     &.full {
-        padding: 6px 0;
+        padding: var(--space-2) 0;
     }
 
-    &.disabled {
-        background: linear-gradient(to bottom, darkgray 0, gray 100%) repeat-x !important;
-        border-color: grey !important;
+    // Secondary / neutral button variant.
+    &.btn-secondary, &.btn-gray {
+        background: var(--color-surface-raised);
+        color: var(--color-text) !important;
+        border: 1px solid var(--color-border);
+
+        &:hover, &:active {
+            background: var(--color-surface-alt);
+        }
+    }
+
+    // Danger variant.
+    &.btn-danger, &.delete {
+        background: var(--color-danger-fg);
+        color: var(--color-accent-contrast) !important;
+
+        &:hover, &:active {
+            filter: brightness(0.92);
+        }
+    }
+
+    &.disabled, &:disabled {
+        opacity: 0.55;
         cursor: not-allowed;
+    }
+
+    // Fully-rounded variant for hero CTAs and compact toolbar actions.
+    &.btn-pill {
+        border-radius: var(--radius-pill);
+    }
+
+    // Low-emphasis text button: no fill until hovered. Reads as accent-colored
+    // text so it recedes next to a solid primary action.
+    &.btn-ghost {
+        background: transparent;
+        color: var(--color-accent) !important;
+        box-shadow: none;
+
+        &:hover, &:active {
+            background: var(--color-focus-ring-soft);
+            box-shadow: none;
+            transform: none;
+        }
     }
 }
 
@@ -71,15 +122,81 @@ $is_light_theme: true;
     padding: 3px 6px;
 }
 
+// Reusable card/surface family (design-system spec 5.5, extended in phase 6a).
+// Generalizes the blog's card treatment so every feature shares one surface style.
+.card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--card-pad);
+    // A soft resting shadow by default so cards separate from the canvas and the
+    // canvas -> card -> raised -> popover elevation hierarchy reads clearly.
+    box-shadow: var(--shadow-1);
+
+    &.card-flat {
+        box-shadow: none;
+    }
+
+    &.card-raised {
+        box-shadow: var(--shadow-1);
+    }
+
+    // Interactive card: lifts on hover/focus-within. Motion is disabled globally
+    // under prefers-reduced-motion (base.scss).
+    &.card--interactive {
+        box-shadow: var(--shadow-1);
+        transition: transform var(--motion-base) var(--ease-standard),
+            box-shadow var(--motion-base) var(--ease-standard);
+
+        &:hover, &:focus-within {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-2);
+        }
+    }
+
+    // Card with a media/image header that bleeds to the card edges.
+    &.card--media {
+        padding: 0;
+        overflow: hidden;
+
+        > .card__body, > .card__footer, > .card__title, > .card__meta {
+            padding-left: var(--card-pad);
+            padding-right: var(--card-pad);
+        }
+    }
+}
+
+.card__title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+}
+
+.card__meta {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+}
+
+.card__body {
+    color: var(--color-text);
+}
+
+.card__footer {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+}
+
 input {
     &[type=text], &[type=password], &[type=email], &[type=number], &[type=url] {
-        padding: 4px 8px;
-        color: $color_primary75;
-        background: $color_primary0 none;
-        border: 1px solid $color_primary25;
-        border-radius: $widget_border_radius;
-        box-shadow: 0 1px 1px rgba($color_primary100, 0.075) inset;
-        transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+        padding: var(--space-2) var(--space-3);
+        color: var(--color-text);
+        background: var(--color-surface) none;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        transition: border-color var(--motion-fast) var(--ease-standard),
+            box-shadow var(--motion-fast) var(--ease-standard);
         box-sizing: border-box;
 
         // Need this explicitly because UA stylesheet for Chrome on 4k makes
@@ -87,13 +204,12 @@ input {
         font-size: $base_font_size;
 
         &:hover {
-            border-color: rgba(82, 168, 236, 0.8);
-            box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 4px rgba(82, 168, 236, 0.6);
+            border-color: var(--color-border-strong);
         }
 
         &:focus {
-            border-color: rgba(82, 168, 236, 0.8);
-            box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px var(--color-focus-ring-soft);
             outline: 0;
         }
     }
@@ -105,8 +221,8 @@ input {
     &[type=checkbox] {
         appearance: none;
         vertical-align: middle;
-        border: 1px solid $color_primary50;
-        background: $color_primary0;
+        border: 1px solid var(--color-border-strong);
+        background: var(--color-surface);
         border-radius: 2px;
         width: 0.95em;
         height: 0.95em;
@@ -120,24 +236,23 @@ input {
 }
 
 textarea {
-    padding: 4px 8px;
+    padding: var(--space-2) var(--space-3);
     color: $color_primary75;
-    background: $color_primary0 none;
-    border: 1px solid $color_primary25;
-    border-radius: $widget_border_radius;
-    box-shadow: 0 1px 1px rgba($color_primary100, 0.075) inset;
-    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    background: var(--color-surface) none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--motion-fast) var(--ease-standard),
+        box-shadow var(--motion-fast) var(--ease-standard);
     box-sizing: border-box;
 }
 
 textarea:hover {
-    border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 4px rgba(82, 168, 236, 0.6);
+    border-color: var(--color-border-strong);
 }
 
 textarea:focus {
-    border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: inset 0 1px 1px rgba($color_primary100, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-focus-ring-soft);
     outline: 0;
 }
 
@@ -148,10 +263,10 @@ textarea:focus {
     display: block;
     font-size: 12px;
     font-weight: bold;
-    color: $color_primary50;
+    color: var(--color-text-muted);
     cursor: pointer;
     background-color: $color_pageBg;
-    border: 1px solid $color_primary25;
+    border: 1px solid var(--color-border);
     border-radius: 0 $widget_border_radius;
     position: absolute;
     padding: 5px 8px;
@@ -164,17 +279,17 @@ textarea:focus {
 
 // Bootstrap-y tabs
 .ul_tab_a_active {
-    color: $color_primary100;
+    color: var(--color-text);
     // Cover up the bottom border of active tabs with this color
     background: $color_pageBg;
     cursor: default;
-    border: 1px solid $color_primary25;
+    border: 1px solid var(--color-border);
     border-bottom-color: $color_pageBg;
     border-image: none;
 }
 
 .tabs {
-    border-bottom: 1px solid $color_primary25;
+    border-bottom: 1px solid var(--color-border);
     margin: 0 0 8px;
     width: 100%;
     display: flex;
@@ -184,10 +299,10 @@ textarea:focus {
     .tab {
         .tab-icon {
             padding-right: 0.3em;
-            color: $color_primary50;
+            color: var(--color-text-muted);
 
             &.fa-plus {
-                color: green !important;
+                color: var(--color-success-fg) !important;
             }
         }
 
@@ -197,17 +312,17 @@ textarea:focus {
 
         &.active {
             a, span {
-                border-top-color: $highlight_blue !important;
+                border-top-color: var(--color-accent) !important;
             }
 
             .tab-icon {
-                color: $color_primary100;
+                color: var(--color-text);
             }
         }
     }
 
     h2 {
-        color: $color_primary75;
+        color: var(--color-text);
     }
 
     > ul {
@@ -239,75 +354,83 @@ textarea:focus {
                 margin-right: 2px;
                 line-height: 1.42857;
                 border: 1px solid transparent;
-                border-radius: $widget_border_radius $widget_border_radius 0 0;
+                border-radius: var(--radius-md) var(--radius-md) 0 0;
                 position: relative;
                 display: block;
                 padding: 10px 15px;
-                color: $color_primary66;
+                color: var(--color-text-muted);
                 text-decoration: none;
                 white-space: nowrap;
+                transition: color var(--motion-fast) var(--ease-standard),
+                    background-color var(--motion-fast) var(--ease-standard);
+            }
+
+            > a:hover {
+                color: var(--color-text);
+                background: var(--color-surface-alt);
             }
         }
     }
 }
 
-// Bootstrap-y pagination
-ul.pagination a:hover {
-    background: rgba($color_primary100, 0.55);
+// Pill hover only for real, non-active/disabled page links.
+ul.pagination > li:not(.active-page):not(.disabled-page) > a:hover {
+    background: var(--color-surface-alt);
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
 }
 
+// Modern pagination: separated rounded pills with a small gap instead of the
+// old glued-together bootstrap strip.
 ul.pagination {
-    display: inline-block;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
     padding-left: 0;
     margin: 0;
 
     > {
         li {
-            display: inline;
-
-            &:first-child > {
-                a, span {
-                    margin-left: 0;
-                    border-top-left-radius: $widget_border_radius;
-                    border-bottom-left-radius: $widget_border_radius;
-                }
-            }
-
-            &:last-child > {
-                a, span {
-                    border-top-right-radius: $widget_border_radius;
-                    border-bottom-right-radius: $widget_border_radius;
-                }
-            }
+            display: inline-flex;
 
             > {
                 a, span {
                     position: relative;
-                    float: left;
-                    padding: 4px 12px;
-                    line-height: 1.42857;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 2.1em;
+                    padding: var(--space-1) var(--space-3);
+                    line-height: 1.5;
                     text-decoration: none;
-                    color: $color_primary0;
-                    background-color: $color_primary75;
-                    border: 1px solid $color_primary50;
-                    margin-left: -1px;
+                    color: var(--color-link);
+                    background-color: var(--color-surface);
+                    border: 1px solid var(--color-border);
+                    border-radius: var(--radius-md);
+                    font-variant-numeric: tabular-nums;
+                    transition: background-color var(--motion-fast) var(--ease-standard),
+                        color var(--motion-fast) var(--ease-standard),
+                        border-color var(--motion-fast) var(--ease-standard);
                 }
             }
         }
 
         .disabled-page > {
             a, span {
-                color: $color_primary50;
+                color: var(--color-text-muted);
+                background: var(--color-surface-alt);
+                cursor: default;
             }
         }
 
         .active-page > {
             a, span {
                 z-index: 2;
-                color: #FFF;
-                background-color: $highlight_blue;
+                color: var(--color-accent-contrast);
+                background-color: var(--color-accent);
                 border-color: transparent;
                 cursor: default;
+                font-weight: var(--weight-semibold);
             }
         }
     }
@@ -324,29 +447,68 @@ ul.pagination {
     margin-top: 10px;
 }
 
+// Alerts / messages (spec 5.10): semantic token backgrounds + a left accent bar
+// in the level color. Icon/text pairing (never color-only) is provided by markup.
 .alert {
-    padding: 15px;
-    margin-bottom: 20px;
+    padding: var(--space-4);
+    margin-bottom: var(--space-5);
     border: 1px solid transparent;
-    border-radius: $widget_border_radius;
+    border-left-width: 4px;
+    border-radius: var(--radius-md);
 }
 
 .alert-info {
-    color: #31708f;
-    background-color: #d9edf7;
-    border-color: #bce8f1;
+    color: var(--color-info-fg);
+    background-color: var(--color-info-bg);
+    border-color: var(--color-info-fg);
 }
 
 .alert-warning {
-    color: #8a6d3b;
-    background-color: #fcf8e3;
-    border-color: #faebcc;
+    color: var(--color-warning-fg);
+    background-color: var(--color-warning-bg);
+    border-color: var(--color-warning-fg);
+
+    // Some templates use `.alert-warning` without the `.alert` base class, so
+    // give it the box treatment on its own too (padding + rounded + left bar).
+    // Without this it rendered as bare colored text, which read poorly on the
+    // dark warm-charcoal surface.
+    &:not(.alert) {
+        padding: var(--space-4);
+        margin-bottom: var(--space-5);
+        border: 1px solid var(--color-warning-fg);
+        border-left-width: 4px;
+        border-radius: var(--radius-md);
+    }
+}
+
+// Links and bold text inside any alert inherit the alert's foreground so they
+// stay legible in dark mode (default link blue washes out on dark surfaces).
+.alert {
+    a:not(.button), b, strong {
+        color: inherit;
+    }
+
+    a:not(.button) {
+        text-decoration: underline;
+    }
+}
+
+.alert-warning a:not(.button),
+.alert-warning b,
+.alert-warning strong {
+    color: inherit;
 }
 
 .alert-danger {
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
+    color: var(--color-danger-fg);
+    background-color: var(--color-danger-bg);
+    border-color: var(--color-danger-fg);
+}
+
+.alert-success {
+    color: var(--color-success-fg);
+    background-color: var(--color-success-bg);
+    border-color: var(--color-success-fg);
 }
 
 .alert-dismissable, .alert-dismissible {
@@ -365,7 +527,7 @@ ul.pagination {
     font-size: 21px;
     font-weight: 700;
     line-height: 1;
-    color: $color_primary100;
+    color: var(--color-text);
     filter: alpha(opacity=20);
     opacity: 0.2;
 }
@@ -376,7 +538,7 @@ a.close {
     line-height: 1;
 
     &:hover {
-        color: $color_primary100;
+        color: var(--color-text);
     }
 }
 
@@ -418,8 +580,8 @@ a.close {
     justify-content: space-between;
     gap: 0.6rem;
     margin: 0;
-    background: #045c20;
-    border-radius: 4px 4px 0 0;
+    background: $color_navbar_bg;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     @if $is_light_theme {
         color: #fff;
     } 
@@ -454,7 +616,7 @@ a.close {
     min-width: 1.8em;
     height: 1.5em;
     padding: 0 0.4em;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     font-size: 0.58em;
     line-height: 1;
     font-weight: 700;
@@ -464,7 +626,7 @@ a.close {
 }
 
 .sidebox-content {
-    border: 1px solid $color_primary25;
+    border: 1px solid var(--color-border);
     border-top: none;
     margin: 0;
     padding: 0.35rem 0.6rem 0.5rem;
@@ -480,11 +642,13 @@ a.close {
     }
 }
 
+// Sidebox cards (home page + others). Card surface + subtle elevation from the
+// token layer for a cohesive, modern look across palettes/themes.
 .sidebox {
-    border-top-left-radius: $widget_border_radius;
-    border-top-right-radius: $widget_border_radius;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
     padding: 0 !important;
-    padding-bottom: 1rem !important;
     overflow: hidden;
 }
 
@@ -551,8 +715,8 @@ a.close {
 }
 
 details {
-    border: 1px solid $color_primary25;
-    background: $color_primary5;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-alt);
     padding: 5px 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }

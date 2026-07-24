@@ -16,36 +16,43 @@
 }
 
 .django-ace-toolbar {
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 34px;
+    padding: 0 8px;
+    font-size: 13px;
     text-align: left;
-    color: #555;
-    text-shadow: 0 1px 0 #fff;
-    border-bottom: 1px solid #d8d8d8;
-    background-color: #eaeaea;
-    background-image: -moz-linear-gradient(#fafafa, #eaeaea);
-    background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
-    background-image: linear-gradient(#fafafa, #eaeaea);
-    background-repeat: repeat-x;
+    color: var(--color-text-secondary, #555);
+    border-bottom: 1px solid var(--color-border, #d8d8d8);
+    background: var(--color-surface-alt, #eaeaea);
     clear: both;
     overflow: hidden;
 }
 
+.django-ace-toolbar a:focus-visible {
+    outline: 2px solid var(--color-focus-ring, #1958c1);
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+
 .theme-dark .django-ace-toolbar {
-    background-color: rgb(17, 17, 17);
-    background-image: none;
-    color: #ddd;
-    text-shadow: none;
-    border-bottom-color: #333;
+    color: var(--color-text-secondary, #ddd);
+    border-bottom-color: var(--color-border, #333);
+    background: var(--color-surface-alt, #111);
 }
 
 .django-ace-max_min {
-    float: right;
-    padding: 5px;
-
-    background: url(img/expand.png) no-repeat 5px 5px;
     display: block;
-    height: 16px;
-    width: 16px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 4px;
+    background: url(img/expand.png) center / 16px 16px no-repeat;
+}
+
+.django-ace-max_min:hover {
+    background-color: var(--color-surface, #fff);
 }
 
 .theme-dark .django-ace-max_min {
@@ -54,6 +61,11 @@
 
 .django-ace-editor {
     position: relative;
+    border: 1px solid var(--color-border-strong, #808080);
+    border-radius: 6px;
+    background: var(--color-surface-raised, #fff);
+    box-shadow: var(--shadow-1, 0 1px 3px rgba(0, 0, 0, .12));
+    overflow: hidden;
 }
 
 .django-ace-editor-fullscreen {
@@ -67,4 +79,21 @@
 
 .django-ace-editor-fullscreen .django-ace-max_min {
     background-image: url(img/contract.png);
+}
+
+/* iOS / iPadOS support: prevent Safari's auto-zoom on focus (triggered by any
+   font < 16px), enable momentum scrolling, and stop selection/callout glitches
+   that make the Ace editor hard to use on touch devices. */
+.django-ace-ios .ace_editor,
+.django-ace-ios .ace_editor .ace_text-input {
+    font-size: 16px !important;
+}
+
+.django-ace-ios .ace_editor {
+    -webkit-overflow-scrolling: touch;
+    -webkit-text-size-adjust: 100%;
+}
+
+.django-ace-ios .ace_content {
+    -webkit-touch-callout: none;
 }

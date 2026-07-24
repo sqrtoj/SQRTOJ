@@ -2,6 +2,9 @@
 {% compress js %}
     <script type="text/javascript">
         $(document).ready(function () {
+            var expandLabel = {{ _('Expand')|htmltojs }};
+            var collapseLabel = {{ _('Collapse')|htmltojs }};
+
             function ajax_vote(url, id, delta, on_success) {
                 return $.ajax({
                     url: url,
@@ -11,12 +14,12 @@
                     },
                     success: function (data, textStatus, jqXHR) {
                         var score = $('#post-' + id + ' #post-score').first();
-                        score.text(parseInt(score.text()) + delta);
+                        score.text(data.score);
                         if (typeof on_success !== 'undefined')
-                            on_success();
+                            on_success(data.vote_score);
                     },
                     error: function (data, textStatus, jqXHR) {
-                        alert('Could not vote: ' + data.responseText);
+                        alert({{ _('Could not vote: {error}')|htmltojs }}.replace('{error}', data.responseText));
                     }
                 });
             }
@@ -32,24 +35,103 @@
             window.blog_upvote = function (id) {
                 ajax_vote('{{ url('blog_upvote') }}', id, 1, function () {
                     var $votes = get_$votes(id);
-                    if ($votes.downvote.hasClass('voted'))
-                        $votes.downvote.removeClass('voted');
-                    else
-                        $votes.upvote.addClass('voted');
+                    $votes.downvote.removeClass('voted');
+                    $votes.upvote.addClass('voted');
                 });
             };
 
             window.blog_downvote = function (id) {
                 ajax_vote('{{ url('blog_downvote') }}', id, -1, function () {
                     var $votes = get_$votes(id);
-                    if ($votes.upvote.hasClass('voted'))
-                        $votes.upvote.removeClass('voted');
-                    else
-                        $votes.downvote.addClass('voted');
+                    $votes.upvote.removeClass('voted');
+                    $votes.downvote.addClass('voted');
                 });
             };
 
             $('votes-link').find('a[data-featherlight]').featherlight();
+
+            // Per-post collapse. Canonical here so the toggle works anywhere
+            // blog-post.html is rendered (newsfeed + user blogs).
+            //
+            // Behaviour: every post is COLLAPSED by default (only the head -- title,
+            // author, time -- shows). Clicking a post expands its body. We persist the
+            // set of posts the reader has explicitly EXPANDED, so their choices stick
+            // across reloads while new/unseen posts stay collapsed.
+            var EXPANDED_KEY = 'newsfeed_expanded_posts';
+            function readExpanded() {
+                try {
+                    return JSON.parse(localStorage.getItem(EXPANDED_KEY)) || {};
+                } catch (e) {
+                    return {};
+                }
+            }
+            function writeExpanded(state) {
+                try {
+                    localStorage.setItem(EXPANDED_KEY, JSON.stringify(state));
+                } catch (e) { /* storage unavailable; collapse still works per-session */ }
+            }
+            function setCollapsed($post, collapsed) {
+                var $toggle = $post.find('.blog-collapse-toggle').first();
+                var $icon = $toggle.find('i');
+                $post.toggleClass('collapsed', collapsed);
+                $toggle.attr('aria-expanded', collapsed ? 'false' : 'true');
+                $toggle.attr('title', collapsed ? expandLabel : collapseLabel);
+                $icon.toggleClass('fa-chevron-down', collapsed);
+                $icon.toggleClass('fa-chevron-up', !collapsed);
+            }
+
+            function setAllCollapsed(collapsed) {
+                var state = readExpanded();
+                $('.post').each(function () {
+                    var $post = $(this);
+                    setCollapsed($post, collapsed);
+                    if (collapsed) {
+                        delete state[$post.attr('id')];
+                    } else {
+                        state[$post.attr('id')] = true;
+                    }
+                });
+                writeExpanded(state);
+            }
+
+            window.blogCollapse = {
+                read: readExpanded,
+                write: writeExpanded,
+                set: setCollapsed,
+                setAll: setAllCollapsed,
+            };
+
+            // Collapse everything by default, then re-open only what the reader
+            // previously expanded.
+            var expandedState = readExpanded();
+            $('.post').each(function () {
+                setCollapsed($(this), !expandedState[this.id]);
+            });
+
+            $(document).on('click', '.blog-collapse-toggle', function (e) {
+                e.preventDefault();
+                togglePost($(this).closest('.post'));
+            });
+
+            // Clicking the header block (but not the title link itself) also
+            // toggles, so the whole teaser is an easy expand/collapse target.
+            $(document).on('click', '.post-header-main', function (e) {
+                if ($(e.target).closest('a').length) return;
+                togglePost($(this).closest('.post'));
+            });
+
+            function togglePost($post) {
+                var collapsed = !$post.hasClass('collapsed');
+                setCollapsed($post, collapsed);
+                var state = readExpanded();
+                if (collapsed) {
+                    delete state[$post.attr('id')];
+                } else {
+                    state[$post.attr('id')] = true;
+                }
+                writeExpanded(state);
+                $(document).trigger('blog:collapse-changed');
+            }
         });
     </script>
 {% endcompress %}

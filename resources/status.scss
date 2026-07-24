@@ -1,44 +1,283 @@
+// Verdict / status badges. Colors come from the protected verdict-token layer
+// (docs/design-system/03-design-tokens.md §2.3): solid-fill background with a
+// contrasting label, replacing the legacy grey-fill + colored-text. Semantics are
+// unchanged (AC green, WA red, ...); the token values are theme-aware so badges
+// stay legible on warm paper (light) and warm charcoal (dark) surfaces.
+//
+// Color is always paired with the verdict abbreviation text (never color-only) for
+// accessibility (see 07-accessibility.md, spec 5.4).
+
 .AB {
-    background-color: #CCC;
-    color: black;
+    background-color: var(--verdict-ab-bg);
+    color: var(--verdict-ab-fg);
 }
 
 .AC {
-    background-color: #53f23f;
-    color: green;
+    background-color: var(--verdict-ac-bg);
+    color: var(--verdict-ac-fg);
 }
 
 ._AC {
-    background-color: #DFFF00;
-    color: green;
+    background-color: var(--verdict-partial-bg);
+    color: var(--verdict-partial-fg);
 }
 
 .WA {
-    background-color: #CCC;
-    color: #ef1b53;
+    background-color: var(--verdict-wa-bg);
+    color: var(--verdict-wa-fg);
 }
 
-.TLE, .MLE {
-    background-color: #CCC;
-    color: black;
+.TLE {
+    background-color: var(--verdict-tle-bg);
+    color: var(--verdict-tle-fg);
 }
 
-.OLE, .IR, .RTE, .OTH {
-    background-color: #FAB623;
-    color: black;
+.MLE {
+    background-color: var(--verdict-mle-bg);
+    color: var(--verdict-mle-fg);
+}
+
+.OLE {
+    background-color: var(--verdict-ole-bg);
+    color: var(--verdict-ole-fg);
+}
+
+.RTE {
+    background-color: var(--verdict-rte-bg);
+    color: var(--verdict-rte-fg);
+}
+
+.IR, .OTH {
+    background-color: var(--verdict-ir-bg);
+    color: var(--verdict-ir-fg);
 }
 
 .CE {
-    background-color: #CCC;
-    color: black;
+    background-color: var(--verdict-ce-bg);
+    color: var(--verdict-ce-fg);
 }
 
 .IE {
-    background-color: red;
-    color: black;
+    background-color: var(--verdict-ie-bg);
+    color: var(--verdict-ie-fg);
 }
 
 .QU, .G {
-    background: white;
-    color: black;
+    background: var(--verdict-queued-bg);
+    color: var(--verdict-queued-fg);
+}
+
+// Judges page — responsive card grid (docs/design-system/10-modern-ui-overhaul.md
+// §3.5). Replaces the legacy judge-status table; the #judge-status container is
+// kept so the 10s AJAX refresh in status/media-js.html keeps working.
+#judge-status {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    gap: var(--space-4);
+    margin: var(--space-4) 0;
+}
+
+.judge-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    // Complete the card treatment (spec 10 §3.5): subtle lift on hover and a
+    // focus-within ring. Motion is disabled globally under prefers-reduced-motion.
+    transition: transform var(--motion-base) var(--ease-standard),
+        box-shadow var(--motion-base) var(--ease-standard);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-2);
+    }
+
+    &:focus-within {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+    }
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+    }
+
+    &__name {
+        font-size: var(--text-md);
+        font-weight: var(--weight-semibold);
+        color: var(--color-text);
+        word-break: break-word;
+    }
+
+    &__stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-2);
+    }
+
+    &__runtimes {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+}
+
+.judge-runtime-chips .runtime-label {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.judge-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+
+    &__label {
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--color-text-muted);
+    }
+
+    &__value {
+        font-weight: var(--weight-medium);
+        color: var(--color-text);
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+// Online/offline status pill — pairs color with a text label (never color-only).
+.judge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+
+    .fa {
+        font-size: 0.7em;
+    }
+
+    &--online {
+        background: var(--color-success-bg);
+        color: var(--color-success-fg);
+    }
+
+    &--offline {
+        background: var(--color-danger-bg);
+        color: var(--color-danger-fg);
+    }
+}
+
+.judge-runtime-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+
+    .runtime-label {
+        display: inline-block;
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-sm);
+        background: var(--color-surface-alt);
+        border: 1px solid var(--color-border);
+        color: var(--color-link);
+        font-size: var(--text-sm);
+        cursor: pointer;
+        transition: background-color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-surface);
+            border-color: var(--color-border-strong);
+        }
+    }
+}
+
+.judge-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: var(--space-7) var(--space-4);
+
+    .fa {
+        font-size: 2.5em;
+        margin-bottom: var(--space-3);
+        opacity: 0.5;
+    }
+}
+
+// The date-range plugin ships with a fixed white palette. Its popup is used on
+// the OJ statistics page, so map every visible surface to our theme tokens.
+// This also keeps the calendar legible in the dark palettes.
+.daterangepicker {
+    color: var(--color-text) !important;
+    background: var(--color-surface-raised) !important;
+    border-color: var(--color-border) !important;
+    font-family: var(--font-ui) !important;
+
+    &::before {
+        border-bottom-color: var(--color-border) !important;
+    }
+
+    &::after {
+        border-bottom-color: var(--color-surface-raised) !important;
+    }
+
+    &.drop-up::before {
+        border-top-color: var(--color-border) !important;
+    }
+
+    &.drop-up::after {
+        border-top-color: var(--color-surface-raised) !important;
+    }
+
+    .calendar-table,
+    td.off,
+    td.off.in-range,
+    td.off.start-date,
+    td.off.end-date {
+        background: var(--color-surface-raised) !important;
+        border-color: var(--color-border) !important;
+        color: var(--color-text-muted) !important;
+    }
+
+    .calendar-table .next span,
+    .calendar-table .prev span {
+        border-color: var(--color-text) !important;
+    }
+
+    td.available:hover,
+    th.available:hover,
+    .ranges li:hover,
+    select.hourselect,
+    select.minuteselect,
+    select.secondselect,
+    select.ampmselect {
+        background: var(--color-surface-alt) !important;
+        border-color: var(--color-border-strong) !important;
+        color: var(--color-text) !important;
+    }
+
+    td.in-range {
+        background: var(--color-accent-soft) !important;
+        color: var(--color-text) !important;
+    }
+
+    td.active,
+    td.active:hover,
+    .ranges li.active {
+        background: var(--color-accent) !important;
+        color: var(--color-accent-contrast) !important;
+    }
+
+    select,
+    .drp-buttons {
+        background: var(--color-surface-raised) !important;
+        border-color: var(--color-border) !important;
+        color: var(--color-text) !important;
+    }
 }

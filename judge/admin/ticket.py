@@ -35,4 +35,3 @@ class TicketAdmin(ModelAdmin):
     list_display = ('title', 'user', 'time', 'linked_item')
     inlines = [TicketMessageInline]
     form = TicketForm
-    date_hierarchy = 'time'

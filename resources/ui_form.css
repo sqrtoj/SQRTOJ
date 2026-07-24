@@ -1,6 +1,6 @@
 .helptext {
     font-size: 15px;
-    color: #999;
+    color: var(--color-text-muted);
     border-width: 0 0 1px 0;
 }
 .helptext::before {
@@ -28,16 +28,16 @@
 }
 
 .errorlist {
-    background: rgba(255, 0, 0, 0.3);
-    border: 3px dashed red;
+    background: var(--color-danger-bg);
+    border: 3px dashed var(--color-danger-fg);
     border-right: none;
-    border-left: solid red;
+    border-left: solid var(--color-danger-fg);
     padding: 0 1em 0.1em 2em;
     margin: 0.3em 0 0.5em 0;
 }
 .errornote {
-    border: 3px dashed #ffc000;
-    border-left: solid #ffc000;
+    border: 3px dashed var(--color-warning-fg);
+    border-left: solid var(--color-warning-fg);
     padding: 0.7em 2em;
     margin: 0 0 8px;
     font-size: 13px !important;
@@ -45,5 +45,5 @@
 }
 .required th::after {
     content: "*";
-    color: red;
+    color: var(--color-danger-fg);
 }

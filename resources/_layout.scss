@@ -1,0 +1,84 @@
+// Reusable layout utilities (Phase 6, docs/design-system/10-modern-ui-overhaul.md).
+// Token-driven, palette/theme-agnostic. No colors here beyond token references.
+
+@import "vars";
+
+// Centered, max-width content wrapper with responsive side padding.
+.u-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    box-sizing: border-box;
+
+    &.u-container-wide {
+        max-width: var(--container-wide);
+    }
+}
+
+// Responsive auto-fill card grid. Set --u-grid-min per usage to tune column width.
+.u-grid-auto {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--u-grid-min, 260px), 1fr));
+    gap: var(--space-4);
+}
+
+// Vertical spacing stack.
+.u-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--u-stack-gap, var(--space-4));
+}
+
+// Horizontal cluster with wrapping.
+.u-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--u-cluster-gap, var(--space-2));
+}
+
+// Standardized section header: title on the left, optional action on the right.
+.section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-4);
+
+    .section-head-title {
+        margin: 0;
+        font-size: var(--text-lg);
+        font-weight: var(--weight-semibold);
+        color: var(--color-text);
+    }
+
+    .section-head-action {
+        font-size: var(--text-sm);
+        white-space: nowrap;
+    }
+}
+
+// Consistent centered empty state (lists with no results).
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-3);
+    padding: var(--space-7) var(--space-4);
+    color: var(--color-text-secondary);
+
+    .empty-state-icon {
+        font-size: 2.5em;
+        color: var(--color-text-muted);
+        line-height: 1;
+    }
+
+    .empty-state-message {
+        font-size: var(--text-md);
+    }
+}

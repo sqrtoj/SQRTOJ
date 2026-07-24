@@ -154,7 +154,14 @@
 {% endblock %}
 
 {% block body %}
+<div class="auth-page auth-page--wide">
 <div id="center-float">
+            <div class="auth-brand">
+                <img src="{{ static('icons/logo.svg') }}" alt="{{ SITE_NAME }}" width="72" height="72"
+                     onerror="this.src='{{ static('icons/logo.png') }}'; this.onerror=null">
+                <h1 class="auth-title">{{ _('Create your %(sitename)s account', sitename=SITE_NAME) }}</h1>
+                <p class="auth-subtitle">{{ _('Join the community and start solving.') }}</p>
+            </div>
             {% if not oauth_only %}
             <form id="edit-form" action="" method="post" class="form-area">
                 {% csrf_token %}
@@ -251,4 +258,5 @@
                 <div class="map-axis-y"></div>
             </div>
         </div>
+</div>
 {% endblock %}

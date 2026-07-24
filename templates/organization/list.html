@@ -17,6 +17,7 @@
 
 {% macro org_table(name, queryset) %}
     <h4>{{ name }}</h4>
+    <div class="h-scrollable-table">
     <table class="organization-table table striped">
         <thead>
             <tr>
@@ -32,9 +33,19 @@
                 <td><a href="{{ org.get_users_url() }}">{{ org.performance_points|floatformat(2) }}</a></td>
                 <td><a href="{{ org.get_users_url() }}">{{ org.member_count }}</a></td>
             </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">
+                    <div class="empty-state">
+                        <i class="empty-state-icon fa fa-users" aria-hidden="true"></i>
+                        <span class="empty-state-message">{{ _('No organizations here yet.') }}</span>
+                    </div>
+                </td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
+    </div>
 {% endmacro %}
 
 {% block body %}

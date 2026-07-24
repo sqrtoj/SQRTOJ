@@ -42,12 +42,15 @@ $is_light_theme: true;
         text-align: right;
 
         &, a {
-            color: grey !important;
+            color: var(--color-text-muted) !important;
         }
     }
 }
 
 #problem-table {
+    width: 100%;
+    min-width: 760px;
+
     td, th {
         // Text columns are left-aligned
         &.problem-code, &.problem-name, &.category, &.types {
@@ -57,7 +60,7 @@ $is_light_theme: true;
 
         // Numeric columns are center-aligned
         &.solved, &.points, &.ac-rate, &.editorial, &.users {
-            padding: 0 10px;
+            padding: 0 var(--space-3);
             white-space: nowrap;
         }
 
@@ -67,20 +70,36 @@ $is_light_theme: true;
     }
 
     th a {
-        @if $is_light_theme {
-            color: #fff;
-        } 
-        @else {
-            color: #ccc;
-        }
+        color: var(--color-text-inverse);
+    }
+}
+
+// Keep the problem results and the filters as two clearly separate desktop
+// columns. The table owns the remaining width, while the filter panel stays a
+// stable readable size instead of stretching into the list.
+@media (min-width: 700px) {
+    #common-content:has(#problem-table) {
+        align-items: flex-start;
+        gap: clamp(var(--space-4), 2vw, var(--space-6));
     }
 
-    tr {
-        transition: background-color linear 0.2s;
+    #content-left.problems {
+        flex: 1 1 0;
+    }
 
-        &:hover {
-            background: rgba(vars.$color_primary100, 0.05);
-        }
+    #content-right.problems {
+        flex: 0 0 clamp(15rem, 18vw, 19rem);
+        max-width: 19rem;
+        padding-left: 0;
+    }
+}
+
+// The problem list is a data-dense two-column page. Give this page a little
+// more of the viewport than prose pages so the table and filter card do not
+// feel unnecessarily compressed on desktop displays.
+@media (min-width: 700px) {
+    #content:has(#problem-table) {
+        width: 94%;
     }
 }
 
@@ -94,6 +113,11 @@ $is_light_theme: true;
         display: inline-block;
         padding: 3px 10px;
         vertical-align: middle;
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
+        }
     }
 
     input {
@@ -142,9 +166,57 @@ label[for="category"], label[for="type"] {
     width: 100%;
 }
 
-// span.type-tag {
-//     white-space: nowrap;
-// }
+// Type tags read as small neutral pills instead of plain comma-separated text.
+span.type-tag {
+    display: inline-block;
+    padding: 1px var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
+// Points shown as a subtle accent-tinted badge so the number stands out.
+.points-badge {
+    display: inline-block;
+    min-width: 2.5em;
+    padding: 1px var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-accent-soft, var(--color-surface-alt));
+    color: var(--color-accent);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+}
+
+// AC-rate: number over a thin progress bar for an at-a-glance difficulty read.
+.ac-rate-cell {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    min-width: 4em;
+}
+
+.ac-rate-value {
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-sm);
+}
+
+.ac-rate-bar {
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-alt);
+    overflow: hidden;
+
+    &__fill {
+        display: block;
+        height: 100%;
+        border-radius: var(--radius-pill);
+        background: var(--color-accent);
+    }
+}
 
 ul.problem-list {
     list-style: none;
@@ -178,34 +250,34 @@ ul.problem-list {
 }
 
 .solved-problem-color {
-    color: #44AD41;
+    color: var(--color-success-fg);
 }
 
 .unsolved-problem-color {
-    color: #DE2121;
+    color: var(--color-danger-fg);
 }
 
 .attempted-problem-color {
-    color: orange;
+    color: var(--color-warning-fg);
 }
 
 .has-editorial-color {
-    color: #44AD41;
+    color: var(--color-success-fg);
 }
 
 .no-editorial-color {
-    color: #DE2121;
+    color: var(--color-danger-fg);
 }
 
 .submissions-left {
-    color: vars.$color_primary100;
+    color: var(--color-text);
     font-weight: 600;
     text-align: center;
     margin-top: 0.5em;
 }
 
 .no-submissions-left {
-    color: red;
+    color: var(--color-danger-fg);
 }
 
 .organization-tags {
@@ -220,13 +292,13 @@ ul.problem-list {
     font-weight: 600;
     margin-right: 0.45em;
     position: relative;
-    background-color: vars.$color_primary25;
+    background-color: var(--color-border);
     transform: translateY(+35%);
     display: inline-block;
 }
 
 .organization-tag a {
-    color: vars.$color_primary100;
+    color: var(--color-text);
 }
 
 .pdf-icon {
@@ -254,7 +326,7 @@ ul.problem-list {
     font-size: 0.85em;
 
     a {
-        color: vars.$color_primary50;
+        color: var(--color-text-muted);
         text-decoration: none;
     }
 }
@@ -275,6 +347,11 @@ ul.problem-list {
     .button {
         display: inline-block !important;
         padding: 6px 12px;
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
+        }
     }
 
     .submit-bar {
@@ -316,9 +393,9 @@ ul.problem-list {
     }
 
     #file_drag {
-        border: 2px dashed #999;
+        border: 2px dashed var(--color-border-strong);
         border-radius : 7px;
-        color: #999;
+        color: var(--color-text-muted);
         cursor: pointer;
         display: block;
         padding: 1.5em;
@@ -326,15 +403,20 @@ ul.problem-list {
         transition: background 0.3s, color 0.3s;
 
         &:hover, &.hover {
-            background: #ddd;
+            background: var(--color-surface-alt);
             border-style: solid;
-            box-shadow: inset 0 3px 4px #999;
+            box-shadow: inset 0 3px 4px var(--color-border-strong);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
         }
     }
 
     .helptext {
         font-size: 13px;
-        color: #999;
+        color: var(--color-text-muted);
         border-width: 0 0 1px 0;
 
         &::before {
@@ -350,16 +432,16 @@ ul.problem-list {
 
     .errorlist {
         background: rgba(255, 0, 0, 0.3);
-        border: 3px dashed red;
+        border: 3px dashed var(--color-danger-fg);
         border-right: none;
-        border-left: solid red;
+        border-left: solid var(--color-danger-fg);
         padding: 0 1em 0.1em 2em;
         margin: 0.3em 0 0.5em 0;
     }
 
     .errornote {
-        border: 3px dashed #ffc000;
-        border-left: solid #ffc000;
+        border: 3px dashed var(--color-warning-fg);
+        border-left: solid var(--color-warning-fg);
         padding: 0.7em 2em;
         margin: 0 0 8px;
         font-size: 13px !important;
@@ -368,7 +450,7 @@ ul.problem-list {
 
     .required th::after {
         content: "*";
-        color: red;
+        color: var(--color-danger-fg);
     }
 }
 
@@ -384,7 +466,7 @@ ul.problem-list {
 
     .select2-results__option {
         color: vars.$color_problem_submit_select2 !important;
-        background: vars.$color_primary0 !important;
+        background: var(--color-surface) !important;
     }
 
     .select2-results__option--highlighted {
@@ -393,7 +475,7 @@ ul.problem-list {
 
     .select2-results__option[aria-selected=true] {
         font-weight: bold;
-        color: vars.$color_primary100 !important;
+        color: var(--color-text) !important;
     }
 
     .select2-results__option {
@@ -417,7 +499,7 @@ ul.problem-list {
     }
 
     #result-version-info {
-        border-bottom: 1px solid vars.$color_primary50;
+        border-bottom: 1px solid var(--color-border-strong);
         margin: 0px 1em;
         color: vars.$color_problem_submit_select2;
         font-weight: 600;
@@ -426,20 +508,17 @@ ul.problem-list {
     }
 }
 
-@media (max-width: 550px) {
-    #problem-table tr .users {
+@media (max-width: 600px) {
+    #problem-table tr .category,
+    #problem-table tr .types {
         display: none;
     }
 }
 
-@media (max-width: 450px) {
-    #problem-table tr .ac-rate {
-        display: none;
-    }
-}
-
-@media (max-width: 350px) {
-    #problem-table tr .category {
+@media (max-width: 480px) {
+    #problem-table tr .users,
+    #problem-table tr .ac-rate,
+    #problem-table tr .editorial {
         display: none;
     }
 }

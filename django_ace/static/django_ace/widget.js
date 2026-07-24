@@ -70,6 +70,14 @@
         editor.resize();
     }
 
+    // iOS/iPadOS need special handling: iPadOS 13+ masquerades as "MacIntel",
+    // so we also treat a touch-capable Mac as iPadOS.
+    function isAppleTouchDevice() {
+        var ua = navigator.userAgent || '';
+        if (/iPad|iPhone|iPod/.test(ua)) return true;
+        return navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+    }
+
     function apply_widget(widget) {
         var div = widget.firstChild,
             textarea = next(widget),
@@ -190,6 +198,23 @@
                 }
             }
         ]);
+
+        // iOS/iPadOS support: Safari auto-zooms when a focused input has a
+        // font-size below 16px, and Ace's hidden textarea defaults smaller than
+        // that, so tapping the editor would zoom the whole page. Bump the input
+        // font, enable momentum scrolling, and flag the widget for CSS.
+        if (isAppleTouchDevice()) {
+            widget.className += ' django-ace-ios';
+            var aceInput = div.querySelector('textarea.ace_text-input');
+            if (aceInput) {
+                aceInput.style.fontSize = '16px';
+                aceInput.setAttribute('autocorrect', 'off');
+                aceInput.setAttribute('autocapitalize', 'off');
+                aceInput.setAttribute('spellcheck', 'false');
+            }
+            editor.renderer.setScrollMargin(0, 0);
+            editor.setOption('dragEnabled', false);
+        }
 
         window[widget.id] = editor;
         $(widget).trigger('ace_load', [editor]);

@@ -17,9 +17,42 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var collapseAllLabel = {{ _('Collapse all')|htmltojs }};
+            var expandAllLabel = {{ _('Expand all')|htmltojs }};
+
             $('.time-remaining').each(function () {
                 count_down($(this));
             });
+
+            // Per-post collapsing lives in blog/media-js.html (shared with the
+            // user blog tab). Here we only wire the newsfeed "collapse/expand all"
+            // toolbar button and keep its label in sync.
+            function refreshCollapseAllButton() {
+                var anyOpen = $('.post').not('.collapsed').length > 0;
+                var $btn = $('#collapse-all-posts');
+                var $icon = $btn.find('i');
+                var $label = $btn.find('.newsfeed-toolbar__label');
+                if (anyOpen) {
+                    $label.text(collapseAllLabel);
+                    $icon.removeClass('fa-expand').addClass('fa-compress');
+                    $btn.attr('aria-pressed', 'false');
+                } else {
+                    $label.text(expandAllLabel);
+                    $icon.removeClass('fa-compress').addClass('fa-expand');
+                    $btn.attr('aria-pressed', 'true');
+                }
+            }
+
+            $('#collapse-all-posts').on('click', function (e) {
+                e.preventDefault();
+                var collapseThemAll = $('.post').not('.collapsed').length > 0;
+                if (window.blogCollapse) window.blogCollapse.setAll(collapseThemAll);
+                refreshCollapseAllButton();
+            });
+
+            $(document).on('click', '.blog-collapse-toggle', refreshCollapseAllButton);
+
+            refreshCollapseAllButton();
 
             $('.blog-sidebar').hide();
             $('#blog-tab').find('a').click(function (e) {
@@ -53,9 +86,22 @@
     <div id="blog-container">
         <div class="blog-content sidebox">
             {% include "blog/blog-list-tabs.html" %}
+            {% if posts %}
+                <div class="newsfeed-toolbar">
+                    <button type="button" id="collapse-all-posts" class="newsfeed-toolbar__btn">
+                        <i class="fa fa-compress" aria-hidden="true"></i>
+                        <span class="newsfeed-toolbar__label">{{ _('Collapse all') }}</span>
+                    </button>
+                </div>
+            {% endif %}
             <div class="sidebox-content" style="border: unset;">
                 {% for post in posts %}
                     {% include "blog/blog-post.html" %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="empty-state-icon fa fa-newspaper-o" aria-hidden="true"></i>
+                        <div class="empty-state-message">{{ _('No posts here yet.') }}</div>
+                    </div>
                 {% endfor %}
             </div>
             {% if page_obj.has_other_pages() %}
@@ -106,47 +152,22 @@
                     </div>
                 </div>
             {% endif %}
-            {% if current_contests %}
-                <div class="blog-sidebox sidebox">
-                    <h3>
-                        <span>{{ _('Ongoing contests') }}</span>
-                    </h3>
-                    <div class="sidebox-content sidebox-ongoing-contest">
-                        {% for contest in current_contests %}
-                            <div class="contest">
-                                <div class="contest-list-title">
-                                    <a href="{{ url('contest_view', contest.key) }}">{{ contest.name }}</a>
-                                </div>
-                                <div class="time">
-                                    {{ _('Ends in %(countdown)s.', countdown=as_countdown(contest.time_before_end)) }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+            {# Ongoing / Upcoming contests intentionally omitted here: they are
+               surfaced in the contest spotlight strip on the homepage (home.html,
+               docs/design-system/19-homepage-dashboard.md) to avoid duplication. #}
+            <div class="blog-sidebox sidebox">
+                <h3 class="sidebox-head">
+                    <span><i class="fa fa-search" aria-hidden="true"></i> {{ _('Find user') }}</span>
+                </h3>
+                <div class="sidebox-content">
+                    <form class="handle-search" action="{{ url('user_ranking_redirect') }}" method="get" role="search">
+                        <input class="handle-search__input" type="text" name="handle"
+                               placeholder="{{ _('Enter a handle...') }}" aria-label="{{ _('Find a user by handle') }}"
+                               autocomplete="off" required>
+                        <button class="handle-search__btn" type="submit" aria-label="{{ _('Find') }}"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+                    </form>
                 </div>
-            {% endif %}
-
-            {% if future_contests %}
-                <div class="blog-sidebox sidebox">
-                    <h3>
-                        <span>{{ _('Upcoming contests') }}</span>
-                        
-                    </h3>
-                    <div class="sidebox-content">
-                        {% for contest in future_contests %}
-                            <div class="contest">
-                                <div class="contest-list-title">
-                                    <a href="{{ url('contest_view', contest.key) }}">{{ contest.name }}</a>
-                                </div>
-                                <div class="time">
-                                    {{ _('Starting in %(countdown)s.', countdown=as_countdown(contest.time_before_start)) }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
+            </div>
             {% if top_rated_users %}
                 {% include "blog/top-rating.html" %}
             {% endif %}
@@ -154,26 +175,20 @@
                 {% include "blog/top-contrib.html" %}
             {% endif %}
             <div class="blog-sidebox sidebox">
-                <h3 style="display: flex; justify-content: space-between; white-space: nowrap;">
-                    <span style="margin-right: 10px;">
-                        {{ _('Comment stream') }}
-                    </span>
+                <h3 class="sidebox-head">
+                    <span><i class="fa fa-comments" aria-hidden="true"></i> {{ _('Comment stream') }}</span>
                     {% if misc_config.discord_invite_link and misc_config.discord_invite_shieldio %}
-                        <span style="margin: 0.1em 0.3em -6px;">
-                            <a href="{{ misc_config.discord_invite_link }}">
-                                <img style="max-width: none;" src="{{ misc_config.discord_invite_shieldio }}" alt="Discord">
-                            </a>
-                        </span>
+                        <a class="sidebox-head__badge" href="{{ misc_config.discord_invite_link }}">
+                            <img src="{{ misc_config.discord_invite_shieldio }}" alt="Discord">
+                        </a>
                     {% endif %}
                 </h3>
                 <div class="sidebox-content">
-                    <ul>
+                    <ul class="comment-stream">
                         {% for comment in comments %}
                             <li>
-                                <span style="padding-left:0.25em" class="poster">
-                                    {{ link_user(comment.author) }}
-                                </span> &rarr;
-                                <a href="{{ comment.link }}#comment-{{ comment.id }}">{{ comment.page_title }}</a>
+                                <span class="poster">{{ link_user(comment.author) }}</span>
+                                <a class="comment-stream__page" href="{{ comment.link }}#comment-{{ comment.id }}">{{ comment.page_title }}</a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -181,22 +196,6 @@
                         <a href="{{ url('comment_rss') }}"><span><i class="fa fa-rss"></i></span> RSS</a>
                         /
                         <a href="{{ url('comment_atom') }}">Atom</a>
-                    </span>
-                </div>
-            </div>
-            <div class="blog-sidebox sidebox">
-                <h3>{{ _('New problems') }} <i class="fa fa-puzzle-piece"></i>
-                </h3>
-                <div class="sidebox-content">
-                    <ul class="problem-list">
-                        {% for problem in new_problems %}
-                            <li><a href="{{ url('problem_detail', problem.code) }}">{{ problem.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    <span class="rssatom">
-                        <a href="{{ url('problem_rss') }}"><span><i class="fa fa-rss"></i></span> RSS</a>
-                        /
-                        <a href="{{ url('problem_atom') }}">Atom</a>
                     </span>
                 </div>
             </div>

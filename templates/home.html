@@ -1,8 +1,210 @@
 {% extends "blog/list.html" %}
 {% block before_posts %}
+    {# Homepage dashboard (docs/design-system/19-homepage-dashboard.md).
+       Tier A: living aurora hero + count-up stats + greeting.
+       Tier B: contest spotlight strip.  Tier C: personal strip for logged-in users.
+       All data comes from PostList.get_context_data; no backend changes. #}
+    <section class="home-hero">
+        <div class="home-hero__bg" role="presentation"></div>
+        <div class="home-hero__aurora" role="presentation" aria-hidden="true">
+            <span class="home-hero__blob home-hero__blob--1"></span>
+            <span class="home-hero__blob home-hero__blob--2"></span>
+            <span class="home-hero__blob home-hero__blob--3"></span>
+        </div>
+        <div class="home-hero__illustration"></div>
+        <div class="home-hero__content">
+            {% if request.user.is_authenticated %}
+                <h1 class="home-hero__title">
+                    {{ _('Welcome back, %(name)s', name=request.user.username) }}
+                </h1>
+                <p class="home-hero__pitch">{{ _('Ready to solve something today?') }}</p>
+                <div class="home-hero__actions">
+                    <a class="button" href="{{ url('problem_list') }}"><i class="fa fa-code" aria-hidden="true"></i> {{ _('Solve problems') }}</a>
+                    <a class="button btn-secondary" href="{{ url('contest_list') }}"><i class="fa fa-trophy" aria-hidden="true"></i> {{ _('Contests') }}</a>
+                </div>
+            {% else %}
+                <h1 class="home-hero__title">{{ SITE_LONG_NAME }}</h1>
+                <p class="home-hero__pitch">
+                    {{ _('Practice competitive programming, join contests, and climb the ranks.') }}
+                </p>
+                <div class="home-hero__actions">
+                    <a class="button" href="{{ url('problem_list') }}"><i class="fa fa-code" aria-hidden="true"></i> {{ _('Solve problems') }}</a>
+                    <a class="button btn-secondary" href="{{ url('contest_list') }}"><i class="fa fa-trophy" aria-hidden="true"></i> {{ _('Join a contest') }}</a>
+                </div>
+            {% endif %}
+            <div class="home-hero__stats">
+                <div class="hero-stat">
+                    <span class="hero-stat__value" data-count-to="{{ user_count }}">{{ user_count }}</span>
+                    <span class="hero-stat__label">{{ _('Users') }}</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat__value" data-count-to="{{ problem_count }}">{{ problem_count }}</span>
+                    <span class="hero-stat__label">{{ _('Problems') }}</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat__value" data-count-to="{{ submission_count }}">{{ submission_count }}</span>
+                    <span class="hero-stat__label">{{ _('Submissions') }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# Tier C: personal numbers for logged-in users. #}
+    {% if request.user.is_authenticated and request.profile %}
+        <section class="home-personal" aria-label="{{ _('Your progress') }}">
+            <div class="home-personal__chips">
+                <div class="home-chip">
+                    <i class="fa fa-check-circle home-chip__icon" aria-hidden="true"></i>
+                    <span class="home-chip__value">{{ request.profile.problem_count }}</span>
+                    <span class="home-chip__label">{{ _('Solved') }}</span>
+                </div>
+                {% if request.profile.rating %}
+                <div class="home-chip">
+                    <i class="fa fa-star home-chip__icon" aria-hidden="true"></i>
+                    <span class="home-chip__value {{ rating_class(request.profile.rating) }}">{{ request.profile.rating }}</span>
+                    <span class="home-chip__label">{{ _('Rating') }}</span>
+                </div>
+                {% endif %}
+                <div class="home-chip">
+                    <i class="fa fa-line-chart home-chip__icon" aria-hidden="true"></i>
+                    <span class="home-chip__value">{{ request.profile.performance_points|floatformat(0) }}</span>
+                    <span class="home-chip__label">{{ _('Points') }}</span>
+                </div>
+                {% if request.profile.contribution_points %}
+                <div class="home-chip">
+                    <i class="fa fa-heart home-chip__icon" aria-hidden="true"></i>
+                    <span class="home-chip__value">{{ request.profile.contribution_points }}</span>
+                    <span class="home-chip__label">{{ _('Contribution') }}</span>
+                </div>
+                {% endif %}
+            </div>
+            <a class="button btn-secondary home-personal__cta" href="{{ url('problem_random') }}">
+                <i class="fa fa-random" aria-hidden="true"></i> {{ _("I'm feeling lucky") }}
+            </a>
+        </section>
+    {% endif %}
+
+    {# Tier B: contest spotlight as a horizontal slider. Reuses as_countdown →
+       .time-remaining span, which the existing count_down() handler animates.
+       Auto-hides when empty. Prev/next buttons scroll the track; they and the
+       progress dots are wired up in the after_posts JS block. #}
+    {% if current_contests or future_contests %}
+        <section class="home-spotlight" aria-label="{{ _('Contests') }}" data-spotlight>
+            <div class="home-spotlight__head">
+                <h2 class="home-spotlight__title"><i class="fa fa-trophy" aria-hidden="true"></i> {{ _('Contests') }}</h2>
+                <div class="home-spotlight__nav">
+                    <button type="button" class="home-spotlight__arrow" data-spotlight-prev aria-label="{{ _('Previous') }}">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="home-spotlight__arrow" data-spotlight-next aria-label="{{ _('Next') }}">
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="home-spotlight__track" data-spotlight-track>
+                {% for contest in current_contests %}
+                    <a class="spotlight-card spotlight-card--live" href="{{ url('contest_view', contest.key) }}">
+                        <div class="spotlight-card__top">
+                            <span class="spotlight-badge spotlight-badge--live">
+                                <span class="spotlight-badge__dot"></span> {{ _('Live') }}
+                            </span>
+                        </div>
+                        <div class="spotlight-card__name">{{ contest.name }}</div>
+                        <div class="spotlight-card__countdown">
+                            <i class="fa fa-hourglass-half" aria-hidden="true"></i>
+                            {{ _('Ends in %(countdown)s', countdown=as_countdown(contest.time_before_end)) }}
+                        </div>
+                        <span class="spotlight-card__cta">{{ _('Enter') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                    </a>
+                {% endfor %}
+                {% for contest in future_contests %}
+                    <a class="spotlight-card spotlight-card--upcoming" href="{{ url('contest_view', contest.key) }}">
+                        <div class="spotlight-card__top">
+                            <span class="spotlight-badge spotlight-badge--upcoming">
+                                <i class="fa fa-calendar-o" aria-hidden="true"></i> {{ _('Upcoming') }}
+                            </span>
+                        </div>
+                        <div class="spotlight-card__name">{{ contest.name }}</div>
+                        <div class="spotlight-card__countdown">
+                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                            {{ _('Starts in %(countdown)s', countdown=as_countdown(contest.time_before_start)) }}
+                        </div>
+                        <span class="spotlight-card__cta">{{ _('Details') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
     {% if misc_config.home_page_top %}
         {{ render_django(misc_config.home_page_top, request=request, user_count=user_count, problem_count=problem_count, submission_count=submission_count, language_count=language_count, perms=perms) }}
     {% endif %}
+{% endblock %}
+
+{% block after_posts %}
+    {# Count-up animation for the hero stats. Respects prefers-reduced-motion and
+       degrades to the plain number (already rendered server-side) if JS is off. #}
+    <script type="text/javascript">
+        $(function () {
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce) return;
+            $('.hero-stat__value[data-count-to]').each(function () {
+                var $el = $(this);
+                var target = parseInt($el.attr('data-count-to'), 10);
+                if (isNaN(target) || target <= 0) return;
+                var duration = 900, start = null;
+                $el.text('0');
+                function step(ts) {
+                    if (start === null) start = ts;
+                    var p = Math.min((ts - start) / duration, 1);
+                    // easeOutCubic
+                    var eased = 1 - Math.pow(1 - p, 3);
+                    $el.text(Math.round(target * eased).toLocaleString());
+                    if (p < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            });
+        });
+    </script>
+    {# Contest spotlight slider: scroll the track by one card-width via the
+       prev/next buttons. Purely progressive — with JS off the track is still a
+       horizontally scrollable row of cards. #}
+    <script type="text/javascript">
+        $(function () {
+            $('[data-spotlight]').each(function () {
+                var $root = $(this);
+                var track = $root.find('[data-spotlight-track]')[0];
+                if (!track) return;
+                var $prev = $root.find('[data-spotlight-prev]');
+                var $next = $root.find('[data-spotlight-next]');
+
+                function step() {
+                    var card = track.querySelector('.spotlight-card');
+                    if (!card) return track.clientWidth;
+                    var gap = parseInt(getComputedStyle(track).columnGap || getComputedStyle(track).gap, 10) || 0;
+                    return card.offsetWidth + gap;
+                }
+
+                function refresh() {
+                    var maxScroll = track.scrollWidth - track.clientWidth - 1;
+                    var overflowing = maxScroll > 0;
+                    $root.toggleClass('home-spotlight--static', !overflowing);
+                    $prev.prop('disabled', track.scrollLeft <= 0);
+                    $next.prop('disabled', track.scrollLeft >= maxScroll);
+                }
+
+                $prev.on('click', function () {
+                    track.scrollBy({ left: -step(), behavior: 'smooth' });
+                });
+                $next.on('click', function () {
+                    track.scrollBy({ left: step(), behavior: 'smooth' });
+                });
+                track.addEventListener('scroll', refresh, { passive: true });
+                $(window).on('resize', refresh);
+                refresh();
+            });
+        });
+    </script>
 {% endblock %}
 {% block meta %}
     {% if misc_config.meta_description %}

@@ -556,7 +556,7 @@ class RandomProblem(ProblemList):
     def get(self, request, *args, **kwargs):
         self.setup_problem_list(request)
         if self.in_contest:
-            raise Http404()
+            return self.get_random_contest_problem()
 
         queryset = self.get_normal_queryset()
         count = queryset.count()
@@ -564,6 +564,13 @@ class RandomProblem(ProblemList):
             return HttpResponseRedirect('%s%s%s' % (reverse('problem_list'), request.META['QUERY_STRING'] and '?',
                                                     request.META['QUERY_STRING']))
         return HttpResponseRedirect(queryset[randrange(count)].get_absolute_url())
+
+    def get_random_contest_problem(self):
+        problem_codes = list(self.contest.contest_problems.values_list('problem__code', flat=True))
+        if not problem_codes:
+            return HttpResponseRedirect(self.contest.get_absolute_url())
+        code = problem_codes[randrange(len(problem_codes))]
+        return HttpResponseRedirect(reverse('problem_detail', args=(code,)))
 
 
 user_logger = logging.getLogger('judge.user')

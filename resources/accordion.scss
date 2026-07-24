@@ -16,7 +16,7 @@
 }
 
 .accordion .card-toggle {
-    color: $color_primary0;
+    color: var(--color-text-inverse);
     background: $color_primary75;
     border-radius: 4px 4px 0 0;
     display: block;

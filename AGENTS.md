@@ -35,6 +35,8 @@ documentation apply here.
 - `websocket/` — Node.js websocket daemon (formatted with Prettier).
 - `locale/` — translations (`locale/vi/LC_MESSAGES` for Vietnamese).
 - `martor/`, `django_ace/` — vendored editor widgets.
+- `docs/design-system/` — spec for the in-progress Modern Competitive-Programming
+  UI overhaul (tokens, components, accessibility, autumn "Warm Harvest" theme).
 
 ## Build, lint, and test
 
@@ -52,8 +54,22 @@ Python:
 Frontend:
 
 - Styles: `./make_style.sh` (needs `postcss`, `sass`, `autoprefixer` via `npm ci`).
+  It builds four theme variants: warm light/dark and summer light/dark.
 - Websocket JS: `npm run format` / `npm run format:check` (Prettier, config in
   `.prettierrc`: 2-space indent, semicolons, double quotes, width 100).
+
+## Design system / styling
+
+- Style sources are `resources/*.scss`, aggregated by `resources/style.scss`.
+- Semantic design tokens are emitted as CSS custom properties from
+  `resources/_tokens.scss`, branched on palette (`$is_summer`) and mode
+  (`$is_light_theme`). New components should consume `var(--...)` tokens rather
+  than hardcoding colors, spacing, radii, or typography.
+- Theme values are set per-build via `resources/vars-*.scss` files
+  (`vars-default`, `vars-dark`, `vars-summer-default`, `vars-summer-dark`), all of
+  which forward `resources/vars-common.scss`.
+- The full specification lives in `docs/design-system/`; read `README.md` there
+  before making cross-cutting UI changes.
 
 ## Conventions
 

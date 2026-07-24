@@ -22,6 +22,7 @@ dark mode a first-class, instantly switchable feature.
 | 7 | [`07-accessibility.md`](07-accessibility.md) | Contrast, focus, motion, and semantics requirements plus a verification checklist. |
 | 8 | [`08-autumn-theme.md`](08-autumn-theme.md) | The "Warm Harvest" autumn palette (light + dark) mapped onto the token layer, plus the custom artwork asset manifest. |
 | 9 | [`09-testing-and-validation.md`](09-testing-and-validation.md) | The build/lint/test gates and the per-phase manual visual QA, contrast, and cross-browser checklists that must pass before a phase ships. |
+| 10 | [`10-modern-ui-overhaul.md`](10-modern-ui-overhaul.md) | Page-level modern redesign spec: home hero, auth pages, flatpage (shop/about) cards, and the judge status page as cards. |
 
 ## Current state (baseline)
 

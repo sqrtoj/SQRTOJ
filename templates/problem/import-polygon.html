@@ -124,6 +124,7 @@
         {% csrf_token %}
         {{ formset.management_form }}
         <table class="django-as-table">{{ form.as_table() }}</table>
+        <div class="h-scrollable-table">
         <table class="table" id="statements-table">
             <thead>
                 <tr>
@@ -140,6 +141,7 @@
                 {{ form_as_row(formset.empty_form) }}
             </tbody>
         </table>
+        </div>
         <table>
             <tr><td style="float: left;">
             <td style="float: right;"><input type="submit" value="{{ _('Import') }}" class="button"></td></tr>

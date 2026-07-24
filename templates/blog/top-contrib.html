@@ -3,31 +3,24 @@
         <span>{{ _('Top contributors') }}</span>
     </h3>
     <div class="sidebox-content leaderboard-content">
-        <table class="users-table table leaderboard-table">
-            <thead>
-                <tr>
-                    <th class="header rank leaderboard-rank"> # </th>
-                    <th class="header username">{{ _('Username') }}</th>
-                    <th class="header contrib leaderboard-value"> {{ _('Contrib.') }} </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in top_contrib %}
-                    <tr id="user-{{ loop.index }}">
-                        <td>{{ loop.index }}</td>
-                        <td class="user-name">
-                            <div>
-                                {{ link_user(user) }}
-                            </div>
-                        </td>
-
-                        <td class="user-contrib">
-                            {{ user.contribution_points }}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <ol class="leaderboard-podium">
+            {% for user in top_contrib %}
+                <li class="podium-row podium-row--{{ loop.index }}">
+                    <span class="podium-rank">
+                        {%- if loop.index <= 3 -%}
+                            <i class="fa fa-trophy" aria-hidden="true"></i>
+                        {%- else -%}
+                            {{ loop.index }}
+                        {%- endif -%}
+                    </span>
+                    <img class="podium-avatar" src="{{ gravatar(user, 40) }}" loading="lazy" alt="">
+                    <span class="podium-name">{{ link_user(user) }}</span>
+                    <span class="podium-value podium-value--contrib">
+                        <i class="fa fa-heart" aria-hidden="true"></i> {{ user.contribution_points }}
+                    </span>
+                </li>
+            {% endfor %}
+        </ol>
         <div class="leaderboard-footer-wrap">
             <table class="table bottom leaderboard-footer">
                 <tbody>

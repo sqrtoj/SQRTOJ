@@ -109,9 +109,16 @@ class ContestList(QueryStringSortMixin, DiggPaginatorMixin, TitleMixin, ContestL
     def _get_queryset(self):
         return super().get_queryset().prefetch_related('tags', 'organizations', 'authors', 'curators', 'testers')
 
+    def _get_filtered_queryset(self):
+        query_set = self._get_queryset()
+        self.tag_filter = ' '.join(self.request.GET.getlist('tag')).strip()
+        if self.tag_filter:
+            query_set = query_set.filter(tags__name=self.tag_filter)
+        return query_set
+
     def get_queryset(self):
         self.search_query = None
-        query_set = self._get_queryset().order_by(self.order, 'key').filter(end_time__lt=self._now)
+        query_set = self._get_filtered_queryset().order_by(self.order, 'key').filter(end_time__lt=self._now)
         if 'search' in self.request.GET:
             self.search_query = search_query = ' '.join(self.request.GET.getlist('search')).strip()
             if search_query:
@@ -126,7 +133,8 @@ class ContestList(QueryStringSortMixin, DiggPaginatorMixin, TitleMixin, ContestL
         context = super(ContestList, self).get_context_data(**kwargs)
         present, active, future = [], [], []
         finished = set()
-        for contest in self._get_queryset().exclude(end_time__lt=self._now):
+        filtered_query_set = self._get_filtered_queryset()
+        for contest in filtered_query_set.exclude(end_time__lt=self._now):
             if contest.start_time > self._now:
                 future.append(contest)
             else:
@@ -155,6 +163,10 @@ class ContestList(QueryStringSortMixin, DiggPaginatorMixin, TitleMixin, ContestL
         context['first_page_href'] = '.'
         context['page_suffix'] = '#past-contests'
         context['search_query'] = self.search_query
+        context['tag_filter'] = self.tag_filter
+        context['tag_filter_options'] = ContestTag.objects.filter(
+            contests__in=self._get_queryset(),
+        ).distinct().order_by('name')
         context.update(self.get_sort_context())
         context.update(self.get_sort_paginate_context())
         return context
@@ -960,7 +972,7 @@ def base_contest_ranking_list(
     contest, problems, queryset, frozen=False, result_hidden=False, can_see_submissions=False,
 ):
     participations = list(
-        queryset.select_related('user__user', 'rating')
+        queryset.select_related('user__user', 'user__display_badge', 'rating')
         .prefetch_related(
             Prefetch(
                 'user__organizations',

@@ -20,7 +20,10 @@
     <tbody>
     {% for rank, user in users %}
         <tr id="user-{{ user.user.username }}" {% block row_extra scoped %}{% endblock %}>
-            <td>{{ rank }}</td>
+            <td class="rank-cell{% if rank <= 3 %} rank-cell--medal rank-cell--{{ rank }}{% endif %}">
+                {%- if rank <= 3 %}<i class="fa fa-trophy rank-medal" aria-hidden="true"></i> {% endif -%}
+                {{ rank }}
+            </td>
             {% block after_rank scoped %}{% endblock %}
             <td class="user-name">
                 <div>
@@ -54,6 +57,15 @@
                 </td>
             {% endblock %}
             {% block after_point scoped %}{% endblock %}
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="10">
+                <div class="empty-state">
+                    <i class="empty-state-icon fa fa-users" aria-hidden="true"></i>
+                    <div class="empty-state-message">{{ _('No users found.') }}</div>
+                </div>
+            </td>
         </tr>
     {% endfor %}
     {% block after_user_list scoped %}{% endblock %}

@@ -45,6 +45,7 @@
         {% endif %}
 
         <script src="{{ static('libs/chart.js/Chart.js') }}"></script>
+        <script type="text/javascript" src="{{ static('chart-theme.js') }}"></script>
         <script type="text/javascript">
             $(function () {
                 var info_float = $('.info-float');
@@ -378,6 +379,11 @@
                         {% with problem_name=show_problem and (submission.problem.i18n_name or submission.problem.name) %}
                             {% include "submission/row.html" %}
                         {% endwith %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="empty-state-icon fa fa-inbox" aria-hidden="true"></i>
+                        <div class="empty-state-message">{{ _('No submissions to display.') }}</div>
                     </div>
                 {% endfor %}
             </div>

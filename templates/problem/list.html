@@ -233,14 +233,19 @@
                                 {% endfor %}
                             </td>
                         {% endif %}
-                        <td class="p">{{ problem.points|floatformat(2) }}</td>
-                        <td class="ac-rate">{{ problem.ac_rate|floatformat(1) }}%</td>
+                        <td class="points"><span class="points-badge">{{ problem.points|floatformat(2) }}</span></td>
+                        <td class="ac-rate">
+                            <div class="ac-rate-cell">
+                                <span class="ac-rate-value">{{ problem.ac_rate|floatformat(1) }}%</span>
+                                <span class="ac-rate-bar"><span class="ac-rate-bar__fill" style="width: {{ problem.ac_rate|floatformat(0) }}%"></span></span>
+                            </div>
+                        </td>
                         <td class="users">
                             <a href="{{ url('ranked_submissions', problem.code) }}">
                                 {{ problem.user_count }}
                             </a>
                         </td>
-                        <td>
+                        <td class="editorial">
                             {% if problem.has_public_editorial %}
                                 <a href="{{ url('problem_editorial', problem.code) }}">
                                     <i class="has-editorial-color fa fa-check-circle"></i>
@@ -248,6 +253,15 @@
                             {% else %}
                                 <i class="no-editorial-color fa fa-minus-circle"></i>
                             {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="100">
+                            <div class="empty-state">
+                                <i class="empty-state-icon fa fa-inbox" aria-hidden="true"></i>
+                                <span class="empty-state-message">{{ _('No problems match your filters.') }}</span>
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}

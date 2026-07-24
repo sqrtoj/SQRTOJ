@@ -3,7 +3,7 @@
 @mixin content-description {
     line-height: 1.5em;
     font-size: 1em;
-    font-family: "Segoe UI", "Lucida Grande", Arial, sans-serif;
+    font-family: var(--font-ui);
 
     p {
         margin: 1em 0 !important;
@@ -136,12 +136,12 @@
     code, span.code {
         font-family: $monospace-fonts !important;
         margin: 0 2px;
-        padding: 0 5px;
-        border: 1px solid $color_primary25;
-        background-color: $color_primary5;
-        border-radius: $widget_border_radius;
-        font-size: 0.95em;
-        color: $color_primary75;
+        padding: 1px 6px;
+        border: 1px solid var(--color-border, #{$color_primary25});
+        background-color: var(--color-surface-alt, #{$color_primary5});
+        border-radius: var(--radius-sm, #{$widget_border_radius});
+        font-size: 0.9em;
+        color: var(--color-accent, #{$color_primary75});
     }
 
     pre {
@@ -152,17 +152,17 @@
             padding: 0;
             background: transparent;
             font-size: 1em;
-            color: $color_primary100;
+            color: var(--color-text, #{$color_primary100});
         }
 
         white-space: pre-wrap;
         word-wrap: break-word;
         margin: 1.5em 0 1.5em 0;
-        padding: 1em;
-        border: 1px solid $color_primary25;
-        background-color: $color_primary5;
-        color: $color_primary100;
-        border-radius: $widget_border_radius;
+        padding: 1em 1.2em;
+        border: 1px solid var(--color-border, #{$color_primary25});
+        background-color: var(--color-surface-alt, #{$color_primary5});
+        color: var(--color-text, #{$color_primary100});
+        border-radius: var(--radius-md, #{$widget_border_radius});
     }
 
     b, strong {
@@ -221,6 +221,37 @@
         border: 0;
         -ms-interpolation-mode: bicubic;
         vertical-align: middle;
+    }
+
+    table {
+        display: table;
+        width: 100%;
+        max-width: 100%;
+        table-layout: auto;
+    }
+
+    th,
+    td {
+        overflow-wrap: anywhere;
+    }
+
+    // The Markdown renderer wraps every table in this element. Size both the
+    // wrapper and its internal table explicitly; otherwise the wrapper can
+    // span the article while the table formatting context still hugs its
+    // intrinsic column widths, leaving a large empty area to the right.
+    .table-responsive {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+
+        > table {
+            display: table !important;
+            width: 100% !important;
+            min-width: 100%;
+            table-layout: fixed;
+        }
     }
 
     td {

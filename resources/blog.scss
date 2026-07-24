@@ -1,5 +1,573 @@
 @import "vars";
 
+// Home hero band (Phase 6c, docs/design-system/10-modern-ui-overhaul.md §3.1). The
+// autumn artwork (A-1) fills the background via the --hero-image token and collapses
+// gracefully to the accent gradient when no asset is set.
+.home-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: clamp(var(--radius-lg), 2vw, 22px);
+    margin-bottom: var(--space-6);
+    padding: clamp(var(--space-6), 6vw, calc(var(--space-8) + var(--space-2))) clamp(var(--space-5), 5vw, var(--space-7));
+    background:
+        radial-gradient(circle at 82% -10%, rgba(255, 255, 255, 0.30), transparent 46%),
+        radial-gradient(circle at 12% 120%, rgba(0, 0, 0, 0.24), transparent 44%),
+        linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+    color: var(--color-accent-contrast);
+    box-shadow: var(--shadow-3);
+
+    // Decorative dotted texture overlay for depth.
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1.4px, transparent 1.4px);
+        background-size: 22px 22px;
+        opacity: 0.55;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    // Soft diagonal sheen sweeping across the top for a glossy, premium feel.
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.18) 0%, transparent 32%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    &__bg {
+        position: absolute;
+        inset: 0;
+        background-image: var(--hero-image, none);
+        background-size: cover;
+        background-position: center;
+        // Scrim keeps text AA-legible over whatever art lands.
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+        }
+    }
+
+    // Living aurora: slow-drifting gradient blobs behind the content for a
+    // modern, "alive" feel. Purely decorative; disabled for reduced-motion.
+    &__aurora {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    &__illustration {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('/static/autumn/hero-banner.webp');
+        background-size: cover;
+        background-position: left bottom;
+        background-repeat: no-repeat;
+        z-index: 1;
+        pointer-events: none;
+
+        // Gradient mask to blend the left side of the image into the background smoothly
+        mask-image: linear-gradient(to right, transparent 0%, black 50%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 50%);
+    }
+
+    &__blob {
+        position: absolute;
+        width: 26rem;
+        height: 26rem;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.5;
+        mix-blend-mode: soft-light;
+
+        &--1 {
+            top: -8rem;
+            left: -6rem;
+            background: rgba(255, 255, 255, 0.55);
+            animation: hero-drift-1 18s ease-in-out infinite alternate;
+        }
+
+        &--2 {
+            bottom: -10rem;
+            right: -4rem;
+            background: rgba(0, 0, 0, 0.35);
+            animation: hero-drift-2 22s ease-in-out infinite alternate;
+        }
+
+        &--3 {
+            top: 20%;
+            right: 25%;
+            width: 18rem;
+            height: 18rem;
+            background: rgba(255, 255, 255, 0.4);
+            animation: hero-drift-3 26s ease-in-out infinite alternate;
+        }
+    }
+
+    &__content {
+        position: relative;
+        z-index: 1;
+        min-width: 0;
+        max-width: 46rem;
+    }
+
+    &__title {
+        font-size: clamp(1.6rem, 5vw, 3rem);
+        font-weight: var(--weight-bold);
+        line-height: 1.12;
+        letter-spacing: -0.025em;
+        margin: 0 0 var(--space-3);
+        color: var(--color-accent-contrast);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        overflow-wrap: anywhere;
+    }
+
+    &__pitch {
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        line-height: 1.5;
+        max-width: 34rem;
+        margin: 0 0 var(--space-5);
+        opacity: 0.96;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin-bottom: var(--space-5);
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            width: auto;
+            padding: var(--space-3) var(--space-5);
+            font-size: var(--text-md);
+            font-weight: var(--weight-semibold);
+            box-shadow: var(--shadow-1);
+        }
+
+        // Primary CTA inverts to a solid light chip so it pops on the accent band.
+        .button:not(.btn-secondary) {
+            background: var(--color-surface);
+            color: var(--color-accent) !important;
+
+            &:hover {
+                background: var(--color-surface-alt);
+            }
+        }
+
+        // Secondary CTA reads as a translucent glass button on the accent band.
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--color-accent-contrast) !important;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(4px);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.28);
+            }
+        }
+    }
+
+    // Stats sit in an even three-up row below the actions, each a subtle glass
+    // tile. A grid keeps the tiles equal width and prevents the uneven
+    // "2 + 1 stretched" wrap the old flex layout produced on phones.
+    &__stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-3);
+        padding-top: var(--space-5);
+        margin-top: var(--space-1);
+        border-top: 1px solid rgba(255, 255, 255, 0.22);
+    }
+}
+
+// Handle search in the sidebar (above Top users): a compact input + button that
+// jumps straight to a user's place on the leaderboard (GET -> user_ranking_redirect).
+.handle-search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    &__input {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+        color: var(--color-text);
+        font-size: var(--text-sm);
+
+        &::placeholder {
+            color: var(--color-text-muted);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+    }
+
+    &__btn {
+        flex: 0 0 auto;
+        width: auto;
+        border: none;
+        cursor: pointer;
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-md);
+        background: var(--color-accent);
+        color: var(--color-accent-contrast);
+        transition: background-color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-accent-hover);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
+        }
+    }
+}
+
+.hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(6px);
+    // In the stats grid each tile is an equal fraction; min-width:0 lets it
+    // shrink below its content width instead of forcing horizontal overflow.
+    min-width: 0;
+    box-sizing: border-box;
+    transition: background-color var(--motion-base) var(--ease-standard),
+        transform var(--motion-base) var(--ease-standard);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    &__value {
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        font-weight: var(--weight-bold);
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+    }
+
+    &__label {
+        font-size: var(--text-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.9;
+        overflow-wrap: anywhere;
+    }
+}
+
+// -------------------------------------------------------------------------
+// Tier C: personal progress strip (logged-in users). A row of stat chips plus
+// a "continue solving" CTA. Uses request.profile data already in the template.
+// -------------------------------------------------------------------------
+.home-personal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+    }
+
+    &__cta.button {
+        width: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+}
+
+.home-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    transition: border-color var(--motion-fast) var(--ease-standard),
+        transform var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        border-color: var(--color-accent);
+        transform: translateY(-1px);
+    }
+
+    &__icon {
+        color: var(--color-accent);
+        font-size: 1.05em;
+    }
+
+    &__value {
+        font-weight: var(--weight-bold);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__label {
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+}
+
+// -------------------------------------------------------------------------
+// Tier B: contest spotlight strip. Responsive card grid; live contests get an
+// accent gradient face, upcoming ones a neutral surface. Auto-hides when empty.
+// -------------------------------------------------------------------------
+// Contest spotlight slider: a header row (title + prev/next arrows) above a
+// horizontally scrollable, scroll-snapping track of cards.
+.home-spotlight {
+    margin-bottom: var(--space-6);
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+        margin-bottom: var(--space-3);
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin: 0;
+        font-size: var(--text-lg);
+
+        .fa { color: var(--color-accent); }
+    }
+
+    &__nav {
+        display: flex;
+        gap: var(--space-2);
+    }
+
+    // When the track fits without overflowing, the arrows are redundant.
+    &--static &__nav {
+        display: none;
+    }
+
+    &__arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--color-accent);
+        background: var(--color-accent);
+        color: var(--color-accent-contrast);
+        cursor: pointer;
+        transition: background-color var(--motion-fast) var(--ease-standard),
+            border-color var(--motion-fast) var(--ease-standard),
+            color var(--motion-fast) var(--ease-standard);
+
+        &:hover {
+            background: var(--color-accent-hover);
+            border-color: var(--color-accent-hover);
+            color: var(--color-accent-contrast);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-focus-ring);
+            outline-offset: 2px;
+        }
+
+        &[disabled] {
+            opacity: 0.4;
+            cursor: default;
+            pointer-events: none;
+        }
+    }
+
+    &__track {
+        display: flex;
+        gap: var(--space-4);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        padding: 4px 4px var(--space-2);
+        scroll-padding-inline: 4px;
+        // Hide scrollbar (arrows drive navigation) while keeping it scrollable.
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar { display: none; }
+    }
+
+    // Cards take a fixed, responsive width inside the flex track.
+    .spotlight-card {
+        flex: 0 0 clamp(min(260px, 100%), 80%, 340px);
+        box-sizing: border-box;
+        scroll-snap-align: start;
+    }
+}
+
+.spotlight-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    min-width: 0;
+    box-shadow: var(--shadow-1);
+    transition: transform var(--motion-fast) var(--ease-standard),
+        box-shadow var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-3);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+    }
+
+    &__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__name {
+        font-size: var(--text-lg);
+        font-weight: var(--weight-bold);
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    &__countdown {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-variant-numeric: tabular-nums;
+        font-weight: var(--weight-semibold);
+    }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-top: var(--space-1);
+        font-weight: var(--weight-semibold);
+        font-size: var(--text-sm);
+    }
+
+    // Live contest: brand accent face with light text.
+    &--live {
+        background:
+            radial-gradient(circle at 88% -20%, rgba(255, 255, 255, 0.22), transparent 45%),
+            linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+        color: var(--color-accent-contrast);
+
+        .spotlight-card__cta { color: var(--color-accent-contrast); }
+    }
+
+    // Upcoming contest: neutral surface card.
+    &--upcoming {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        color: var(--color-text);
+
+        .spotlight-card__countdown { color: var(--color-text-secondary); }
+        .spotlight-card__cta { color: var(--color-accent); }
+    }
+}
+
+.spotlight-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &--live {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--color-accent-contrast);
+    }
+
+    &--upcoming {
+        background: var(--color-surface-alt);
+        color: var(--color-text-secondary);
+    }
+
+    &__dot {
+        width: 0.55em;
+        height: 0.55em;
+        border-radius: 50%;
+        background: currentColor;
+        animation: spotlight-pulse 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes spotlight-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes hero-drift-1 {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(4rem, 2.5rem) scale(1.15); }
+}
+
+@keyframes hero-drift-2 {
+    from { transform: translate(0, 0) scale(1.1); }
+    to { transform: translate(-3.5rem, -2rem) scale(0.9); }
+}
+
+@keyframes hero-drift-3 {
+    from { transform: translate(0, 0) scale(0.9); }
+    to { transform: translate(-2.5rem, 3rem) scale(1.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spotlight-badge__dot { animation: none; }
+    .home-hero__blob { animation: none !important; }
+}
+
 .blog-content {
     padding-right: 0em;
     flex: 1 1 0;
@@ -7,8 +575,49 @@
     overflow: hidden;
     vertical-align: top;
 
+    // Newsfeed toolbar: right-aligned "collapse/expand all" control.
+    .newsfeed-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        padding: var(--space-2) var(--space-3) 0;
+
+        &__btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            min-height: 2.75rem;
+            padding: var(--space-1) var(--space-3);
+            width: auto;
+            font-size: var(--text-sm);
+            font-weight: var(--weight-medium);
+            color: var(--color-text-secondary) !important;
+            background: var(--color-surface-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-pill);
+            box-shadow: none;
+            cursor: pointer;
+            transition: background-color var(--motion-fast) var(--ease-standard),
+                border-color var(--motion-fast) var(--ease-standard),
+                color var(--motion-fast) var(--ease-standard);
+
+            &:hover {
+                background: var(--color-surface);
+                border-color: var(--color-border-strong);
+                color: var(--color-text) !important;
+                transform: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--color-focus-ring);
+                outline-offset: 2px;
+            }
+        }
+    }
+
     .post {
         margin: 0em 0.5em;
+        min-width: 0;
+        max-width: 100%;
 
         &:first-child {
             margin-top: 1.1em;
@@ -18,19 +627,189 @@
             border-bottom: none;
         }
 
+        // Newsfeed header row: vote column, title/meta block, and the collapse
+        // toggle pinned to the right. The main block flexes to fill the middle.
+        .post-header {
+            display: flex;
+            gap: var(--space-2);
+            align-items: flex-start;
+            border-radius: var(--radius-md);
+            transition: background-color var(--motion-fast) var(--ease-standard);
+        }
+
+        // Keep voting in the same metadata row as the author and publish time.
+        // This makes the controls read as post metadata instead of a detached
+        // column beside the title.
+        .post-meta-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            min-width: 0;
+
+            .time {
+                min-width: 0;
+            }
+        }
+
+        .vote {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.15rem;
+
+            .upvote-link, .downvote-link {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 1.75rem;
+                height: 1.75rem;
+                line-height: 1;
+            }
+
+            .comment-score {
+                padding: 0;
+                line-height: 1;
+            }
+        }
+
+        // The title/meta block is the click target for expand/collapse, so give
+        // it a pointer and a subtle hover cue.
+        .post-header-main {
+            flex: 1 1 auto;
+            min-width: 0;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            padding: var(--space-1) var(--space-2);
+            margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1);
+            transition: background-color var(--motion-fast) var(--ease-standard);
+
+            &:hover {
+                background: var(--color-surface-alt);
+            }
+        }
+
+        // Collapse toggle button. Ghost styling so it reads as a control without
+        // competing with the post title; only visible affordance is on hover/focus.
+        .blog-collapse-toggle {
+            flex: 0 0 auto;
+            align-self: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.75rem;
+            height: 2.75rem;
+            padding: 0;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+            &:hover {
+                background: var(--color-surface-alt);
+                color: var(--color-text);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--color-focus-ring);
+                outline-offset: 2px;
+            }
+
+            i {
+                transition: transform 0.2s ease;
+            }
+        }
+
+        // Collapsed state: keep a short preview of the body (fading out at the
+        // bottom) instead of hiding it entirely, so readers get a teaser and can
+        // click to expand. The meta footer is hidden while collapsed.
+        &.collapsed {
+            .blog-body {
+                position: relative;
+                max-height: 13em;
+                overflow: hidden;
+                // Fade the preview into the surface so the cut looks intentional.
+                -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+            }
+
+            .meta {
+                display: none;
+            }
+
+            .post-header {
+                margin-bottom: 0.4em;
+            }
+        }
+
+        // Centered "Read more" CTA shown only while collapsed; hidden once open
+        // (the header chevron then handles collapsing again).
+        .blog-expand-cta {
+            display: none;
+            justify-content: center;
+            margin: calc(var(--space-2) * -1) 0 var(--space-3);
+        }
+
+        &.collapsed .blog-expand-cta {
+            display: flex;
+        }
+
+        .blog-expand-cta__btn {
+            width: auto;
+            min-height: 2.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-1) var(--space-4);
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            // Global `button` rule forces accent-contrast (white) with !important,
+            // which would be white-on-white here; re-assert the text color.
+            color: var(--color-text-secondary) !important;
+            font-size: var(--text-sm);
+            font-weight: var(--weight-medium);
+            cursor: pointer;
+            transition: background-color var(--motion-fast) var(--ease-standard),
+                border-color var(--motion-fast) var(--ease-standard),
+                color var(--motion-fast) var(--ease-standard);
+
+            &:hover {
+                background: var(--color-surface-alt);
+                border-color: var(--color-border-strong);
+                color: var(--color-text) !important;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--color-focus-ring);
+                outline-offset: 2px;
+            }
+        }
+
         .title {
             font-weight: 600;
             font-size: 1.7em;
 
             a {
-                color: $color_link50;
+                // Match the page title color (#content .title) so post titles read
+                // as headings, not links. Palette-aware: sienna in Warm Harvest,
+                // green in Summer.
+                color: $color_primary75;
 
                 &:hover {
-                    color: $color_link100;
+                    color: var(--color-accent);
                 }
 
                 &:active {
                     color: $color_link200;
+                }
+
+                &:focus-visible {
+                    outline: 2px solid var(--color-focus-ring);
+                    outline-offset: 2px;
                 }
             }
         }
@@ -40,26 +819,117 @@
         }
 
         .comment-count-link {
-            color: $color_primary75;
+            color: var(--color-text-secondary);
         }
 
         .comment-icon {
             padding: 0 0.2em 0 0.5em;
         }
 
+        .summary,
         .blog-body {
-            border-left: 4px solid grey;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .blog-body {
+            border-left: 4px solid var(--color-border-strong);
             margin: 1em 0;
             padding-left: 1em;
             padding-bottom: 0.25em;
+            overflow-wrap: break-word;
+            word-break: break-word;
+
+            // Keep wide media/code/tables/math inside the column so they never
+            // push the whole page wider than the viewport on mobile.
+            img, svg, video, iframe {
+                max-width: 100%;
+                height: auto;
+            }
+
+            pre {
+                max-width: 100%;
+                overflow-x: auto;
+            }
+
+            table {
+                display: block;
+                max-width: 100%;
+                overflow-x: auto;
+            }
+
+            // MathJax (SVG output on blog) display equations can be very wide;
+            // let them scroll within the post instead of stretching the page.
+            .MathJax_SVG_Display,
+            .MathJax_Display,
+            mjx-container {
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
         }
     }
 
+    // Post footer: a single tokenized meta row (time + comment count). The author
+    // is intentionally omitted here since the post header already carries it.
     .meta {
-        margin: 1em 0 1.5em 0;
-        padding: 0.25em 0.5em;
-        border: 2px solid grey;
-        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        margin: var(--space-4) 0 var(--space-5);
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface-alt);
+        color: var(--color-text-secondary);
+        font-size: var(--text-sm);
+
+        .meta-time {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .comment-data {
+            margin-left: auto;
+        }
+    }
+}
+
+.blog-post-title {
+    width: 100%;
+    min-width: 0;
+
+    &__main {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+.blog-post-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+
+    .vote {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.15rem;
+
+        .upvote-link,
+        .downvote-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem;
+            height: 1.75rem;
+            line-height: 1;
+        }
+
+        .comment-score {
+            padding: 0;
+            line-height: 1;
+        }
     }
 }
 
@@ -74,6 +944,38 @@
 }
 
 .blog-sidebox {
+    // Consistent, compact sidebox header with an accent icon.
+    .sidebox-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+        white-space: nowrap;
+
+        > span:first-child {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fa {
+            color: var(--color-accent);
+        }
+
+        .sidebox-head__badge {
+            flex: 0 1 40%;
+            min-width: 0;
+
+            img {
+                max-width: 100%;
+                vertical-align: middle;
+            }
+        }
+    }
+
     .leaderboard-content {
         padding: 0 !important;
         border: 0 !important;
@@ -81,9 +983,9 @@
 
     .leaderboard-table {
         margin-bottom: 0 !important;
-        border-left: 1px solid $color_primary25;
-        border-right: 1px solid $color_primary25;
-        border-bottom: 1px solid $color_primary25;
+        border-left: 1px solid var(--color-border);
+        border-right: 1px solid var(--color-border);
+        border-bottom: 1px solid var(--color-border);
         background: rgba($color_primary100, 0.02);
         border-radius: 0;
 
@@ -93,7 +995,7 @@
         }
 
         th {
-            border-bottom-color: $color_primary33;
+            border-bottom-color: var(--color-border-strong);
         }
 
         .leaderboard-rank {
@@ -131,6 +1033,79 @@
         }
     }
 
+    // Modern top-3 podium leaderboard: medal-tinted rank, avatar, name, value.
+    // Replaces the flat 2-column table for top users / contributors.
+    .leaderboard-podium {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-left: 1px solid var(--color-border);
+        border-right: 1px solid var(--color-border);
+
+        .podium-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            border-bottom: 1px solid var(--color-border);
+            transition: background-color var(--motion-fast) var(--ease-standard);
+
+            &:hover {
+                background: var(--color-surface-alt);
+            }
+        }
+
+        .podium-rank {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.6rem;
+            font-weight: var(--weight-bold);
+            font-variant-numeric: tabular-nums;
+            color: var(--color-text-muted);
+        }
+
+        .podium-avatar {
+            flex: 0 0 auto;
+            width: 1.9rem;
+            height: 1.9rem;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            background: #fff;
+            object-fit: cover;
+        }
+
+        .podium-name {
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .podium-value {
+            flex: 0 0 auto;
+            font-weight: var(--weight-semibold);
+            font-variant-numeric: tabular-nums;
+        }
+
+        // Contribution value + heart use the brand accent (sienna in Warm
+        // Harvest, green in Summer) instead of a generic red heart.
+        .podium-value--contrib {
+            color: var(--color-accent);
+
+            .fa-heart {
+                color: var(--color-accent);
+            }
+        }
+
+        // Medal tints for the top three ranks (gold / silver / bronze).
+        .podium-row--1 .podium-rank { color: #d4af37; }
+        .podium-row--2 .podium-rank { color: #9aa2ad; }
+        .podium-row--3 .podium-rank { color: #cd7f32; }
+    }
+
     .leaderboard-footer-wrap {
         position: relative;
         font-size: smaller;
@@ -139,9 +1114,9 @@
 
     .leaderboard-footer {
         margin-top: -1px;
-        border-left: 1px solid $color_primary25;
-        border-right: 1px solid $color_primary25;
-        border-bottom: 1px solid $color_primary25;
+        border-left: 1px solid var(--color-border);
+        border-right: 1px solid var(--color-border);
+        border-bottom: 1px solid var(--color-border);
         background: rgba($color_primary100, 0.02);
         border-radius: 0;
 
@@ -188,13 +1163,52 @@
         }
     }
 
+    // Compact comment stream: each entry is a single tight line (poster + page)
+    // truncated with an ellipsis so the box stays short and scannable.
+    .comment-stream {
+        font-size: var(--text-sm);
+
+        li {
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-1);
+            margin-bottom: var(--space-1);
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .poster {
+            font-weight: var(--weight-semibold);
+            flex: 0 0 auto;
+        }
+
+        .comment-stream__page {
+            color: var(--color-text-secondary);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &::before {
+                content: "\f105"; // fa-angle-right
+                font-family: FontAwesome;
+                color: var(--color-text-muted);
+                margin-right: var(--space-1);
+            }
+
+            &:hover {
+                color: var(--color-accent);
+            }
+        }
+    }
+
     .contest {
         display: grid;
         justify-items: center;
         gap: 0.25rem;
         padding: 0.85rem 0.25rem 1rem;
         text-align: center;
-        border-bottom: 1px solid $color_primary25;
+        border-bottom: 1px solid var(--color-border);
 
         &:last-child {
             border-bottom: none;
@@ -203,6 +1217,22 @@
         .contest-list-title {
             margin-bottom: 0.25rem;
             line-height: 1.25;
+
+            a {
+                // Match the brand heading color (like blog post titles) so sidebar
+                // contest titles read as headings, not generic links. Palette-aware.
+                color: $color_primary75;
+                font-weight: 600;
+
+                &:hover {
+                    color: var(--color-accent);
+                }
+
+                &:focus-visible {
+                    outline: 2px solid var(--color-focus-ring);
+                    outline-offset: 2px;
+                }
+            }
         }
 
         .time {
@@ -238,8 +1268,85 @@
     }
 }
 
+// On mobile (< 800px) the blog container is a single column; keep it and its
+// content from exceeding the viewport width so expanded posts never scroll the
+// whole page sideways.
+#blog-container {
+    max-width: 100%;
+    overflow: hidden;
+}
+
 #mobile.tabs {
     margin: 0 0 1em;
+}
+
+@media (max-width: 799px) {
+    .home-hero__actions .button {
+        flex: 1 1 12rem;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .home-personal {
+        align-items: stretch;
+        padding: var(--space-4);
+
+        &__chips,
+        &__cta.button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        &__cta.button {
+            justify-content: center;
+        }
+    }
+}
+
+@media (max-width: 420px) {
+    .home-hero {
+        padding: var(--space-5) var(--space-4);
+
+        &__stats {
+            gap: var(--space-2);
+            padding-top: var(--space-4);
+        }
+    }
+
+    .hero-stat {
+        padding: var(--space-2) var(--space-2);
+        align-items: center;
+        text-align: center;
+
+        &__value {
+            font-size: clamp(1.15rem, 6vw, 1.6rem);
+        }
+
+        &__label {
+            font-size: 0.68rem;
+            letter-spacing: 0.02em;
+        }
+    }
+
+    .blog-content .post {
+        margin-right: 0;
+        margin-left: 0;
+
+        .post-header {
+            gap: var(--space-1);
+        }
+
+        .title {
+            font-size: clamp(1.25rem, 7vw, 1.45rem);
+            line-height: 1.2;
+        }
+
+        .blog-body {
+            h1 { font-size: clamp(1.65rem, 9vw, 2rem); }
+            h2 { font-size: clamp(1.4rem, 8vw, 1.75rem); }
+            h3 { font-size: clamp(1.2rem, 7vw, 1.5rem); }
+        }
+    }
 }
 
 .rssatom {

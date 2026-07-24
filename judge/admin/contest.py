@@ -199,7 +199,6 @@ class ContestAdmin(NoBatchDeleteMixin, SortableAdminBase, VersionAdmin):
     form = ContestForm
     change_list_template = 'admin/judge/contest/change_list.html'
     filter_horizontal = ['rate_exclude']
-    date_hierarchy = 'start_time'
 
     def get_actions(self, request):
         actions = super(ContestAdmin, self).get_actions(request)
@@ -422,7 +421,6 @@ class ContestParticipationAdmin(admin.ModelAdmin):
     actions_on_bottom = actions_on_top = True
     search_fields = ('contest__key', 'contest__name', 'user__user__username')
     form = ContestParticipationForm
-    date_hierarchy = 'real_start'
 
     def get_queryset(self, request):
         return super(ContestParticipationAdmin, self).get_queryset(request).only(
