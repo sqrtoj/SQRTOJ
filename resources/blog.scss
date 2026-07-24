@@ -637,22 +637,34 @@
             transition: background-color var(--motion-fast) var(--ease-standard);
         }
 
-        // Vote column: a centered stack so the up-arrow, score, and down-arrow
-        // sit on one axis with equal gaps. Without this the icon glyph metrics
-        // and the score's own padding make the two gaps look uneven.
+        // Keep voting in the same metadata row as the author and publish time.
+        // This makes the controls read as post metadata instead of a detached
+        // column beside the title.
+        .post-meta-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            min-width: 0;
+
+            .time {
+                min-width: 0;
+            }
+        }
+
         .vote {
             flex: 0 0 auto;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            gap: var(--space-1);
+            gap: 0.15rem;
 
             .upvote-link, .downvote-link {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 2.75rem;
-                height: 2.75rem;
+                width: 1.75rem;
+                height: 1.75rem;
                 line-height: 1;
             }
 
@@ -879,6 +891,44 @@
 
         .comment-data {
             margin-left: auto;
+        }
+    }
+}
+
+.blog-post-title {
+    width: 100%;
+    min-width: 0;
+
+    &__main {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+.blog-post-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+
+    .vote {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.15rem;
+
+        .upvote-link,
+        .downvote-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem;
+            height: 1.75rem;
+            line-height: 1;
+        }
+
+        .comment-score {
+            padding: 0;
+            line-height: 1;
         }
     }
 }

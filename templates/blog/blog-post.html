@@ -2,38 +2,40 @@
 {% set profile = request.profile if logged_in else None %}
 <section class="{% if post.sticky %}sticky {% endif %}post collapsed" id="post-{{ post.id }}">
     <div class="post-header">
-        <div class="vote">
-            {% if logged_in %}
-                <a href="javascript:blog_upvote({{ post.id }})"
-                class="upvote-link fa fa-chevron-up fa-fw{% if post.vote_score == 1 %} voted{% endif %}"></a>
-            {% else %}
-                <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
-                class="upvote-link fa fa-chevron-up fa-fw"></a>
-            {% endif %}
-            <div id="post-score" class="comment-score">{{ post.score }}</div>
-            {% if logged_in %}
-                <a href="javascript:blog_downvote({{ post.id }})"
-                class="downvote-link fa fa-chevron-down fa-fw{% if post.vote_score == -1 %} voted{% endif %}"></a>
-            {% else %}
-                <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
-                class="downvote-link fa fa-chevron-down fa-fw"></a>
-            {% endif %}
-        </div>
         <div class="post-header-main">
             <h2 class="title">
                 <a href="{{ url('blog_post', post.id, post.slug) }}">{% if not post.visible %}<i class="fa fa-lock post-lock-icon" aria-hidden="true"></i> {% endif %}{{ post.title }}</a>
             </h2>
-            <span class="time">
-                {%- if post.sticky %}<i title="{{ _('Sticky') }}" class="fa fa-star fa-fw"></i>{% endif -%}
-                {% with authors=post.authors.all() %}
-                    {%- if authors -%}
-                        <span class="post-authors">{{ link_users(authors) }}</span>
-                    {%- endif -%}
-                {% endwith %}
-                {% with abs=_('posted on {time}'), rel=_('posted {time}') %}
-                    {{ relative_time(post.publish_on, abs=abs, rel=rel) }}
-                {% endwith %}
-            </span>
+            <div class="post-meta-row">
+                <div class="vote">
+                    {% if logged_in %}
+                        <a href="javascript:blog_upvote({{ post.id }})"
+                        class="upvote-link fa fa-chevron-up fa-fw{% if post.vote_score == 1 %} voted{% endif %}"></a>
+                    {% else %}
+                        <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
+                        class="upvote-link fa fa-chevron-up fa-fw"></a>
+                    {% endif %}
+                    <div id="post-score" class="comment-score">{{ post.score }}</div>
+                    {% if logged_in %}
+                        <a href="javascript:blog_downvote({{ post.id }})"
+                        class="downvote-link fa fa-chevron-down fa-fw{% if post.vote_score == -1 %} voted{% endif %}"></a>
+                    {% else %}
+                        <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
+                        class="downvote-link fa fa-chevron-down fa-fw"></a>
+                    {% endif %}
+                </div>
+                <span class="time">
+                    {%- if post.sticky %}<i title="{{ _('Sticky') }}" class="fa fa-star fa-fw"></i>{% endif -%}
+                    {% with authors=post.authors.all() %}
+                        {%- if authors -%}
+                            <span class="post-authors">{{ link_users(authors) }}</span>
+                        {%- endif -%}
+                    {% endwith %}
+                    {% with abs=_('posted on {time}'), rel=_('posted {time}') %}
+                        {{ relative_time(post.publish_on, abs=abs, rel=rel) }}
+                    {% endwith %}
+                </span>
+            </div>
         </div>
         <button type="button" class="blog-collapse-toggle" aria-expanded="false"
                 title="{{ _('Expand') }}" aria-label="{{ _('Expand post') }}">
