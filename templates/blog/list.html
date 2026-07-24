@@ -162,7 +162,8 @@
                 <div class="sidebox-content">
                     <form class="handle-search" action="{{ url('user_ranking_redirect') }}" method="get" role="search">
                         <input class="handle-search__input" type="text" name="handle"
-                               placeholder="{{ _('Enter a handle...') }}" aria-label="{{ _('Find a user by handle') }}" autocomplete="off">
+                               placeholder="{{ _('Enter a handle...') }}" aria-label="{{ _('Find a user by handle') }}"
+                               autocomplete="off" required>
                         <button class="handle-search__btn" type="submit" aria-label="{{ _('Find') }}"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
                     </form>
                 </div>
