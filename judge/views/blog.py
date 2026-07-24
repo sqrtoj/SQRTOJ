@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Count, FilteredRelation, Max, Prefetch, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
@@ -70,7 +70,11 @@ def vote_blog(request, delta):
 
     while True:
         try:
-            vote.save()
+            # Keep duplicate-key failures inside a savepoint. This matters when
+            # the view is called from Django's outer test transaction as well
+            # as under concurrent requests in production.
+            with transaction.atomic():
+                vote.save()
         except IntegrityError:
             with LockModel(write=(BlogVote,)):
                 try:
