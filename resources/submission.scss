@@ -116,6 +116,7 @@
     .sub-main {
         display: flex;
         flex: 1;
+        min-width: 0;
         flex-direction: row;
         place-items: center;
         justify-content: space-between;
@@ -221,6 +222,42 @@ label[for="language"], label[for="status"], label[for="organization"] {
 
     #content-right.submission {
         max-width: 100%;
+    }
+}
+
+// Below 480px the fixed verdict/usage rails plus the main column no longer fit
+// on one line. Let the row wrap so the usage block drops to a compact second
+// line spanning the full width instead of forcing horizontal overflow.
+@media (max-width: 480px) {
+    .submission-row {
+        flex-wrap: wrap;
+
+        > div {
+            padding: var(--space-2) var(--space-2);
+        }
+
+        .sub-result {
+            border-right: none;
+        }
+
+        .sub-main {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .sub-usage {
+            flex: 1 1 100%;
+            width: auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0 var(--space-3);
+            text-align: left;
+            border-left: none;
+            border-top: 1px solid var(--color-border);
+        }
     }
 }
 

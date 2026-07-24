@@ -308,9 +308,21 @@ $is_light_theme: true;
         vertical-align: top;
     }
 
+    // Join / Spectate / Virtual join / Register actions. Size to their label
+    // (not the whole column) so they read as compact pills, centered in the
+    // action cell instead of stretching into an over-long bar.
+    .contest-action {
+        min-width: 6.5em;
+        text-align: center;
+    }
+
     .participate-button {
         display: inline-block;
-        width: 90px;
+        width: auto;
+        box-sizing: border-box;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-md);
+        white-space: nowrap;
     }
 
     .contest-block {
@@ -324,6 +336,14 @@ $is_light_theme: true;
         }
         @else {
             color: #ccc;
+        }
+    }
+
+    // On phones the user-count column is the least important; drop it so the
+    // title and the primary action button keep their room.
+    @media (max-width: 600px) {
+        .contest-users {
+            display: none;
         }
     }
 }
@@ -374,6 +394,14 @@ $is_light_theme: true;
     font-weight: 600;
 }
 
+// Time/Memory-limit columns on the contest problem list are secondary; hide
+// them on very narrow screens so the problem name + points stay legible.
+@media (max-width: 480px) {
+    .contest-problem-limit {
+        display: none;
+    }
+}
+
 // "Already registered" confirmation label (was inline sage-green hex).
 .contest-registered-label {
     color: var(--color-success-fg);
@@ -397,10 +425,12 @@ form.contest-join-pseudotab {
 
     input {
         display: inline;
-        border: none;
-        padding: 0;
-        background: none;
+        border: none !important;
+        padding: 0 !important;
+        background: none !important;
+        box-shadow: none !important;
         font-weight: 600;
+        color: inherit !important;
     }
 }
 

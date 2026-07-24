@@ -110,31 +110,45 @@ window.fix_div = function (div, height) {
 };
 
 $(function () {
-    if (typeof window.orientation !== 'undefined') {
-        $(window).resize(function () {
-            var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-            $('#viewport').attr('content', width > 480 ? 'initial-scale=1' : 'width=480');
-        });
-    }
-
     var $nav_list = $('#nav-list');
-    $('#navicon').click(function (event) {
+    var $navicon = $('#navicon');
+    var $user_menu = $('#user-menu');
+    var $user_menu_toggle = $('#user-menu-toggle');
+
+    var close_nav_menus = function () {
+        $nav_list.removeClass('show-list');
+        $navicon.removeClass('hover').attr('aria-expanded', 'false');
+        $user_menu.removeClass('show-list');
+        $user_menu_toggle.attr('aria-expanded', 'false');
+    };
+
+    $navicon.click(function (event) {
         event.stopPropagation();
-        $nav_list.toggleClass('show-list');
-        if ($nav_list.is(':hidden'))
-            $(this).blur().removeClass('hover');
-        else {
-            $(this).addClass('hover');
-        }
+        var is_open = !$nav_list.hasClass('show-list');
+        $user_menu.removeClass('show-list');
+        $user_menu_toggle.attr('aria-expanded', 'false');
+        $nav_list.toggleClass('show-list', is_open);
+        $(this).toggleClass('hover', is_open).attr('aria-expanded', is_open ? 'true' : 'false');
     }).hover(function () {
         $(this).addClass('hover');
     }, function () {
-        $(this).removeClass('hover');
+        if (!$nav_list.hasClass('show-list'))
+            $(this).removeClass('hover');
     });
 
     $nav_list.find('li a .nav-expand').click(function (event) {
         event.preventDefault();
+        event.stopPropagation();
         $(this).parent().siblings('ul').toggleClass('show-list');
+    });
+
+    $user_menu_toggle.click(function (event) {
+        event.stopPropagation();
+        var is_open = !$user_menu.hasClass('show-list');
+        $nav_list.removeClass('show-list');
+        $navicon.removeClass('hover').attr('aria-expanded', 'false');
+        $user_menu.toggleClass('show-list', is_open);
+        $(this).attr('aria-expanded', is_open ? 'true' : 'false');
     });
 
     $nav_list.find('li a').each(function () {
@@ -147,13 +161,23 @@ $(function () {
         });
     });
 
-    $nav_list.click(function (event) {
+    $nav_list.add($user_menu).click(function (event) {
         event.stopPropagation();
     });
 
-    $('html').click(function () {
-        $nav_list.removeClass('show-list');
+    $(document).on('keydown', function (event) {
+        if (event.key === 'Escape') {
+            close_nav_menus();
+            $navicon.trigger('focus');
+        }
     });
+
+    $(window).on('resize', function () {
+        if (window.innerWidth > 960)
+            close_nav_menus();
+    });
+
+    $('html').click(close_nav_menus);
 
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
@@ -190,12 +214,12 @@ function count_down(label) {
         var m = Math.floor(time % 3600 / 60);
         var s = time % 60;
         var parts = [];
-        if (d > 0)
-            parts.push(formatUnit(d, '%s day', '%s days'));
-        parts.push(formatUnit(h, '%s hour', '%s hours'));
-        parts.push(formatUnit(m, '%s minute', '%s minutes'));
-        parts.push(formatUnit(s, '%s second', '%s seconds'));
-        label.text(parts.join(', '));
+        if (d > 0) {
+            var day_str = ngettext('%s day', '%s days', d).replace('%s', d);
+            label.text(day_str + ' ' + ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2));
+        } else {
+            label.text(('0' + h).slice(-2) + ':' + ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2));
+        }
     }, 1000);
 }
 
@@ -235,6 +259,21 @@ $(function () {
         // Prevent multiple submissions of forms, see #565
         $("button[type=submit], input[type=submit]").prop('disabled', true);
     });
+
+    // Bring the active tab into view on horizontally-scrollable tab strips so it
+    // isn't left offscreen on narrow viewports. Scroll the strip itself instead
+    // of the whole page to avoid unwanted vertical jumps.
+    $('.tabs > ul').each(function () {
+        var strip = this;
+        var active = $(strip).children('li.active')[0];
+        if (!active || strip.scrollWidth <= strip.clientWidth)
+            return;
+        var target = active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
+        strip.scrollLeft = Math.max(0, target);
+    });
+
+    // Keep the footer copyright year current without a template rebuild.
+    $('.js-current-year').text(new Date().getFullYear());
 });
 
 window.notification_template = {

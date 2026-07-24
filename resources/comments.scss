@@ -168,6 +168,7 @@ a {
     .comment .detail {
         margin: 0px 15px 0px;
         width: 100%;
+        min-width: 0;
 
         .header {
             display: flex;
@@ -239,6 +240,25 @@ a {
 
         .vote {
             margin-right: 0em;
+        }
+
+        // Reclaim horizontal space on phones: trim the reading-column margins and
+        // let the body shrink instead of forcing the whole thread to overflow.
+        .comment .detail {
+            margin: 0 0 0 10px;
+            width: auto;
+        }
+
+        .comment-display {
+            padding-left: 0.5em !important;
+        }
+    }
+
+    // Deeply nested reply threads flatten their indentation on narrow screens so
+    // the innermost comments still have room to breathe.
+    @media (max-width: 480px) {
+        .comments {
+            padding-left: 0.5em;
         }
     }
 }

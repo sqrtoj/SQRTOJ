@@ -63,6 +63,24 @@
         z-index: 0;
     }
 
+    &__illustration {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('/static/autumn/hero-banner.webp');
+        background-size: cover;
+        background-position: left bottom;
+        background-repeat: no-repeat;
+        z-index: 1;
+        pointer-events: none;
+
+        // Gradient mask to blend the left side of the image into the background smoothly
+        mask-image: linear-gradient(to right, transparent 0%, black 50%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 50%);
+    }
+
     &__blob {
         position: absolute;
         width: 26rem;
@@ -162,11 +180,12 @@
         }
     }
 
-    // Stats sit in a horizontal row below the action buttons, each a subtle
-    // glass tile so the numbers read as distinct, tappable-looking facts.
+    // Stats sit in an even three-up row below the actions, each a subtle glass
+    // tile. A grid keeps the tiles equal width and prevents the uneven
+    // "2 + 1 stretched" wrap the old flex layout produced on phones.
     &__stats {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: var(--space-3);
         padding-top: var(--space-5);
         margin-top: var(--space-1);
@@ -232,7 +251,10 @@
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(6px);
-    min-width: 7rem;
+    // In the stats grid each tile is an equal fraction; min-width:0 lets it
+    // shrink below its content width instead of forcing horizontal overflow.
+    min-width: 0;
+    box-sizing: border-box;
     transition: background-color var(--motion-base) var(--ease-standard),
         transform var(--motion-base) var(--ease-standard);
 
@@ -247,6 +269,7 @@
         line-height: 1.05;
         letter-spacing: -0.01em;
         font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
     }
 
     &__label {
@@ -254,6 +277,7 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
         opacity: 0.9;
+        overflow-wrap: anywhere;
     }
 }
 
@@ -363,8 +387,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 2rem;
-        height: 2rem;
+        width: 2.75rem;
+        height: 2.75rem;
         padding: 0;
         border-radius: var(--radius-pill);
         border: 1px solid var(--color-accent);
@@ -399,7 +423,8 @@
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
-        padding-bottom: var(--space-2);
+        padding: 4px 4px var(--space-2);
+        scroll-padding-inline: 4px;
         // Hide scrollbar (arrows drive navigation) while keeping it scrollable.
         scrollbar-width: none;
         -ms-overflow-style: none;
@@ -409,7 +434,8 @@
 
     // Cards take a fixed, responsive width inside the flex track.
     .spotlight-card {
-        flex: 0 0 clamp(260px, 80%, 340px);
+        flex: 0 0 clamp(min(260px, 100%), 80%, 340px);
+        box-sizing: border-box;
         scroll-snap-align: start;
     }
 }
@@ -559,6 +585,7 @@
             display: inline-flex;
             align-items: center;
             gap: var(--space-1);
+            min-height: 2.75rem;
             padding: var(--space-1) var(--space-3);
             width: auto;
             font-size: var(--text-sm);
@@ -624,8 +651,8 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 1.6em;
-                height: 1.6em;
+                width: 2.75rem;
+                height: 2.75rem;
                 line-height: 1;
             }
 
@@ -659,8 +686,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 2rem;
-            height: 2rem;
+            width: 2.75rem;
+            height: 2.75rem;
             padding: 0;
             border: 1px solid transparent;
             border-radius: var(--radius-md);
@@ -720,6 +747,7 @@
 
         .blog-expand-cta__btn {
             width: auto;
+            min-height: 2.75rem;
             display: inline-flex;
             align-items: center;
             gap: var(--space-2);
@@ -887,9 +915,14 @@
             color: var(--color-accent);
         }
 
-        .sidebox-head__badge img {
-            max-width: none;
-            vertical-align: middle;
+        .sidebox-head__badge {
+            flex: 0 1 40%;
+            min-width: 0;
+
+            img {
+                max-width: 100%;
+                vertical-align: middle;
+            }
         }
     }
 
@@ -1195,6 +1228,75 @@
 
 #mobile.tabs {
     margin: 0 0 1em;
+}
+
+@media (max-width: 799px) {
+    .home-hero__actions .button {
+        flex: 1 1 12rem;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .home-personal {
+        align-items: stretch;
+        padding: var(--space-4);
+
+        &__chips,
+        &__cta.button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        &__cta.button {
+            justify-content: center;
+        }
+    }
+}
+
+@media (max-width: 420px) {
+    .home-hero {
+        padding: var(--space-5) var(--space-4);
+
+        &__stats {
+            gap: var(--space-2);
+            padding-top: var(--space-4);
+        }
+    }
+
+    .hero-stat {
+        padding: var(--space-2) var(--space-2);
+        align-items: center;
+        text-align: center;
+
+        &__value {
+            font-size: clamp(1.15rem, 6vw, 1.6rem);
+        }
+
+        &__label {
+            font-size: 0.68rem;
+            letter-spacing: 0.02em;
+        }
+    }
+
+    .blog-content .post {
+        margin-right: 0;
+        margin-left: 0;
+
+        .post-header {
+            gap: var(--space-1);
+        }
+
+        .title {
+            font-size: clamp(1.25rem, 7vw, 1.45rem);
+            line-height: 1.2;
+        }
+
+        .blog-body {
+            h1 { font-size: clamp(1.65rem, 9vw, 2rem); }
+            h2 { font-size: clamp(1.4rem, 8vw, 1.75rem); }
+            h3 { font-size: clamp(1.2rem, 7vw, 1.5rem); }
+        }
+    }
 }
 
 .rssatom {

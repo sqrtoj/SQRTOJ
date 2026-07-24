@@ -168,9 +168,9 @@
 
 {% macro contest_join(contest, request, finished_contests) %}
     {% if request.in_contest and contest.key == request.participation.contest.key %}
-        <td><span>Already joined</span></td>
+        <td class="contest-action"><span>Already joined</span></td>
     {% else %}
-        <td>
+        <td class="contest-action">
             {% if contest.key in finished_contests or request.profile in contest.authors.all() or request.profile in contest.curators.all() or request.profile in contest.testers.all() %}
                 <form action="{{ url('contest_join', contest.key) }}" method="post">
                     {% csrf_token %}
@@ -189,7 +189,7 @@
 {% endmacro %}
 
 {% macro contest_register(contest, request) %}
-    <td>
+    <td class="contest-action">
         {% if request.profile not in contest.authors.all() and request.profile not in contest.curators.all() and request.profile not in contest.testers.all() %}
             {% if request.profile and contest.id in request.profile.registered_contest_ids %}
                 <span class="contest-registered-label"><b>Already registered</b></span>
@@ -253,7 +253,7 @@
                 <thead>
                 <tr>
                     <th style="width:80%">{{ _('Contest') }}</th>
-                    <th>{{ _('Users') }}</th>
+                    <th class="contest-users">{{ _('Users') }}</th>
                     <th style="width:20%"></th>
                 </tr>
                 </thead>
@@ -275,7 +275,7 @@
                                     {% endif %}
                                 </div>
                             </td>
-                            <td>
+                            <td class="contest-users">
                                 {{ user_count(contest, request.user) }}
                             </td>
                             {{ contest_join(contest, request, finished_contests) }}
@@ -299,7 +299,7 @@
                 <thead>
                 <tr>
                     <th style="width:80%">{{ _('Contest') }}</th>
-                    <th>{{ _('Users') }}</th>
+                    <th class="contest-users">{{ _('Users') }}</th>
                     <th style="width:15%"></th>
                 </tr>
                 </thead>
@@ -318,7 +318,7 @@
                                 {% endif %}
                             </div>
                         </td>
-                        <td>
+                        <td class="contest-users">
                             {{ user_count(contest, request.user) }}
                         </td>
                         {% if not contest.require_registration or contest.can_register %}
@@ -399,7 +399,7 @@
                     <th style="width:80%">
                         <a href="{{ sort_links.name }}" class="contest-sort-link">{{ _('Contest') }}{{ sort_order.name }}</a>
                     </th>
-                    <th>
+                    <th class="contest-users">
                         <a href="{{ sort_links.user_count }}" class="contest-sort-link">{{ _('Users') }}{{ sort_order.user_count }}</a>
                     </th>
                     <th style="width:15%"></th>
@@ -414,10 +414,10 @@
                                 {{ time_left(contest) }}
                             </div>
                         </td>
-                        <td>
+                        <td class="contest-users">
                             {{ user_count(contest, request.user) }}
                         </td>
-                        <td>
+                        <td class="contest-action">
                             {% if request.in_contest and contest.key == request.participation.contest.key %}
                                 <span>{{ _('Already joined') }}</span>
                             {% elif not contest.disallow_virtual %}

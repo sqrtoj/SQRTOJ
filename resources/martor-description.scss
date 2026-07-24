@@ -254,6 +254,16 @@ form .martor-preview {
         height: 90%;
         position: relative;
     }
+
+    // In fullscreen the editor/preview should grow to fill the section (which is
+    // sized to the viewport) rather than staying pinned to the fixed 400px
+    // authoring height.
+    .martor-field,
+    .ace_editor,
+    form .martor-preview {
+        height: 100%;
+        max-height: none;
+    }
 }
 
 .marked-emoji {

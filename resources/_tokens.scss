@@ -101,7 +101,8 @@ $is_summer: false !default;
             --color-accent-hover: #9e3609;
             --color-accent-contrast: #ffffff;
             --color-accent-2: #e0a82e;
-            --color-navbar: #7a2906;
+            --color-navbar: #a84210; // Adjusted for a prettier orange/autumn look
+            --bg-texture: url('#{$path_to_root}/autumn/seamless-light.webp');
 
             // Links use the warm sienna family (not teal) to match the autumn
             // brand. #c1440e clears AA on white (5.12:1) and paper (~4.8:1).
@@ -118,38 +119,54 @@ $is_summer: false !default;
             --color-warning-fg: #8a6100;
             --color-danger-bg: #f8dcdc;
             --color-danger-fg: #a52222;
+
+            // --- Autumn artwork (warm light) ---
+            // A-1 homepage hero banner + A-3 seamless page background. Paths are
+            // relative to the compiled stylesheet ($path_to_root), so they resolve
+            // to /static/autumn/... for every build variant.
+            --hero-image: url("#{$path_to_root}/autumn/hero-banner.webp");
+            --bg-texture: url("#{$path_to_root}/autumn/seamless-light.webp");
+            --bg-texture-opacity: 1;
         } @else {
-            --color-canvas: #1a1512;
-            --color-surface: #2e241c;
-            --color-surface-raised: #4a3b2f;
-            --color-surface-alt: #4a3b2f;
-            --color-border: #4a3b2f;
-            --color-border-strong: #6e5d4e;
-            --color-text: #f4ebdd;
-            --color-text-secondary: #a8907a;
-            --color-text-muted: #a8907a;
+            // Warm Harvest dark: a deep-espresso autumn palette with a genuine
+            // canvas -> surface -> raised elevation ladder and a visible border
+            // tier (the old build collapsed raised/alt/border into one flat brown).
+            --color-canvas: #140f0a;
+            --color-surface: #211812;
+            --color-surface-raised: #2c2018;
+            --color-surface-alt: #271d15;
+            --color-border: #3d2e22;
+            --color-border-strong: #5b4636;
+            --color-text: #f7efe4;
+            --color-text-secondary: #cbb6a0;
+            --color-text-muted: #9c8770;
             --color-text-inverse: #ffffff;
 
-            --color-accent: #e07b39;
-            --color-accent-hover: #f6cdb6;
-            --color-accent-contrast: #120e0b;
-            --color-accent-2: #e9c46a;
-            --color-navbar: #120e0b;
+            --color-accent: #ef8544;
+            --color-accent-hover: #ffa066;
+            --color-accent-contrast: #1a120b;
+            --color-accent-2: #ecc061;
+            --color-navbar: #100b07;
 
             // Links use the warm pumpkin/gold family (not teal) to match autumn.
-            --color-link: #e07b39;
-            --color-link-hover: #e9c46a;
-            --color-focus-ring: #e07b39;
-            --color-focus-ring-soft: rgba(224, 123, 57, 0.25);
+            --color-link: #f2985a;
+            --color-link-hover: #ecc061;
+            --color-focus-ring: #ef8544;
+            --color-focus-ring-soft: rgba(239, 133, 68, 0.3);
 
             --color-info-bg: #0d2b33;
-            --color-info-fg: #5fb3c4;
-            --color-success-bg: #0e3a22;
-            --color-success-fg: #66ff88;
-            --color-warning-bg: #3a2e05;
-            --color-warning-fg: #ffdd66;
-            --color-danger-bg: #3a1414;
-            --color-danger-fg: #ff9999;
+            --color-info-fg: #6fc0d1;
+            --color-success-bg: #10371f;
+            --color-success-fg: #6fe08c;
+            --color-warning-bg: #3a2c08;
+            --color-warning-fg: #f2c85a;
+            --color-danger-bg: #3a1616;
+            --color-danger-fg: #ff9b9b;
+
+            // --- Autumn artwork (warm dark) ---
+            --hero-image: url("#{$path_to_root}/autumn/hero-banner.webp");
+            --bg-texture: url("#{$path_to_root}/autumn/seamless-dark.webp");
+            --bg-texture-opacity: 1;
         }
     }
 
@@ -231,16 +248,33 @@ $is_summer: false !default;
     --card-pad: 24px;
 
     // --- Elevation ---
-    @if $is_light_theme {
-        --shadow-0: none;
-        --shadow-1: 0 1px 2px rgba(16, 24, 32, 0.08);
-        --shadow-2: 0 2px 8px rgba(16, 24, 32, 0.1);
-        --shadow-3: 0 8px 24px rgba(16, 24, 32, 0.14);
+    // Warm Harvest tints its shadows with the brand brown so surfaces feel like
+    // they sit on warm paper rather than under a cold grey light; Summer keeps
+    // the neutral blue-grey shadow it always had.
+    @if $is_summer {
+        @if $is_light_theme {
+            --shadow-0: none;
+            --shadow-1: 0 1px 2px rgba(16, 24, 32, 0.08);
+            --shadow-2: 0 2px 8px rgba(16, 24, 32, 0.1);
+            --shadow-3: 0 8px 24px rgba(16, 24, 32, 0.14);
+        } @else {
+            --shadow-0: none;
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+            --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.55);
+            --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
     } @else {
-        --shadow-0: none;
-        --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
-        --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.55);
-        --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.6);
+        @if $is_light_theme {
+            --shadow-0: none;
+            --shadow-1: 0 1px 2px rgba(74, 45, 24, 0.10);
+            --shadow-2: 0 4px 12px rgba(74, 45, 24, 0.12);
+            --shadow-3: 0 12px 30px rgba(74, 45, 24, 0.18);
+        } @else {
+            --shadow-0: none;
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.45);
+            --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.55);
+            --shadow-3: 0 14px 34px rgba(0, 0, 0, 0.65);
+        }
     }
 
     // --- Typography ---

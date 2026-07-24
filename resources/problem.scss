@@ -476,20 +476,17 @@ ul.problem-list {
     }
 }
 
-@media (max-width: 550px) {
-    #problem-table tr .users {
+@media (max-width: 600px) {
+    #problem-table tr .category,
+    #problem-table tr .types {
         display: none;
     }
 }
 
-@media (max-width: 450px) {
-    #problem-table tr .ac-rate {
-        display: none;
-    }
-}
-
-@media (max-width: 350px) {
-    #problem-table tr .category {
+@media (max-width: 480px) {
+    #problem-table tr .users,
+    #problem-table tr .ac-rate,
+    #problem-table tr .editorial {
         display: none;
     }
 }

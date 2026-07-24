@@ -10,6 +10,7 @@ import judge.contest_format
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('judge', '0214_combined_contest_ranking'),
         ('judge', '0214_profile_site_palette'),
     ]
 

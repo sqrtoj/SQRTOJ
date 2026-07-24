@@ -21,8 +21,29 @@
 
     tr:first-child {
         position: sticky;
-        top: 43px;
+        top: var(--nav-height);
+        z-index: 2;
     }
+
+    // Keep the language-name column visible while the judge columns scroll
+    // horizontally inside .h-scrollable-table.
+    th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background: var(--color-surface-alt);
+    }
+
+    tr:first-child th:first-child {
+        z-index: 3;
+    }
+}
+
+// The OJ status page stacks several charts inside one table. Give it a minimum
+// width so the side-by-side language/result charts keep readable proportions
+// and the .h-scrollable-table wrapper scrolls instead of squeezing them.
+#stats-table {
+    min-width: 48rem;
 }
 
 // Date-range picker button (OJ status stats). Tokenized so it matches the

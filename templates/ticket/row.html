@@ -3,6 +3,6 @@
         <i class="fa {% if ticket.is_contributive%}fa-arrow-up{% else %}fa-minus{% endif %}"></i></td>
     <td>{{ ticket.id }}</td>
     <td><a href="{{ url('ticket', ticket.id) }}">{{ ticket.title }}</a></td>
-    <td>{{ link_user(ticket.user) }}</td>
-    <td>{{ link_users(ticket.assignees.all()) }}</td>
+    <td class="ticket-user">{{ link_user(ticket.user) }}</td>
+    <td class="ticket-assignees">{{ link_users(ticket.assignees.all()) }}</td>
 </tr>

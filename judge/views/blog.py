@@ -168,25 +168,14 @@ def _get_cached_homepage_stats():
 def _get_cached_top_rated_users():
     limit = settings.VNOJ_HOMEPAGE_TOP_USERS_COUNT
     return _get_or_set_cache(
-        f'homepage:top_rating:{limit}:v2',
+        f'homepage:top_rating:{limit}:v3',
         lambda: list(
             Profile.objects.order_by('-rating')
             .filter(rating__isnull=False, is_unlisted=False)
             .select_related('user', 'display_badge')
-            .only('performance_points', 'display_rank', 'rating', 'username_display_override',
-                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
-        ),
-    )
-
-
-def _get_cached_new_problems():
-    limit = settings.DMOJ_BLOG_NEW_PROBLEM_COUNT
-    return _get_or_set_cache(
-        f'homepage:new_problems:{limit}:v1',
-        lambda: list(
-            Problem.get_public_problems()
-            .only('code', 'name', 'date')
-            .order_by('-date', 'code')[:limit],
+            .only('performance_points', 'display_rank', 'rating', 'username_display_override', 'mute',
+                  'user__username', 'user__first_name', 'user__email',
+                  'display_badge__mini', 'display_badge__name')[:limit],
         ),
     )
 
@@ -194,13 +183,14 @@ def _get_cached_new_problems():
 def _get_cached_top_contributors():
     limit = settings.VNOJ_HOMEPAGE_TOP_USERS_COUNT
     return _get_or_set_cache(
-        f'homepage:top_contrib:{limit}:v1',
+        f'homepage:top_contrib:{limit}:v2',
         lambda: list(
             Profile.objects.order_by('-contribution_points')
             .filter(contribution_points__gt=0, is_unlisted=False)
             .select_related('user', 'display_badge')
-            .only('contribution_points', 'display_rank', 'rating', 'username_display_override',
-                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
+            .only('contribution_points', 'display_rank', 'rating', 'username_display_override', 'mute',
+                  'user__username', 'user__first_name', 'user__email',
+                  'display_badge__mini', 'display_badge__name')[:limit],
         ),
     )
 
@@ -241,8 +231,6 @@ class PostList(PostListBase):
         context['comments'] = Comment.most_recent(self.request.user, 10)
         context['page_titles'] = CacheDict(lambda page: Comment.get_page_title(page))
 
-        context['new_problems'] = _get_cached_new_problems()
-
         stats = _get_cached_homepage_stats()
         context['user_count'] = stats['user_count']
         context['problem_count'] = stats['problem_count']
@@ -251,12 +239,15 @@ class PostList(PostListBase):
 
         now = timezone.now()
 
-        visible_contests = Contest.get_visible_contests(self.request.user).filter(is_visible=True) \
-                                  .only('key', 'name', 'start_time', 'end_time') \
-                                  .order_by('start_time')
+        visible_contests = list(
+            Contest.get_visible_contests(self.request.user)
+            .filter(Q(start_time__gt=now) | Q(start_time__lte=now, end_time__gt=now), is_visible=True)
+            .only('key', 'name', 'start_time', 'end_time')
+            .order_by('start_time')
+        )
 
-        context['current_contests'] = visible_contests.filter(start_time__lte=now, end_time__gt=now)
-        context['future_contests'] = visible_contests.filter(start_time__gt=now)
+        context['current_contests'] = [contest for contest in visible_contests if contest.start_time <= now]
+        context['future_contests'] = [contest for contest in visible_contests if contest.start_time > now]
 
         context['top_rated_users'] = self.get_top_rated_users()
         context['top_contrib'] = self.get_top_contributors()
@@ -264,7 +255,7 @@ class PostList(PostListBase):
         if self.request.user.is_authenticated:
             context['own_open_tickets'] = (
                 Ticket.objects.filter(user=self.request.profile, is_open=True).order_by('-id')
-                              .prefetch_related('linked_item').select_related('user__user', 'user__display_badge')
+                              .prefetch_related('linked_item').select_related('user__user', 'user__display_badge')[:10]
             )
         else:
             context['own_open_tickets'] = []

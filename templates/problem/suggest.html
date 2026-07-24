@@ -2,13 +2,6 @@
 
 {% block body %}
 <div class="form-shell form-shell--wide">
-    <div class="form-shell__head">
-        <div class="form-shell__icon"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></div>
-        <div>
-            <h2 class="form-shell__title">{{ _('Create a new problem') }}</h2>
-            <p class="form-shell__subtitle">{{ _('Fill in the details below. Fields marked with * are required.') }}</p>
-        </div>
-    </div>
 
     {% if request.path == url('problem_suggest') %}
         <div class="alert alert-warning alert-dismissable">

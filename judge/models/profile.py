@@ -349,7 +349,7 @@ class Profile(models.Model):
         # Keep this update atomic to avoid lost updates under concurrent votes/actions.
         type(self).objects.filter(pk=self.pk).update(contribution_points=F('contribution_points') + delta)
         self.refresh_from_db(fields=['contribution_points'])
-        cache.delete(f'homepage:top_contrib:{settings.VNOJ_HOMEPAGE_TOP_USERS_COUNT}:v1')
+        cache.delete(f'homepage:top_contrib:{settings.VNOJ_HOMEPAGE_TOP_USERS_COUNT}:v2')
         return self.contribution_points
 
     update_contribution_points.alters_data = True

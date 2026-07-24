@@ -1,0 +1,309 @@
+@import "vars";
+
+// Shared responsive safeguards. This partial is imported last so narrow-screen
+// constraints reliably override legacy page-specific fixed widths.
+html,
+body {
+    max-width: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+#page-container,
+#content,
+#content-body,
+#common-content,
+#content-left,
+#content-right {
+    min-width: 0;
+}
+
+#content-body {
+    overflow-wrap: anywhere;
+}
+
+img,
+svg,
+video,
+canvas,
+iframe,
+object,
+embed {
+    max-width: 100%;
+}
+
+img,
+video {
+    height: auto;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+.h-scrollable-table {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 760px) {
+    #content {
+        width: auto;
+        margin-top: var(--space-4);
+        padding: 0 var(--space-3);
+    }
+
+    #content-body {
+        padding-bottom: var(--space-7);
+    }
+
+    h1 {
+        font-size: clamp(2rem, 12vw, 3.5rem);
+        overflow-wrap: anywhere;
+    }
+
+    h2 {
+        font-size: clamp(1.4rem, 7vw, 2rem);
+        overflow-wrap: anywhere;
+    }
+
+    h3 {
+        font-size: clamp(1.15rem, 5vw, 1.4rem);
+        overflow-wrap: anywhere;
+    }
+
+    .title-line-action,
+    div.info-float {
+        float: none;
+        margin: var(--space-2) 0;
+    }
+
+    .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .section-head .section-head-action {
+        white-space: normal;
+    }
+
+    .u-grid-auto {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--u-grid-min, 260px)), 1fr));
+    }
+
+    .table {
+        font-size: 0.94rem;
+
+        th,
+        td {
+            padding: var(--space-2);
+        }
+    }
+
+    .centered-form .submit-bar {
+        float: none;
+        margin-top: var(--space-3);
+    }
+
+    #announcement {
+        right: var(--space-3);
+        bottom: var(--space-3);
+        left: var(--space-3);
+        width: auto;
+        max-width: none;
+        max-height: min(45vh, 18rem);
+        padding: var(--space-3);
+        box-sizing: border-box;
+        overflow-y: auto;
+        border-radius: var(--radius-md);
+    }
+
+    #contest-info {
+        right: var(--space-2);
+        bottom: var(--space-2);
+        left: var(--space-2) !important;
+        top: auto !important;
+        max-width: none;
+        padding: var(--space-2) var(--space-3);
+        box-sizing: border-box;
+        font-size: var(--text-base);
+        border-width: 2px;
+        border-left-width: 4px;
+    }
+
+    .site-footer__inner {
+        padding-right: var(--space-3);
+        padding-left: var(--space-3);
+    }
+
+    .site-footer__links,
+    .site-footer__section {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .form-area,
+    .pane,
+    .sortedm2m-container,
+    .sortedm2m-container p.selector-filter,
+    ul.sortedm2m {
+        width: 100% !important;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .sortedm2m-container p.selector-filter input {
+        width: calc(100% - 2.5rem) !important;
+        box-sizing: border-box;
+    }
+
+    .api-token,
+    #scratch-codes {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .django-as-table input:not([type='checkbox']):not([type='radio']):not([type='submit']),
+    .django-as-table select,
+    .django-as-table textarea {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    // Stack the top-level form layout table (label row over field row) so long
+    // labels and controls stop forcing horizontal overflow. Scoped to the form's
+    // *direct* table so nested multi-column formsets keep their tabular layout
+    // and rely on their .h-scrollable-table wrapper instead.
+    .form-area > .django-as-table,
+    .form-area > .django-as-table > tbody,
+    .form-area > .django-as-table > tbody > tr,
+    .form-area > .django-as-table > tbody > tr > th,
+    .form-area > .django-as-table > tbody > tr > td,
+    .auth-astable,
+    .auth-astable > tbody,
+    .auth-astable > tbody > tr,
+    .auth-astable > tbody > tr > th,
+    .auth-astable > tbody > tr > td {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .form-area > .django-as-table > tbody > tr > th,
+    .auth-astable > tbody > tr > th {
+        padding-bottom: var(--space-1);
+    }
+
+    // Profile edit page: let the fixed-width panes/pickers become fluid.
+    .settings,
+    .settings .pane,
+    .sortedm2m-container,
+    .sortedm2m-container p.selector-filter,
+    ul.sortedm2m {
+        width: 100% !important;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .settings .pane table {
+        width: 100%;
+    }
+
+    .totp-or-scratch-code-panel-message {
+        width: 100% !important;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .profile-badges {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 120px), 1fr));
+    }
+
+    .site-footer__links {
+        flex-direction: column;
+    }
+
+    .site-footer__bar {
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .site-footer__sep {
+        display: none;
+    }
+}
+
+@media (max-width: 420px) {
+    #content {
+        padding-right: var(--space-2);
+        padding-left: var(--space-2);
+    }
+
+    .button,
+    button,
+    input[type='submit'] {
+        white-space: normal;
+    }
+
+    .profile-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+// On phones the search/filter sidebar precedes the results in source order, so
+// stack the shared two-column layout as a column and pull results above the
+// sidebox. Only applies below the 700px breakpoint where the desktop flex row
+// is not active.
+@media (max-width: 699px) {
+    #common-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #common-content > #content-left {
+        order: 1;
+    }
+
+    #common-content > #content-right {
+        order: 2;
+    }
+}
+
+// Coarse-pointer (touch) devices get comfortable 44px hit targets on the dense
+// icon/link controls that are otherwise sized for a mouse cursor.
+@media (pointer: coarse) {
+    ul.pagination > li > a,
+    ul.pagination > li > span {
+        min-height: 44px;
+        padding-top: var(--space-2);
+        padding-bottom: var(--space-2);
+    }
+
+    .comment-operation a {
+        min-width: 40px;
+        min-height: 40px;
+        justify-content: center;
+    }
+
+    .martor-toolbar .ui.basic.icon.buttons .button,
+    .martor-toolbar .ui.basic.icon.button {
+        min-width: 40px !important;
+        min-height: 40px !important;
+    }
+
+    .django-ace-max_min,
+    .icon.expand-editor {
+        min-width: 40px;
+        min-height: 40px;
+    }
+}

@@ -76,6 +76,16 @@ span.organization {
             font-weight: 600;
         }
     }
+
+    // The full-name column is secondary identity info; drop it on narrow
+    // screens so rank + username + scores stay readable. The table is wrapped
+    // in .h-scrollable-table for any residual overflow.
+    @media (max-width: 700px) {
+        th.full-name,
+        td.full-name {
+            display: none;
+        }
+    }
 }
 
 .users-table,

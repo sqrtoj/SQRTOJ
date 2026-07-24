@@ -45,6 +45,15 @@
             margin-right: 0;
             max-height: 98%;
         }
+
+        @media (max-width: 600px) {
+            width: 100%;
+            max-width: 100%;
+            max-height: 90vh;
+            margin-left: 0;
+            margin-right: 0;
+            box-sizing: border-box;
+        }
     }
 
     .featherlight-inner {
@@ -68,6 +77,13 @@
         color: var(--color-text);
         border: none;
         padding: 0;
+
+        // Larger, easier-to-hit close control on touch devices.
+        @media (pointer: coarse) {
+            line-height: 44px;
+            width: 44px;
+            font-size: 1.3em;
+        }
     }
 
     .featherlight-close-icon::-moz-focus-inner {

@@ -223,6 +223,14 @@
         vertical-align: middle;
     }
 
+    table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
     td {
         vertical-align: top;
     }

@@ -72,7 +72,7 @@
 // kept so the 10s AJAX refresh in status/media-js.html keeps working.
 #judge-status {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
     gap: var(--space-4);
     margin: var(--space-4) 0;
 }
@@ -121,6 +121,12 @@
         flex-direction: column;
         gap: var(--space-2);
     }
+}
+
+.judge-runtime-chips .runtime-label {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .judge-stat {

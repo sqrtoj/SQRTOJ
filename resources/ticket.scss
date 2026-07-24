@@ -25,6 +25,18 @@ form#ticket-form {
     }
 }
 
+@media (max-width: 600px) {
+    #ticket-list .ticket-assignees {
+        display: none;
+    }
+}
+
+@media (max-width: 420px) {
+    #ticket-list .ticket-user {
+        display: none;
+    }
+}
+
 @media (min-width: 600px) {
     #ticket-list-container {
         display: flex;
