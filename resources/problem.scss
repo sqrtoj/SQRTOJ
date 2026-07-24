@@ -48,6 +48,9 @@ $is_light_theme: true;
 }
 
 #problem-table {
+    width: 100%;
+    min-width: 760px;
+
     td, th {
         // Text columns are left-aligned
         &.problem-code, &.problem-name, &.category, &.types {
@@ -68,6 +71,26 @@ $is_light_theme: true;
 
     th a {
         color: var(--color-text-inverse);
+    }
+}
+
+// Keep the problem results and the filters as two clearly separate desktop
+// columns. The table owns the remaining width, while the filter panel stays a
+// stable readable size instead of stretching into the list.
+@media (min-width: 700px) {
+    #common-content:has(#problem-table) {
+        align-items: flex-start;
+        gap: clamp(var(--space-4), 2vw, var(--space-6));
+    }
+
+    #content-left.problems {
+        flex: 1 1 0;
+    }
+
+    #content-right.problems {
+        flex: 0 0 clamp(15rem, 18vw, 19rem);
+        max-width: 19rem;
+        padding-left: 0;
     }
 }
 
