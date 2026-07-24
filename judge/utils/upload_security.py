@@ -7,9 +7,9 @@ import time
 from pathlib import PurePosixPath
 from zipfile import BadZipFile, ZIP_BZIP2, ZIP_DEFLATED, ZIP_LZMA, ZIP_STORED, ZipFile
 
+from PIL import Image, UnidentifiedImageError
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from PIL import Image, UnidentifiedImageError
 from django.utils.translation import gettext_lazy as _
 from pypdf import PdfReader
 from pypdf.errors import PyPdfError
