@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from django.db.models import Count, FilteredRelation, Max, Prefetch, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
@@ -17,7 +17,6 @@ from django.views.generic.detail import SingleObjectMixin, View
 from reversion import revisions
 
 from judge.comments import CommentedDetailView
-from judge.dblock import LockModel
 from judge.forms import BlogPostForm
 from judge.models import (BlogPost, BlogVote, Comment, Contest, Language,
                           Problem, Profile, Submission, Ticket)
@@ -56,43 +55,33 @@ def vote_blog(request, delta):
         return HttpResponseBadRequest()
 
     try:
-        blog = BlogPost.objects.filter(id=blog_id).get()
-    except BlogPost.DoesNotExist:
-        return HttpResponseNotFound(_('Blog post not found.'), content_type='text/plain')
+        with transaction.atomic():
+            # Serializing on the post row keeps both the per-user vote and the
+            # aggregate score consistent without using LOCK TABLES, which
+            # cannot commit inside Django TestCase's outer atomic block.
+            blog = BlogPost.objects.select_for_update().get(id=blog_id)
 
-    if blog.authors.filter(id=request.profile.id).exists():
-        return HttpResponseBadRequest(_('You cannot vote your own blog'), content_type='text/plain')
+            if blog.authors.filter(id=request.profile.id).exists():
+                return HttpResponseBadRequest(_('You cannot vote your own blog'), content_type='text/plain')
 
-    vote = BlogVote()
-    vote.blog_id = blog_id
-    vote.voter = request.profile
-    vote.score = delta
-
-    while True:
-        try:
-            # Keep duplicate-key failures inside a savepoint. This matters when
-            # the view is called from Django's outer test transaction as well
-            # as under concurrent requests in production.
-            with transaction.atomic():
-                vote.save()
-        except IntegrityError:
-            with LockModel(write=(BlogVote,)):
-                try:
-                    vote = BlogVote.objects.get(blog_id=blog_id, voter=request.profile)
-                except BlogVote.DoesNotExist:
-                    # We must continue racing in case this is exploited to manipulate votes.
-                    continue
+            vote, created = BlogVote.objects.get_or_create(
+                blog_id=blog_id,
+                voter=request.profile,
+                defaults={'score': delta},
+            )
+            if created:
+                score_delta = delta
+            else:
                 if vote.score == delta:
                     return HttpResponseBadRequest(_('You cannot vote twice.'), content_type='text/plain')
                 score_delta = delta - vote.score
                 vote.score = delta
                 vote.save(update_fields=['score'])
-        else:
-            score_delta = delta
-        break
 
-    blog = BlogPost.objects.get(id=blog_id)
-    blog.vote(score_delta)
+            blog.vote(score_delta)
+    except BlogPost.DoesNotExist:
+        return HttpResponseNotFound(_('Blog post not found.'), content_type='text/plain')
+
     return JsonResponse({'score': blog.score, 'vote_score': vote.score})
 
 
