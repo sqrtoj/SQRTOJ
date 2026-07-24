@@ -278,7 +278,10 @@ $is_summer: false !default;
     }
 
     // --- Typography ---
-    --font-ui: "Lato", "Segoe UI", "Lucida Grande", Arial, sans-serif;
+    // The bundled Lato subset does not include the Vietnamese tone-mark range.
+    // Source Sans Pro is loaded locally with that range, so it is the glyph-level
+    // fallback while Lato remains the primary UI face.
+    --font-ui: "Lato", "Source Sans Pro", "Segoe UI", "Lucida Grande", Arial, sans-serif;
     --font-mono: "JetBrains Mono", "Fira Code", Consolas, "DejaVu Sans Mono", monospace;
 
     --text-xs: 12px;

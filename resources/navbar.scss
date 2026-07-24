@@ -74,7 +74,9 @@
     border-radius: var(--radius-pill);
     background: transparent;
     color: var(--color-text-inverse) !important;
-    font-family: var(--font-ui);
+    // Keep the compact navigation in Source Sans Pro. Besides matching the
+    // established navbar look, its bundled Vietnamese glyph subset is complete.
+    font-family: "Source Sans Pro", var(--font-ui);
     font-size: var(--text-sm);
     font-weight: var(--weight-semibold);
     letter-spacing: 0.025em;
