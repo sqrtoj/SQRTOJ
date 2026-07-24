@@ -91,20 +91,14 @@ def site_name(request):
 
 def site_theme(request):
     # Middleware populating `profile` may not have loaded at this point if we're called from an error context.
-    # `site_palette` selects the color palette (warm/summer); `site_theme` selects light/dark/auto within it.
-    palette = getattr(getattr(request.user, 'profile', None), 'site_palette', None)
-    if palette not in settings.DMOJ_THEME_PALETTE_CSS:
-        palette = settings.DMOJ_DEFAULT_SITE_PALETTE
-    theme_css = settings.DMOJ_THEME_PALETTE_CSS.get(palette, settings.DMOJ_THEME_CSS)
     if hasattr(request.user, 'profile'):
-        preferred_css = theme_css.get(request.profile.site_theme)
+        preferred_css = settings.DMOJ_THEME_CSS.get(request.profile.site_theme)
     else:
         preferred_css = None
     return {
-        'DARK_STYLE_CSS': theme_css['dark'],
-        'LIGHT_STYLE_CSS': theme_css['light'],
+        'DARK_STYLE_CSS': settings.DMOJ_THEME_CSS['dark'],
+        'LIGHT_STYLE_CSS': settings.DMOJ_THEME_CSS['light'],
         'PREFERRED_STYLE_CSS': preferred_css,
-        'SITE_PALETTE': palette,
     }
 
 

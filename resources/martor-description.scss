@@ -23,44 +23,12 @@ form .martor-preview {
     z-index: 99999 !important;
 }
 
-.main-martor:not(.main-martor-fullscreen) {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-}
-
 .ace_editor {
-    min-height: 400px;
-    font-size: 14px;
-    font-family: var(--font-mono) !important;
-    line-height: 1.55;
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
-
-    .ace_gutter {
-        background: var(--color-surface-alt);
-        color: var(--color-text-muted);
-        border-right: 1px solid var(--color-border);
-    }
-
-    .ace_print-margin {
-        background: var(--color-border);
-    }
-
-    .ace_cursor {
-        color: var(--color-accent);
-    }
-
-    .ace_marker-layer .ace_active-line {
-        background: color-mix(in srgb, var(--color-accent) 10%, transparent);
-    }
+    font-size: 13px;
+    font-family: 'Liberation Mono', monospace !important;
 }
 
 .section-martor {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-
     div[data-tab^="editor-tab-"] {
         padding: 0;
     }
@@ -69,122 +37,23 @@ form .martor-preview {
         display: none !important;
     }
 
-    .tab-martor-menu {
-        display: grid !important;
-        grid-template-columns: max-content max-content minmax(0, 1fr);
-        grid-template-rows: minmax(48px, auto);
-        align-items: stretch;
-        width: 100%;
-        max-width: 100%;
-        min-height: 42px;
-        margin: 0 !important;
-        padding: 0 var(--space-2);
-        box-sizing: border-box;
-        border: 1px solid var(--color-border) !important;
-        border-radius: var(--radius-md) var(--radius-md) 0 0;
-        background: var(--color-surface-alt) !important;
-        overflow: hidden;
-
-        a.item {
-            grid-row: 1;
-            align-self: stretch !important;
-            display: inline-flex !important;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-1);
-            margin: 0 !important;
-            padding: 0 var(--space-3) !important;
-            border: 0 !important;
-            border-bottom: 2px solid transparent !important;
-            color: var(--color-text-secondary) !important;
-            font-size: var(--text-md);
-            line-height: 1;
-
-            &.active {
-                border-bottom-color: var(--color-accent) !important;
-                color: var(--color-text) !important;
-                background: transparent !important;
-                font-weight: var(--weight-semibold);
-            }
-
-            &:hover,
-            &:focus-visible {
-                color: var(--color-text) !important;
-                background: var(--color-surface) !important;
-            }
-        }
+    .tab-martor-menu a.item {
+        font-size: 0.8rem;
     }
 
     .martor-toolbar {
-        grid-column: 3;
-        grid-row: 1;
-        align-self: stretch !important;
-        display: flex !important;
-        align-items: center;
-        width: 100% !important;
-        max-width: 100%;
-        min-width: 0;
-        margin: 0 !important;
-        padding: 0 0 0 var(--space-2) !important;
-        box-sizing: border-box;
-        float: none !important;
+        flex: 0 1 auto !important;
         overflow-x: auto;
         overflow-y: hidden;
-
-        .ui.basic.icon.buttons {
-            display: flex !important;
-            align-items: center;
-            width: max-content;
-            min-width: max-content;
-            height: 100%;
-            margin: 0 0 0 auto !important;
-        }
-
-        .ui.basic.icon.buttons,
-        .ui.basic.icon.buttons .button,
-        .ui.basic.icon.button {
-            background: transparent !important;
-            border-color: transparent !important;
-            color: var(--color-text-secondary) !important;
-        }
-
-        .ui.basic.icon.buttons .button > .icon,
-        .ui.basic.icon.button > .icon {
-            color: currentColor !important;
-            opacity: 1;
-        }
-
-        .ui.basic.icon.buttons .button:hover,
-        .ui.basic.icon.buttons .button:focus-visible,
-        .ui.basic.icon.button:hover,
-        .ui.basic.icon.button:focus-visible {
-            background: var(--color-surface) !important;
-            color: var(--color-accent) !important;
-        }
     }
 
     .martor-field {
         height: 400px;
-        border: 1px solid var(--color-border);
-        border-top: 0;
-        background: var(--color-surface-raised);
-        color: var(--color-text);
-    }
-
-    .main-martor,
-    .ui.bottom.attached.segment,
-    form .martor-preview {
-        width: 100% !important;
-        max-width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
     }
 
     .ui.tabular.menu + .attached:not(.top).segment,
     .ui.tabular.menu + .attached:not(.top).segment + .attached:not(.top).segment {
-        width: 100% !important;
-        max-width: 100%;
-        overflow: hidden;
+        width: auto !important;
     }
 
     .resizable .resizable-b {
@@ -201,10 +70,7 @@ form .martor-preview {
     }
 
     .ui.bottom.attached.segment {
-        border-color: var(--color-border) !important;
-        background: var(--color-surface) !important;
-        color: var(--color-text);
-        padding: var(--space-4) !important;
+        border-color: $color_primary25 !important;
     }
 
     @if not $is_light_theme {
@@ -263,38 +129,15 @@ form .martor-preview {
 }
 
 .main-martor {
-    .section-martor {
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-1);
-    }
-
-    .martor-toolbar .ui.basic.icon.buttons,
-    .martor-toolbar .ui.basic.icon.buttons .button {
-        border-color: transparent !important;
-        background: transparent !important;
-    }
-
-    .martor-toolbar .ui.basic.icon.buttons .button,
-    .martor-toolbar .ui.basic.icon.button {
-        min-width: 30px;
-        min-height: 30px;
-        padding: var(--space-1) !important;
-        border-radius: var(--radius-sm) !important;
-        color: var(--color-text-secondary) !important;
-        transition: background-color var(--motion-fast) var(--ease-standard),
-            color var(--motion-fast) var(--ease-standard);
-
-        &:hover,
-        &:focus-visible {
-            background: var(--color-surface) !important;
-            color: var(--color-accent) !important;
+    @if not $is_light_theme {
+        // Keep toolbar icons readable on dark background.
+        .martor-toolbar .ui.basic.icon.buttons .button,
+        .martor-toolbar .ui.basic.icon.button,
+        .martor-toolbar .ui.basic.icon.buttons .button > .icon,
+        .martor-toolbar .ui.basic.icon.button > .icon {
+            color: $color_primary100 !important;
+            opacity: 1;
         }
-    }
-
-    .ace_editor,
-    .ace_editor .ace_scroller {
-        background: var(--color-surface-raised) !important;
-        color: var(--color-text);
     }
 }
 
@@ -326,16 +169,6 @@ form .martor-preview {
     .section-martor {
         height: 90%;
         position: relative;
-    }
-
-    // In fullscreen the editor/preview should grow to fill the section (which is
-    // sized to the viewport) rather than staying pinned to the fixed 400px
-    // authoring height.
-    .martor-field,
-    .ace_editor,
-    form .martor-preview {
-        height: 100%;
-        max-height: none;
     }
 }
 

@@ -9,127 +9,117 @@
 {% endblock %}
 
 {% block user_content %}
-    <div class="content-description profile-body">
+    <div class="content-description">
+        {% with orgs=user.organizations.filter(is_unlisted=False) %}
+            {% if orgs %}
+                <p style="margin-top: 0"><b>{{ _('From') }}</b>
+                    {% for org in orgs -%}
+                        <a href="{{ org.get_absolute_url() }}">{{ org.name }}</a>
+                        {%- if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
+        {% endwith %}
         {% if perms.judge.change_profile %}
             {% with notes=user.notes %}
                 {% if notes %}
-                    <section class="profile-section">
-                        <h4 class="profile-section__title">{{ _('Admin notes') }}</h4>
-                        <pre class="profile-admin-notes">{{ notes }}</pre>
-                    </section>
+                    <b>{{ _('Admin notes:') }}</b>
+                    <pre style="margin-top: 0">{{ notes }}</pre>
                 {% endif %}
             {% endwith %}
         {% endif %}
 
-        <section class="profile-section">
-            <h4 class="profile-section__title">{{ _('About') }}</h4>
-            {% if user.about %}
-                {% cache 86400 'user_about' user.id MATH_ENGINE %}
-                    {{ user.about|markdown('self-description', MATH_ENGINE)|reference|str|safe }}
-                {% endcache %}
-            {% else %}
-                <div class="empty-state">
-                    <i class="empty-state-icon fa fa-user-o" aria-hidden="true"></i>
-                    <span class="empty-state-message">
-                        {% if user.user == request.user %}
-                            {{ _('You have not shared any information.') }}
-                        {% else %}
-                            {{ _('This user has not shared any information.') }}
-                        {% endif %}
+        {% if user.about %}
+            <h4>{{ _('About') }}</h4>
+            {% cache 86400 'user_about' user.id MATH_ENGINE %}
+                {{ user.about|markdown('self-description', MATH_ENGINE)|reference|str|safe }}
+            {% endcache %}
+        {% else %}
+            <i>
+                {% if user.user == request.user %}
+                    {{ _('You have not shared any information.') }}
+                {% else %}
+                    {{ _('This user has not shared any information.') }}
+                {% endif %}
+            </i>
+            <br>
+        {% endif %}
+
+        <h4>{{ _('Badges & Awards') }}</h4>
+        {% for badge in user.badges.all() %}
+            <div style="display: inline-block; margin-left: 1em; margin-right: 1em;">
+                <img src="{{ badge.full_size or badge.mini or '' }}" title="{{ badge.name }}" style="height: 10em; width: auto; display: block; margin: 0 auto;" />
+                <p style="text-align: center; font-weight: bold; text-transform: uppercase;">{{ badge.name }}</p>
+            </div>
+        {% else %}
+            <i>{{ _('This user has not earned any badges or awards.') }}</i>
+        {% endfor %}
+
+        <h4 id="submission-activity-header"></h4>
+        <div id="submission-activity" style="display: none;">
+            <div id="submission-activity-actions">
+                <a href="javascript:void(0)" id="prev-year-action">&laquo;</a>
+                &nbsp;<span id="year"></span>&nbsp;
+                <a href="javascript:void(0)" id="next-year-action">&raquo;</a>
+            </div>
+            <div id="submission-activity-display">
+                <table id="submission-activity-table">
+                    <tr id="submission-0">
+                        <th class="submission-date-col info-text">
+                            {{ _('Sun') }}
+                        </th>
+                    </tr>
+                    <tr id="submission-1">
+                        <th class="submission-date-col info-text">
+                            {{ _('Mon') }}
+                        </th>
+                    </tr>
+                    <tr id="submission-2">
+                        <th class="submission-date-col info-text">
+                            {{ _('Tues') }}
+                        </th>
+                    </tr>
+                    <tr id="submission-3">
+                        <th class="submission-date-col info-text">
+                            {{ _('Wed') }}
+                        </th>
+                    </tr>
+                    <tr id="submission-4">
+                        <th class="submission-date-col info-text">
+                            {{ _('Thurs') }}
+                        </th>
+                    </tr>
+                    <tr id="submission-5">
+                        <th class="submission-date-col info-text">
+                            {{ _('Fri') }}
+                        </th>
+                    </tr>
+                    <tr id="submission-6">
+                        <th class="submission-date-col info-text">
+                            {{ _('Sat') }}
+                        </th>
+                    </tr>
+                </table>
+                <div class="info-bar">
+                    <span id="submission-total-count" class="info-text">
                     </span>
-                </div>
-            {% endif %}
-        </section>
-
-        <section class="profile-section">
-            <h4 class="profile-section__title">{{ _('Badges & Awards') }}</h4>
-            {% if user.badges.all() %}
-                <div class="profile-badges">
-                    {% for badge in user.badges.all() %}
-                        <figure class="profile-badge">
-                            <img src="{{ badge.full_size or badge.mini or '' }}" title="{{ badge.name }}" alt="{{ badge.name }}" class="profile-badge__img" />
-                            <figcaption class="profile-badge__name">{{ badge.name }}</figcaption>
-                        </figure>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <i class="empty-state-icon fa fa-shield" aria-hidden="true"></i>
-                    <span class="empty-state-message">{{ _('This user has not earned any badges or awards.') }}</span>
-                </div>
-            {% endif %}
-        </section>
-
-        <section class="profile-section">
-            <h4 id="submission-activity-header" class="profile-section__title"></h4>
-            <div id="submission-activity" style="display: none;">
-                <div id="submission-activity-actions">
-                    <a href="javascript:void(0)" id="prev-year-action">&laquo;</a>
-                    &nbsp;<span id="year"></span>&nbsp;
-                    <a href="javascript:void(0)" id="next-year-action">&raquo;</a>
-                </div>
-                <div id="submission-activity-display">
-                    <div class="submission-activity-scroll">
-                        <table id="submission-activity-table">
-                            <tr id="submission-0">
-                                <th class="submission-date-col info-text">
-                                    {{ _('Sun') }}
-                                </th>
-                            </tr>
-                            <tr id="submission-1">
-                                <th class="submission-date-col info-text">
-                                    {{ _('Mon') }}
-                                </th>
-                            </tr>
-                            <tr id="submission-2">
-                                <th class="submission-date-col info-text">
-                                    {{ _('Tues') }}
-                                </th>
-                            </tr>
-                            <tr id="submission-3">
-                                <th class="submission-date-col info-text">
-                                    {{ _('Wed') }}
-                                </th>
-                            </tr>
-                            <tr id="submission-4">
-                                <th class="submission-date-col info-text">
-                                    {{ _('Thurs') }}
-                                </th>
-                            </tr>
-                            <tr id="submission-5">
-                                <th class="submission-date-col info-text">
-                                    {{ _('Fri') }}
-                                </th>
-                            </tr>
-                            <tr id="submission-6">
-                                <th class="submission-date-col info-text">
-                                    {{ _('Sat') }}
-                                </th>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="info-bar">
-                        <span id="submission-total-count" class="info-text">
-                        </span>
-                        <table class="info-table">
-                            <tr>
-                                <th class="info-table-text info-text">{{ _('Less') }}</th>
-                                <td class="activity-0"><div></div></td>
-                                <td class="activity-1"><div></div></td>
-                                <td class="activity-2"><div></div></td>
-                                <td class="activity-3"><div></div></td>
-                                <td class="activity-4"><div></div></td>
-                                <th class="info-table-text info-text">{{ _('More') }}</th>
-                            </tr>
-                        </table>
-                    </div>
+                    <table class="info-table">
+                        <tr>
+                            <th class="info-table-text info-text">{{ _('Less') }}</th>
+                            <td class="activity-0"><div></div></td>
+                            <td class="activity-1"><div></div></td>
+                            <td class="activity-2"><div></div></td>
+                            <td class="activity-3"><div></div></td>
+                            <td class="activity-4"><div></div></td>
+                            <th class="info-table-text info-text">{{ _('More') }}</th>
+                        <tr>
+                    </table>
                 </div>
             </div>
-        </section>
+        </div>
 
         {% if rating %}
-        <section class="profile-section">
-            <h4 class="profile-section__title">{{ _('Rating history') }}</h4>
+            <h4>{{ _('Rating history') }}</h4>
             <div id="rating-chart">
                 <canvas></canvas>
             </div>
@@ -141,7 +131,6 @@
                     <span class="rating"></span>, #<span class="rank"></span>
                 </div>
             </div>
-        </section>
         {% endif %}
     </div>
 {% endblock %}
@@ -160,7 +149,6 @@
 
     {% if ratings %}
         <script type="text/javascript" src="{{ static('libs/chart.js/Chart.js') }}"></script>
-        <script type="text/javascript" src="{{ static('chart-theme.js') }}"></script>
         <script type="text/javascript">
             var rating_history = {{ rating_data }};
 
@@ -221,19 +209,15 @@
                     }
                 });
 
-                var css = getComputedStyle(document.documentElement);
-                var lineColor = (css.getPropertyValue('--color-accent') || '#A31515').trim();
-                var pointFill = (css.getPropertyValue('--color-surface') || '#fff').trim();
-
                 window.rating_chart = new Chart(ctx, {
                     type: 'scatter',
                     data: {
                         datasets: [{
                             label: 'rating',
-                            backgroundColor: 'rgba(0, 0, 0, 0)',
-                            borderColor: lineColor,
-                            pointBackgroundColor: pointFill,
-                            pointHoverBackgroundColor: lineColor,
+                            backgroundColor: 'rgb(0, 0, 0, 0)',
+                            borderColor: '#A31515',
+                            pointBackgroundColor: '#FFF',
+                            pointHoverBackgroundColor: '#A31515',
                             pointRadius: 5,
                             pointHoverRadius: 5,
                             showLine: true,

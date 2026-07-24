@@ -81,7 +81,6 @@
                 <div class="batch-cases">
             {% endif %}
         {% if can_view_testcase_status %}
-        <div class="testcase-table-scroll h-scrollable-table">
         <table class="submissions-status-table">{% for case in batch.cases %}
             {% set current_test_case_count = test_case_counter() %}
             {% set print_case_output = can_view_test and case.output %}
@@ -157,7 +156,6 @@
             {% endif %}
         {% endfor %}
         </table>
-        </div>
         {% endif %}
 
         {% if batch.id %}</div>{% endif %}

@@ -2,78 +2,27 @@
 
 $is_light_theme: true;
 
-// Collapsible section headers on the contest list (Active / Ongoing). Click or
-// keyboard-toggle to expand/collapse; state persists in localStorage.
-.contest-section-toggle {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    user-select: none;
-
-    &:focus-visible {
-        outline: 2px solid var(--color-focus-ring);
-        outline-offset: 2px;
-    }
-
-    .contest-section-toggle__chevron {
-        color: var(--color-accent);
-        font-size: 0.8em;
-        transition: transform var(--motion-fast) var(--ease-standard);
-    }
-}
-
-// Section header for contest detail blocks: title left, action button right, and
-// wraps instead of colliding on narrow screens (replaces the old float layout).
-.contest-section-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    margin-bottom: var(--space-3);
-
-    h2 {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        margin: 0;
-
-        .fa {
-            color: var(--color-accent);
-        }
-    }
-}
-
-// Space out the contest detail sections so problems / announcements /
-// clarifications read as distinct blocks.
-.contest-problems,
-.contest-announcements,
-.contest-clarifications {
-    margin-bottom: var(--space-6);
-}
-
 #contest-calendar {
     border-collapse: collapse;
     width: 100%;
 
     th {
-        border: 1px solid var(--color-border);
-        background: var(--color-surface-alt);
+        border: 1px solid $color_primary25;
+        background: $color_primary5;
     }
 
     td {
         height: 110px;
         width: 170px;
         vertical-align: top;
-        border: 1px solid var(--color-border);
+        border: 1px solid $color_primary25;
         transition-duration: 0.2s;
 
         .num {
             text-align: right;
             font-weight: bold;
             display: block;
-            border-bottom: 1px dashed var(--color-border);
+            border-bottom: 1px dashed $color_primary25;
             padding-right: 0.2em;
             margin-bottom: 0.4em;
         }
@@ -87,19 +36,14 @@ $is_light_theme: true;
                 margin: 0 0 0.2em 17px;
 
                 i.fa {
-                    color: var(--color-link);
+                    color: $color_link200;
                 }
 
                 a {
-                    color: var(--color-text);
+                    color: $color_primary75;
 
                     &:hover {
                         text-decoration: underline;
-                    }
-
-                    &:focus-visible {
-                        outline: 2px solid var(--color-focus-ring);
-                        outline-offset: 2px;
                     }
                 }
             }
@@ -111,173 +55,54 @@ $is_light_theme: true;
     }
 
     .noday {
-        background: var(--color-surface-alt);
+        background: $color_primary10;
     }
 
     .today {
         background: rgba($color_link200, 0.2);
     }
-
-    // On small screens the 7-column grid can't keep 170px cells; let them shrink
-    // and rely on the .h-scrollable-table wrapper for any residual overflow.
-    @media (max-width: 700px) {
-        td {
-            width: auto;
-            height: 80px;
-            font-size: 0.9em;
-        }
-    }
 }
 
-// Contest detail banner (modernized): a branded accent card with a prominent
-// countdown, the time window below it, and the contest-rules details in a
-// clean, tokenized panel. Presentation only -- countdown JS/markup unchanged.
 #banner {
-    margin-bottom: var(--space-5);
-    color: var(--color-text);
+    border-bottom: 1px solid $color_primary25;
+    padding-bottom: 1em;
+    color: $color_primary75;
     font-size: $base_font_size;
-
-    // Countdown + time window sit on a brand accent band, like the home hero.
-    .contest-countdown {
-        position: relative;
-        overflow: hidden;
-        border-radius: var(--radius-lg);
-        padding: clamp(var(--space-4), 4vw, var(--space-6)) var(--space-5);
-        background:
-            radial-gradient(circle at 85% -20%, rgba(255, 255, 255, 0.25), transparent 45%),
-            linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
-        box-shadow: var(--shadow-2);
-        text-align: center;
-    }
 
     a.date {
         display: block;
         text-decoration: none;
-        line-height: 1.2;
-        font-size: clamp(1.6rem, 4vw, 2.4rem);
-        font-weight: var(--weight-bold);
-        letter-spacing: -0.02em;
-        color: var(--color-accent-contrast);
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        line-height: 1.3;
+        font-size: 2.3em;
+        padding-bottom: 0.15em;
+        color: $color_link50;
 
         &:hover {
-            color: var(--color-accent-contrast);
-            opacity: 0.92;
+            color: $color_link100;
         }
 
-        &:focus-visible {
-            outline: 2px solid var(--color-accent-contrast);
-            outline-offset: 3px;
-            border-radius: var(--radius-sm);
+        &:active {
+            color: $color_link200;
         }
     }
 
     #time {
+        text-align: center;
         display: block;
-        margin-top: var(--space-2);
-        color: var(--color-accent-contrast);
-        opacity: 0.95;
-        font-size: var(--text-sm);
-
-        b {
-            font-weight: var(--weight-semibold);
-        }
     }
 
-    // Rules/details panel below the accent band.
-    div#details {
-        margin-top: var(--space-4);
-
-        > ul {
-            margin: 0;
-            padding: var(--space-4) var(--space-5);
-            list-style: none;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-1);
-
-            > li {
-                position: relative;
-                padding: var(--space-1) 0 var(--space-1) var(--space-5);
-                line-height: 1.5;
-
-                &::before {
-                    content: "\f058"; // fa-check-circle
-                    font-family: FontAwesome;
-                    position: absolute;
-                    left: 0;
-                    top: var(--space-1);
-                    color: var(--color-accent);
-                }
-            }
-
-            ul {
-                margin: var(--space-2) 0 0;
-                padding-left: var(--space-4);
-                list-style: none;
-
-                li {
-                    position: relative;
-                    padding: 2px 0 2px var(--space-4);
-                    color: var(--color-text-secondary);
-
-                    &::before {
-                        content: "\f105"; // fa-angle-right
-                        font-family: FontAwesome;
-                        position: absolute;
-                        left: 0;
-                        color: var(--color-text-muted);
-                    }
-                }
-            }
-        }
-
+    div#details ul {
+        margin-bottom: 0;
+        list-style: none;
         p {
             margin: 0;
-            display: inline;
         }
     }
 }
 
 .top-pagination-bar {
     justify-content: space-between;
-}
-
-.contest-filter-bar {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-3);
-    margin: 0 0 var(--space-5);
-    padding: var(--space-3);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-surface-alt);
-
-    label {
-        color: var(--color-text-secondary);
-        font-weight: 600;
-    }
-
-    select {
-        min-width: 12rem;
-        margin: 0;
-    }
-
-    .button {
-        margin: 0;
-    }
-
-    @media (max-width: 600px) {
-        align-items: stretch;
-        flex-direction: column;
-
-        select,
-        .button {
-            width: 100%;
-        }
-    }
 }
 
 .contest-list {
@@ -299,7 +124,7 @@ $is_light_theme: true;
 
     .time-left {
         text-align: left;
-        color: var(--color-text-muted);
+        color: $color_primary50;
         padding-top: 0.5em;
     }
 
@@ -308,21 +133,9 @@ $is_light_theme: true;
         vertical-align: top;
     }
 
-    // Join / Spectate / Virtual join / Register actions. Size to their label
-    // (not the whole column) so they read as compact pills, centered in the
-    // action cell instead of stretching into an over-long bar.
-    .contest-action {
-        min-width: 6.5em;
-        text-align: center;
-    }
-
     .participate-button {
         display: inline-block;
-        width: auto;
-        box-sizing: border-box;
-        padding: var(--space-2) var(--space-4);
-        border-radius: var(--radius-md);
-        white-space: nowrap;
+        width: 90px;
     }
 
     .contest-block {
@@ -338,81 +151,20 @@ $is_light_theme: true;
             color: #ccc;
         }
     }
-
-    // On phones the user-count column is the least important; drop it so the
-    // title and the primary action button keep their room.
-    @media (max-width: 600px) {
-        .contest-users {
-            display: none;
-        }
-    }
 }
 
 .contest-tag {
     box-shadow: inset 0 -0.1em 0 rgba(0, 0, 0, 0.12);
-    padding: 0.15em 0.4em;
-    border-radius: var(--radius-sm);
+    padding: 0.15em 0.3em;
+    border-radius: 0.15em;
     font-weight: 600;
     margin-right: 0.45em;
     position: relative;
-    background: var(--color-surface-alt);
-    color: var(--color-text-secondary);
-
-    a {
-        color: inherit;
-    }
-
-    .fa {
-        margin-right: 0.15em;
-    }
-
-    // Semantic tag variants (replace per-tag inline hex in contest/list.html).
-    &--hidden {
-        background: var(--color-warning-bg);
-        border: 1px solid var(--color-warning-fg);
-        color: var(--color-warning-fg);
-    }
-
-    &--private {
-        background: var(--color-text-secondary);
-        color: var(--color-text-inverse);
-    }
-
-    &--organization {
-        background: var(--color-surface-alt);
-        color: var(--color-text-secondary);
-    }
-
-    &--rated {
-        background: var(--color-accent);
-        color: var(--color-accent-contrast);
-    }
 }
 
 .contest-list-title {
     font-size: 18px;
     font-weight: 600;
-}
-
-// Time/Memory-limit columns on the contest problem list are secondary; hide
-// them on very narrow screens so the problem name + points stay legible.
-@media (max-width: 480px) {
-    .contest-problem-limit {
-        display: none;
-    }
-}
-
-// "Already registered" confirmation label (was inline sage-green hex).
-.contest-registered-label {
-    color: var(--color-success-fg);
-    font-weight: var(--weight-semibold);
-}
-
-.contest-tab-actions {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: flex-end;
-    margin-left: var(--space-2);
 }
 
 form.contest-join-pseudotab {
@@ -425,35 +177,10 @@ form.contest-join-pseudotab {
 
     input {
         display: inline;
-        border: none !important;
-        padding: 0 !important;
-        background: none !important;
-        box-shadow: none !important;
+        border: none;
+        padding: 0;
+        background: none;
         font-weight: 600;
-        color: inherit !important;
-    }
-}
-
-@media (max-width: 800px) {
-    .contest-tab-actions {
-        flex-basis: 100%;
-        justify-content: flex-end;
-        margin: var(--space-2) 0 0;
-    }
-
-}
-
-// Register pseudo-tab: use the brand accent instead of the legacy green gradient
-// so it matches the tokenized button system in both palettes/themes.
-form.contest-register-tab {
-    background: var(--color-accent) !important;
-
-    &:hover {
-        background: var(--color-accent-hover) !important;
-    }
-
-    input.register-warning {
-        color: var(--color-accent-contrast) !important;
     }
 }
 
@@ -462,7 +189,7 @@ form.contest-register-tab {
     display: flex;
 
     .fa {
-        color: var(--color-text);
+        color: $color_primary75;
     }
 
     a + a {
@@ -500,39 +227,26 @@ form.contest-register-tab {
         display: block;
     }
 
-    a:focus-visible {
-        outline: 2px solid var(--color-focus-ring);
-        outline-offset: 2px;
-    }
-
+    /* Make problem table headers green on hover */
     th a:hover {
-        color: var(--color-accent-2);
+        color: #0F0;
     }
 
     th a, th a:link, th a:visited {
-        color: var(--color-text-inverse);
+        @if $is_light_theme {
+            color: #fff;
+        }
+        @else {
+            color: #ccc;
+        }
     }
 
     .rank {
-        min-width: 2.4em;
-        text-align: right;
-        font-variant-numeric: tabular-nums;
+        min-width: 2.4em
     }
 
     .points {
         min-width: 2.4em;
-        text-align: right;
-        font-variant-numeric: tabular-nums;
-    }
-
-    // Problem-column headers (A/B/C/D ...) read as centered labels above their
-    // right-aligned score cells.
-    th.points {
-        text-align: center;
-
-        a {
-            text-align: center;
-        }
     }
 
     .disqualified {
@@ -540,7 +254,7 @@ form.contest-register-tab {
     }
 
     .point-denominator {
-        border-top: 1px solid var(--color-border-strong);
+        border-top: 1px solid $color_primary50;
         font-size: 0.7em;
     }
 
@@ -553,22 +267,12 @@ form.contest-register-tab {
     }
 
     .virtual-participation {
-        color: var(--color-text-muted);
+        color: grey;
         float: right
     }
 
     .user-points, .user-points a {
-        color: var(--color-text);
-        font-variant-numeric: tabular-nums;
-    }
-
-    // The 20em name column is comfortable on desktop but forces the horizontal
-    // scroll to start almost immediately on phones; tighten it there. The table
-    // is wrapped in .h-scrollable-table, so any residual width scrolls internally.
-    @media (max-width: 700px) {
-        .user-name {
-            min-width: 12em;
-        }
+        color: $color_primary100;
     }
 }
 
@@ -578,10 +282,8 @@ form.contest-register-tab {
 
 #org-check-list-wrapper {
     display: none;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-2);
+    background: $color_primary0;
+    border: 1px solid gray;
     padding: 10px;
 
     right: auto;
@@ -594,8 +296,8 @@ form.contest-register-tab {
     }
 
     #org-check-list {
-        border-bottom: 1px solid var(--color-border);
-        color: var(--color-text);
+        border-bottom: 1px solid gray;
+        color: $color_primary100;
         text-align: left;
         font-weight: normal;
 

@@ -1,7 +1,5 @@
 from django.test import TestCase
-from django.urls import reverse
 
-from judge.models import BlogVote
 from judge.models.tests.util import CommonDataMixin, create_blogpost, create_user
 
 
@@ -81,22 +79,6 @@ class BlogPostTestCase(CommonDataMixin, TestCase):
             },
         }
         self._test_object_methods_with_users(self.basic_blogpost, data)
-
-    def test_blog_vote_can_switch_direction(self):
-        self.client.force_login(self.users['staff_problem_edit_own'])
-
-        response = self.client.post(reverse('blog_upvote'), {'id': self.visible_blogpost.id})
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'score': 1, 'vote_score': 1})
-
-        response = self.client.post(reverse('blog_downvote'), {'id': self.visible_blogpost.id})
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'score': -1, 'vote_score': -1})
-        self.assertEqual(BlogVote.objects.get(blog=self.visible_blogpost,
-                                              voter=self.users['staff_problem_edit_own'].profile).score, -1)
-
-        response = self.client.post(reverse('blog_downvote'), {'id': self.visible_blogpost.id})
-        self.assertEqual(response.status_code, 400)
 
     def test_visible_blogpost_methods(self):
         data = {

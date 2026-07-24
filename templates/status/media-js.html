@@ -2,7 +2,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var table = $("#judge-status");
-        // #judge-status is now a card grid (not a table); tablesorter no longer applies.
+        table.tablesorter();
 
         var tooltip_classes = 'tooltipped tooltipped-w';
         var active_judge = null;

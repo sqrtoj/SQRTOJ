@@ -600,15 +600,11 @@ def users(request):
 
 
 def user_ranking_redirect(request):
-    username = request.GET.get('handle', '').strip()
-    if not username:
-        return generic_message(request, _('Find user'), _('Enter a handle...'))
-
     try:
-        user = Profile.objects.get(user__username__iexact=username)
-    except Profile.DoesNotExist:
-        return generic_message(request, _('No such user'), _('No user handle "%s".') % username)
-
+        username = request.GET['handle']
+    except KeyError:
+        raise Http404()
+    user = get_object_or_404(Profile, user__username=username)
     # Assume using MySQL. NULL is considered smaller than any non-NULL value.
     if user.rating is None:
         rank = Profile.objects.filter(is_unlisted=False, rating__isnull=False).count()

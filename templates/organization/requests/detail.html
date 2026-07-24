@@ -1,6 +1,14 @@
 {% extends "base.html" %}
+{% block media %}
+    <style>
+        th {
+            text-align: left
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <table class="django-as-table">
+    <table>
         <tr>
             <th>{{ _('User:') }}</th>
             <td>{{ link_user(object.user) }}</td>

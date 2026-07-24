@@ -197,22 +197,13 @@
                         <th></th>
                         <th>{{ _('ID') }}</th>
                         <th>{{ _('Title') }}</th>
-                        <th class="ticket-user">{{ _('User') }}</th>
-                        <th class="ticket-assignees">{{ _('Assignees') }}</th>
+                        <th>{{ _('User') }}</th>
+                        <th>{{ _('Assignees') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for ticket in tickets %}
                         {% include "ticket/row.html" %}
-                    {% else %}
-                        <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <i class="empty-state-icon fa fa-ticket" aria-hidden="true"></i>
-                                    <div class="empty-state-message">{{ _('There are no tickets to display.') }}</div>
-                                </div>
-                            </td>
-                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>

@@ -40,7 +40,6 @@
 
 {% block body %}
     <div id="banner">
-        <div class="contest-countdown">
         <a href="https://www.timeanddate.com/worldclock/fixedtime.html?msg={{ contest.name|urlquote('') }}&amp;iso=
                 {{- (contest.start_time if contest.start_time >= now else contest.end_time)|utc|date('Y-m-d\TH:i:s') }}" class="date">
             {%- if is_in_contest and not request.participation.live -%}
@@ -80,7 +79,6 @@
                     {{ _('%(length)s long starting on %(start_time)s', start_time=bold(start_time), length=bold(length)) }}
                 {% endif %}
             {% endwith %}
-        </div>
         </div>
         {% if contest.show_short_display %}
             <div id="details">
@@ -188,13 +186,10 @@
 
     {% if is_in_contest or contest.ended or request.user.is_superuser or is_editor or is_tester %}
         <div class="contest-problems">
-            <div class="contest-section-head">
-                <h2><i class="fa fa-fw fa-list-ol"></i> {{ _('Problems') }}</h2>
-                {% if can_edit and can_download_data %}
-                    <a class="button" href="{{ url('contest_prepare_data', contest.key) }}">{{ _('Download data') }}</a>
-                {% endif %}
-            </div>
-            <div class="h-scrollable-table">
+            <h2 style="margin-bottom: 0.2em; float:left;"><i class="fa fa-fw fa-question-circle"></i>{{ _('Problems') }} </h2>
+            {% if can_edit and can_download_data %}
+                <a class="button" style="float:right" href="{{ url('contest_prepare_data', contest.key) }}">{{ _('Download data') }}</a>
+            {% endif %}
             <table class="table striped">
                 <thead>
                 <tr>
@@ -203,8 +198,6 @@
                         <th><i class="fa fa-check"></i></th>
                     {% endif %}
                     <th>{{ _('Problem') }}</th>
-                    <th class="contest-problem-limit"><abbr title="{{ _('Time limit') }}">{{ _('TL') }}</abbr></th>
-                    <th class="contest-problem-limit"><abbr title="{{ _('Memory limit') }}">{{ _('ML') }}</abbr></th>
                     {% if not is_ICPC_format %}
                         <th>{{ _('Points') }}</th>
                     {% endif %}
@@ -255,8 +248,6 @@
                                 {{ problem.i18n_name or problem.name }}
                             {% endif %}
                         </td>
-                        <td class="contest-problem-limit">{{ problem.time_limit }}s</td>
-                        <td class="contest-problem-limit">{{ problem.memory_limit|kbsimpleformat }}</td>
                         {% if not is_ICPC_format %}
                             <td>{{ problem.points|floatformat(-2) }}</td>
                         {% endif %}
@@ -271,17 +262,13 @@
                 {% endfor %}
                 </tbody>
             </table>
-            </div>
             {% if can_view_all_problems %}
             <a class="button" style="width: fit-content" href="{{ url('contest_all_problems', contest.key) }}">{{ _('All problems') }}</a>
             {% endif %}
         </div>
         {% if has_announcements or can_edit %}
         <div class="contest-announcements">
-            <div class="contest-section-head">
-                <h2><i class="fa fa-bullhorn"></i> {{ _('Announcements') }}</h2>
-            </div>
-            <div class="h-scrollable-table">
+            <h2 style="margin-bottom: 0.2em"><i class="fa fa-check"></i> {{ _('Announcements') }}</h2>
             <table id="contest-announcements" class="table">
                 <thead>
                     <tr>
@@ -315,10 +302,7 @@
         {% endif %}
         {% if has_clarifications %}
         <div class="contest-clarifications">
-            <div class="contest-section-head">
-                <h2><i class="fa fa-question-circle"></i> {{ _('Clarifications') }}</h2>
-            </div>
-            <div class="h-scrollable-table">
+            <h2 style="margin-bottom: 0.2em"><i class="fa fa-check"></i> {{ _('Clarifications') }}</h2>
             <table id="contest-clarifications" class="table">
                 <thead>
                     <tr>

@@ -5,7 +5,6 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, \
     HttpResponseRedirect
@@ -13,7 +12,6 @@ from django.views.decorators.http import require_POST
 from martor.api import imgur_uploader
 
 from judge.models import Submission
-from judge.utils.upload_security import validate_image_upload
 
 __all__ = ['rejudge_submission']
 
@@ -39,9 +37,10 @@ def rejudge_submission(request):
     return HttpResponseRedirect(redirect) if redirect else HttpResponse('success', content_type='text/plain')
 
 
-def django_uploader(image, user_id=None):
-    validate_image_upload(image, user_id=user_id)
-    ext = os.path.splitext(image.name)[1].lower()
+def django_uploader(image):
+    ext = os.path.splitext(image.name)[1]
+    if ext not in settings.MARTOR_UPLOAD_SAFE_EXTS:
+        ext = '.png'
     name = str(uuid.uuid4()) + ext
     default_storage.save(os.path.join(settings.MARTOR_UPLOAD_MEDIA_DIR, name), image)
     url_base = getattr(settings, 'MARTOR_UPLOAD_URL_PREFIX',
@@ -52,7 +51,7 @@ def django_uploader(image, user_id=None):
 
 
 def pdf_statement_uploader(statement):
-    ext = os.path.splitext(statement.name)[1].lower()
+    ext = os.path.splitext(statement.name)[1]
     name = str(uuid.uuid4()) + ext
     default_storage.save(os.path.join(settings.PDF_STATEMENT_UPLOAD_MEDIA_DIR, name), statement)
     url_base = getattr(settings, 'PDF_STATEMENT_UPLOAD_URL_PREFIX',
@@ -82,14 +81,10 @@ def martor_image_uploader(request):
         return HttpResponseBadRequest('Invalid request')
 
     image = request.FILES['markdown-image-upload']
-    try:
-        if request.user.is_staff or request.user.has_perm('judge.can_upload_image'):
-            data = django_uploader(image, user_id=request.user.pk)
-        else:
-            data = imgur_uploader(image)
-    except ValidationError as error:
-        return HttpResponseBadRequest(json.dumps({'status': 400, 'error': error.messages[0]}),
-                                      content_type='application/json')
+    if request.user.is_staff or request.user.has_perm('judge.can_upload_image'):
+        data = django_uploader(image)
+    else:
+        data = imgur_uploader(image)
     return HttpResponse(data, content_type='application/json')
 
 

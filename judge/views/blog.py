@@ -2,13 +2,13 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.db import transaction
+from django.db import IntegrityError
 from django.db.models import Count, FilteredRelation, Max, Prefetch, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
-from django.http import (Http404, HttpResponseBadRequest,
+from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden, HttpResponseNotFound,
-                         HttpResponseRedirect, JsonResponse)
+                         HttpResponseRedirect)
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -17,6 +17,7 @@ from django.views.generic.detail import SingleObjectMixin, View
 from reversion import revisions
 
 from judge.comments import CommentedDetailView
+from judge.dblock import LockModel
 from judge.forms import BlogPostForm
 from judge.models import (BlogPost, BlogVote, Comment, Contest, Language,
                           Problem, Profile, Submission, Ticket)
@@ -55,34 +56,33 @@ def vote_blog(request, delta):
         return HttpResponseBadRequest()
 
     try:
-        with transaction.atomic():
-            # Serializing on the post row keeps both the per-user vote and the
-            # aggregate score consistent without using LOCK TABLES, which
-            # cannot commit inside Django TestCase's outer atomic block.
-            blog = BlogPost.objects.select_for_update().get(id=blog_id)
-
-            if blog.authors.filter(id=request.profile.id).exists():
-                return HttpResponseBadRequest(_('You cannot vote your own blog'), content_type='text/plain')
-
-            vote, created = BlogVote.objects.get_or_create(
-                blog_id=blog_id,
-                voter=request.profile,
-                defaults={'score': delta},
-            )
-            if created:
-                score_delta = delta
-            else:
-                if vote.score == delta:
-                    return HttpResponseBadRequest(_('You cannot vote twice.'), content_type='text/plain')
-                score_delta = delta - vote.score
-                vote.score = delta
-                vote.save(update_fields=['score'])
-
-            blog.vote(score_delta)
+        blog = BlogPost.objects.filter(id=blog_id).get()
     except BlogPost.DoesNotExist:
         return HttpResponseNotFound(_('Blog post not found.'), content_type='text/plain')
 
-    return JsonResponse({'score': blog.score, 'vote_score': vote.score})
+    if blog.authors.filter(id=request.profile.id).exists():
+        return HttpResponseBadRequest(_('You cannot vote your own blog'), content_type='text/plain')
+
+    vote = BlogVote()
+    vote.blog_id = blog_id
+    vote.voter = request.profile
+    vote.score = delta
+
+    while True:
+        try:
+            vote.save()
+        except IntegrityError:
+            with LockModel(write=(BlogVote,)):
+                try:
+                    vote = BlogVote.objects.get(blog_id=blog_id, voter=request.profile)
+                except BlogVote.DoesNotExist:
+                    # We must continue racing in case this is exploited to manipulate votes.
+                    continue
+                return HttpResponseBadRequest(_('You cannot vote twice.'), content_type='text/plain')
+        else:
+            BlogPost.objects.get(id=blog_id).vote(delta)
+        break
+    return HttpResponse('success', content_type='text/plain')
 
 
 def upvote_blog(request):
@@ -168,14 +168,25 @@ def _get_cached_homepage_stats():
 def _get_cached_top_rated_users():
     limit = settings.VNOJ_HOMEPAGE_TOP_USERS_COUNT
     return _get_or_set_cache(
-        f'homepage:top_rating:{limit}:v3',
+        f'homepage:top_rating:{limit}:v2',
         lambda: list(
             Profile.objects.order_by('-rating')
             .filter(rating__isnull=False, is_unlisted=False)
             .select_related('user', 'display_badge')
-            .only('performance_points', 'display_rank', 'rating', 'username_display_override', 'mute',
-                  'user__username', 'user__first_name', 'user__email',
-                  'display_badge__mini', 'display_badge__name')[:limit],
+            .only('performance_points', 'display_rank', 'rating', 'username_display_override',
+                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
+        ),
+    )
+
+
+def _get_cached_new_problems():
+    limit = settings.DMOJ_BLOG_NEW_PROBLEM_COUNT
+    return _get_or_set_cache(
+        f'homepage:new_problems:{limit}:v1',
+        lambda: list(
+            Problem.get_public_problems()
+            .only('code', 'name', 'date')
+            .order_by('-date', 'code')[:limit],
         ),
     )
 
@@ -183,14 +194,13 @@ def _get_cached_top_rated_users():
 def _get_cached_top_contributors():
     limit = settings.VNOJ_HOMEPAGE_TOP_USERS_COUNT
     return _get_or_set_cache(
-        f'homepage:top_contrib:{limit}:v2',
+        f'homepage:top_contrib:{limit}:v1',
         lambda: list(
             Profile.objects.order_by('-contribution_points')
             .filter(contribution_points__gt=0, is_unlisted=False)
             .select_related('user', 'display_badge')
-            .only('contribution_points', 'display_rank', 'rating', 'username_display_override', 'mute',
-                  'user__username', 'user__first_name', 'user__email',
-                  'display_badge__mini', 'display_badge__name')[:limit],
+            .only('contribution_points', 'display_rank', 'rating', 'username_display_override',
+                  'user__username', 'user__first_name', 'display_badge__mini', 'display_badge__name')[:limit],
         ),
     )
 
@@ -231,6 +241,8 @@ class PostList(PostListBase):
         context['comments'] = Comment.most_recent(self.request.user, 10)
         context['page_titles'] = CacheDict(lambda page: Comment.get_page_title(page))
 
+        context['new_problems'] = _get_cached_new_problems()
+
         stats = _get_cached_homepage_stats()
         context['user_count'] = stats['user_count']
         context['problem_count'] = stats['problem_count']
@@ -239,15 +251,12 @@ class PostList(PostListBase):
 
         now = timezone.now()
 
-        visible_contests = list(
-            Contest.get_visible_contests(self.request.user)
-            .filter(Q(start_time__gt=now) | Q(start_time__lte=now, end_time__gt=now), is_visible=True)
-            .only('key', 'name', 'start_time', 'end_time')
-            .order_by('start_time'),
-        )
+        visible_contests = Contest.get_visible_contests(self.request.user).filter(is_visible=True) \
+                                  .only('key', 'name', 'start_time', 'end_time') \
+                                  .order_by('start_time')
 
-        context['current_contests'] = [contest for contest in visible_contests if contest.start_time <= now]
-        context['future_contests'] = [contest for contest in visible_contests if contest.start_time > now]
+        context['current_contests'] = visible_contests.filter(start_time__lte=now, end_time__gt=now)
+        context['future_contests'] = visible_contests.filter(start_time__gt=now)
 
         context['top_rated_users'] = self.get_top_rated_users()
         context['top_contrib'] = self.get_top_contributors()
@@ -255,7 +264,7 @@ class PostList(PostListBase):
         if self.request.user.is_authenticated:
             context['own_open_tickets'] = (
                 Ticket.objects.filter(user=self.request.profile, is_open=True).order_by('-id')
-                              .prefetch_related('linked_item').select_related('user__user', 'user__display_badge')[:10]
+                              .prefetch_related('linked_item').select_related('user__user', 'user__display_badge')
             )
         else:
             context['own_open_tickets'] = []

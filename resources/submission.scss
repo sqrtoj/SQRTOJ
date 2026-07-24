@@ -6,43 +6,6 @@
     width: 20%;
 }
 
-// Submission filter/statistics: unbox the sidebar so the controls read as a
-// plain, open panel instead of a bordered surface card. Scoped to the
-// submission page's #content-right so the shared .sidebox look is untouched
-// elsewhere.
-#content-right.submission {
-    .sidebox {
-        background: none;
-        box-shadow: none;
-        border-radius: 0;
-        overflow: visible;
-        padding: 0 !important;
-    }
-
-    .sidebox h3 {
-        background: none;
-        border-radius: 0;
-        padding: 0;
-        margin: 0 0 var(--space-3);
-        color: var(--color-text);
-        font-weight: var(--weight-semibold);
-
-        .fa {
-            color: var(--color-accent);
-        }
-    }
-
-    .sidebox-content {
-        border: none;
-        padding: 0;
-    }
-
-    #statistics-table {
-        margin-top: var(--space-5);
-        padding-top: 0;
-    }
-}
-
 #submissions-table {
     background: rgba($color_primary100, .01);
 }
@@ -53,24 +16,13 @@
 
 .submission-row {
     display: flex;
-    border-top: var(--color-border) 1px solid;
-    border-left: var(--color-border) 1px solid;
-    border-right: var(--color-border) 1px solid;
-    transition: background-color var(--motion-fast) var(--ease-standard);
-
-    // Rounded outer corners so the stacked rows read as one modern card list.
-    &:first-child {
-        border-top-left-radius: var(--radius-md);
-        border-top-right-radius: var(--radius-md);
-    }
-
-    &:last-child {
-        border-bottom-left-radius: var(--radius-md);
-        border-bottom-right-radius: var(--radius-md);
-    }
+    border-top: $color_primary25 1px solid;
+    border-left: $color_primary25 1px solid;
+    border-right: $color_primary25 1px solid;
+    transition: background-color linear 0.2s;
 
     &:hover {
-        background: var(--color-surface-alt);
+        background: $color_primary10;
     }
 
     &:not(:empty) ~ & {
@@ -80,7 +32,7 @@
     > div {
         padding: 7px 5px;
         vertical-align: middle;
-        border-bottom: var(--color-border) 1px solid;
+        border-bottom: $color_primary25 1px solid;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -90,8 +42,8 @@
         min-width: 80px;
         width: 80px;
         text-align: center;
-        border-bottom-color: var(--color-surface);
-        border-right: var(--color-border) 1px solid;
+        border-bottom-color: $color_primary0;
+        border-right: $color_primary25 1px solid;
 
         .state {
             font-size: 0.7em;
@@ -100,15 +52,11 @@
         }
 
         .score {
-            // Inherit the verdict class's contrasting foreground (--verdict-*-fg)
-            // set on .sub-result, so the "20 / 20" stays legible on the solid
-            // verdict background instead of using dark body text.
-            color: inherit;
-            font-weight: var(--weight-semibold);
-            font-variant-numeric: tabular-nums;
+            // font-size: 1.3em;
+            color: #000;
 
             .grading-spinner {
-                color: inherit;
+                color: $color_primary100;
             }
         }
     }
@@ -116,7 +64,6 @@
     .sub-main {
         display: flex;
         flex: 1;
-        min-width: 0;
         flex-direction: row;
         place-items: center;
         justify-content: space-between;
@@ -133,7 +80,7 @@
         }
 
         .sub-testcase {
-            color: var(--color-text-muted);
+            color: $color_primary50;
             white-space: nowrap;
             padding-right: 5px;
         }
@@ -150,11 +97,10 @@
         width: 70px;
         white-space: nowrap;
         text-align: center;
-        border-left: var(--color-border) 1px solid;
+        border-left: $color_primary25 1px solid;
 
         .time {
             font-weight: bold;
-            font-variant-numeric: tabular-nums;
         }
     }
 }
@@ -164,12 +110,12 @@
 }
 
 .sub-prop .grey-label {
-    color: var(--color-text-muted);
+    color: $color_primary50;
     font-style: italic;
 }
 
 .sub-prop .grey-icon {
-    color: var(--color-text-muted);
+    color: $color_primary50;
 }
 
 label[for="language"], label[for="status"], label[for="organization"] {
@@ -187,11 +133,11 @@ label[for="language"], label[for="status"], label[for="organization"] {
 }
 
 #statistics-table tr:not(:first-child) td {
-    border-top: 1px solid var(--color-border) !important;
+    border-top: 1px solid white !important;
 }
 
 #statistics-table tr:not(:last-child) td:not(:last-child) {
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid white;
 }
 
 #statistics-table {
@@ -225,65 +171,22 @@ label[for="language"], label[for="status"], label[for="organization"] {
     }
 }
 
-// Below 480px the fixed verdict/usage rails plus the main column no longer fit
-// on one line. Let the row wrap so the usage block drops to a compact second
-// line spanning the full width instead of forcing horizontal overflow.
-@media (max-width: 480px) {
-    .submission-row {
-        flex-wrap: wrap;
-
-        > div {
-            padding: var(--space-2) var(--space-2);
-        }
-
-        .sub-result {
-            border-right: none;
-        }
-
-        .sub-main {
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-
-        .sub-usage {
-            flex: 1 1 100%;
-            width: auto;
-            min-width: 0;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 0 var(--space-3);
-            text-align: left;
-            border-left: none;
-            border-top: 1px solid var(--color-border);
-        }
-    }
-}
-
 .submission-contest {
-    color: var(--color-text);
+    color: $color_primary75;
 }
 
 .source-ln {
-    color: var(--color-text-muted);
-    border-right: 1px solid var(--color-border);
-    padding: 0 var(--space-3) 0 var(--space-3);
+    color: $color_primary50;
+    border-right: 1px solid $color_primary50;
+    padding-right: 5px;
     text-align: right;
-    user-select: none;
-    background: var(--color-surface-alt);
 
     a {
-        color: var(--color-text-muted);
+        color: $color_primary50;
         display: block;
 
         &:hover {
             text-decoration: underline;
-        }
-
-        &:focus-visible {
-            outline: 2px solid var(--color-focus-ring);
-            outline-offset: 2px;
         }
 
         &::before {
@@ -303,27 +206,11 @@ label[for="language"], label[for="status"], label[for="organization"] {
 }
 
 .source-code {
-    padding: 0 var(--space-4);
+    padding-left: 15px;
 }
 
-// Card treatment for the submission source viewer: rounded surface, subtle
-// border, and a full-height gutter so line numbers read as a distinct rail.
 .source-wrap {
     overflow-x: auto;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-1);
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    td {
-        vertical-align: top;
-        padding: var(--space-3) 0;
-    }
 }
 
 .statistics-table {
@@ -333,103 +220,60 @@ label[for="language"], label[for="status"], label[for="organization"] {
     }
 
     .count {
-        color: var(--color-text);
+        color: black;
     }
 }
 
 #test-cases {
-    // Batch group: indented, with an accent guide line so cases read as a
-    // nested block under their batch header.
+    .toggle .fa {
+        margin-left: -1.28571em;
+    }
+
     .batch-cases {
-        margin: 0 0 var(--space-3);
-        padding: var(--space-1) 0 var(--space-1) var(--space-4);
-        border-left: 3px solid var(--color-border);
-        display: block;
+        margin: 0;
+        padding-left: 1em;
+        padding-bottom: 3px;
+        padding-top: 3px;
+        display: inline-block;
     }
 
     .batch-cases .case-row td b {
         font-weight: 500;
     }
 
-    // Each testcase status table is a self-contained card row.
-    .submissions-status-table {
-        width: 100%;
-        margin-bottom: var(--space-2);
-    }
-
-    // The clickable case row: padded, with a hover cue and an animated chevron
-    // when it has expandable input/output/feedback.
-    .case-row {
-        cursor: default;
-        transition: background-color var(--motion-fast) var(--ease-standard);
-
-        td {
-            padding: var(--space-2) var(--space-2);
-            border-top: 1px solid var(--color-border);
-            vertical-align: middle;
-        }
-
-        &.toggle {
-            cursor: pointer;
-
-            &:hover td {
-                background: var(--color-surface-alt);
-            }
-        }
-
-        .fa-chevron-right {
-            color: var(--color-text-muted);
-            transition: transform var(--motion-fast) var(--ease-standard);
-        }
-
-        &.open .fa-chevron-right {
-            transform: rotate(90deg);
-        }
-    }
-
     .case-row td:nth-child(3) {
+        padding-right: 0;
         text-align: right;
-        font-variant-numeric: tabular-nums;
-        color: var(--color-text-secondary);
-        white-space: nowrap;
+    }
+
+    .case-row td:nth-child(3) span {
+        float: right;
     }
 
     .case-row td:nth-child(4) {
         text-align: right;
-        font-variant-numeric: tabular-nums;
-        color: var(--color-text-secondary);
-        white-space: nowrap;
     }
 
-    // Expanded input/answer/output panel.
     .case-info {
-        margin: 0 0 var(--space-2);
-        padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
-        border: 1px solid var(--color-border);
-        border-left: 4px solid var(--color-accent);
-        border-radius: var(--radius-md);
-        background: var(--color-surface-alt);
-        color: var(--color-text);
-
-        strong {
-            display: inline-block;
-            margin: var(--space-1) 0;
-            color: var(--color-text-secondary);
-            font-size: var(--text-sm);
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
+        margin: 0;
+        padding-left: 1em;
+        padding-bottom: 3px;
+        padding-top: 3px;
+        border: 1px solid #2980b9;
+        border-left-width: .5em;
+        border-radius: 4px;
+        color: $color_primary75;
     }
 
     .case-output {
-        margin: 0 0 var(--space-2);
-        padding: var(--space-2) var(--space-3);
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
-        word-wrap: anywhere;
-        word-break: break-word;
-        font-variant-numeric: tabular-nums;
+        margin: 0;
+        margin-right: 1em;
+        word-break: break-all;
+    }
+
+    table td {
+        margin: 0;
+        padding: 0 5px 0 0;
     }
 
     .toggle {
@@ -443,30 +287,34 @@ label[for="language"], label[for="status"], label[for="organization"] {
     td.case-output + td.case-ext-feedback {
         width: 50%;
     }
+
+    .case-output {
+        word-wrap: anywhere;
+    }
 }
 
 .case-AC {
-    color: var(--verdict-ac-bg);
+    color: green;
     font-weight: bold;
 }
 
 .case-_AC {
-    color: var(--verdict-partial-bg);
+    color: #BBCC00;
     font-weight: bold;
 }
 
 .case-WA {
-    color: var(--verdict-wa-bg);
+    color: red;
     font-weight: bold;
 }
 
 .case-TLE, .case-SC {
-    color: var(--verdict-tle-bg);
+    color: gray;
     font-weight: bold;
 }
 
 .case-MLE, .case-OLE, .case-RTE, .case-IR {
-    color: var(--verdict-ole-bg);
+    color: orange;
     font-weight: bold;
 }
 
@@ -494,7 +342,7 @@ label[for="language"], label[for="status"], label[for="organization"] {
     }
 
     a:active .line .highlighter {
-        background: var(--color-focus-ring-soft);
+        background: rgba(255, 212, 0, 0.48);
     }
 }
 
@@ -503,6 +351,6 @@ label[for="language"], label[for="status"], label[for="organization"] {
     float: right;
 
     .submission-date {
-        color: var(--color-text-muted);
+        color: $color_primary50;
     }
 }

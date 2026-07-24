@@ -713,7 +713,6 @@
         {% if cases_formset._non_form_errors %}
             {{ cases_formset._non_form_errors }}
         {% endif %}
-        <div class="h-scrollable-table">
         <table id="case-table" class="table">
             <thead>
             <tr>
@@ -771,7 +770,6 @@
             {% endfor %}
             </tbody>
         </table>
-        </div>
         <input type="submit" value="{{ _('Apply!') }}" class="button" id="submit-button">
         <a id="add-case-row" href="#" style="display: None;"><i class="fa fa-plus"></i> {{ _('Add new case') }}</a>
     </form>

@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase, TestCase
-from django.urls import reverse
 from django.utils import timezone
 
 from judge.models import Contest, ContestParticipation, ContestTag
@@ -832,94 +831,6 @@ class ContestTestCase(CommonDataMixin, TestCase):
         self.assertFalse(participation.spectate)
         self.assertEqual(participation.start, participation.real_start)
         self.assertIsInstance(participation.end_time, timezone.datetime)
-
-
-class ContestListTagFilterTestCase(TestCase):
-    @classmethod
-    def setUpTestData(self):
-        now = timezone.now()
-        self.algorithm_tag = ContestTag.objects.create(name='algorithm', color='#123456')
-        self.beginner_tag = ContestTag.objects.create(name='beginner', color='#abcdef')
-        self.private_tag = ContestTag.objects.create(name='private-only', color='#654321')
-
-        self.past_contest = create_contest(
-            key='tagged_past',
-            start_time=now - timezone.timedelta(days=2),
-            end_time=now - timezone.timedelta(days=1),
-            is_visible=True,
-            tags=('algorithm',),
-        )
-        self.other_past_contest = create_contest(
-            key='other_past',
-            start_time=now - timezone.timedelta(days=2),
-            end_time=now - timezone.timedelta(days=1),
-            is_visible=True,
-            tags=('beginner',),
-        )
-        self.current_contest = create_contest(
-            key='tagged_current',
-            start_time=now - timezone.timedelta(hours=1),
-            end_time=now + timezone.timedelta(hours=1),
-            is_visible=True,
-            tags=('algorithm',),
-        )
-        self.future_contest = create_contest(
-            key='tagged_future',
-            start_time=now + timezone.timedelta(days=1),
-            end_time=now + timezone.timedelta(days=2),
-            is_visible=True,
-            tags=('algorithm',),
-        )
-        create_contest(
-            key='private_tagged',
-            start_time=now - timezone.timedelta(days=2),
-            end_time=now - timezone.timedelta(days=1),
-            is_visible=True,
-            is_private=True,
-            tags=('private-only',),
-        )
-
-    def test_filter_applies_to_all_contest_sections(self):
-        response = self.client.get(reverse('contest_list'), {'tag': self.algorithm_tag.name})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
-            response.context['past_contests'],
-            [self.past_contest],
-            transform=lambda contest: contest,
-        )
-        self.assertEqual(response.context['current_contests'], [self.current_contest])
-        self.assertEqual(response.context['future_contests'], [self.future_contest])
-        self.assertEqual(response.context['tag_filter'], self.algorithm_tag.name)
-
-    def test_filter_options_only_include_tags_from_visible_contests(self):
-        response = self.client.get(reverse('contest_list'))
-
-        self.assertQuerysetEqual(
-            response.context['tag_filter_options'],
-            [self.algorithm_tag, self.beginner_tag],
-            transform=lambda tag: tag,
-            ordered=False,
-        )
-        self.assertNotContains(response, self.private_tag.name)
-
-    def test_unknown_tag_returns_no_contests(self):
-        response = self.client.get(reverse('contest_list'), {'tag': 'unknown'})
-
-        self.assertFalse(response.context['past_contests'])
-        self.assertEqual(response.context['current_contests'], [])
-        self.assertEqual(response.context['future_contests'], [])
-
-    def test_filter_is_preserved_in_search_sort_and_pagination(self):
-        response = self.client.get(reverse('contest_list'), {
-            'tag': self.algorithm_tag.name,
-            'search': 'tagged',
-            'order': 'name',
-        })
-
-        self.assertContains(response, 'name="tag" value="algorithm"')
-        self.assertIn('tag=algorithm', response.context['sort_links']['user_count'])
-        self.assertIn('tag=algorithm', response.context['page_prefix'])
 
 
 class ContestTagTestCase(TestCase):

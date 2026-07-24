@@ -1,5 +1,4 @@
 <script type="text/javascript" src="{{ static('libs/chart.js/Chart.js') }}"></script>
-<script type="text/javascript" src="{{ static('chart-theme.js') }}"></script>
 <script type="text/javascript">
     function draw_pie_chart(data, $chart) {
         var ctx = $chart.find('canvas')[0].getContext('2d');
@@ -13,6 +12,7 @@
                 legend: {
                     position: 'right',
                     labels: {
+                        fontColor: 'black',
                         boxWidth: 20,
                     },
                 },

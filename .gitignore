@@ -13,7 +13,6 @@ dmoj-site.sock
 uwsgi.ini
 .fuse_hidden*
 resources/dark
-resources/summer
 resources/martor-description.css
 resources/select2-dmoj.css
 resources/style.css

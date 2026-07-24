@@ -12,7 +12,3 @@ build_style() {
 
 build_style 'default' 'resources'
 build_style 'dark' 'resources/dark'
-
-# Summer is the classic green/blue palette, preserved as a selectable alternate.
-build_style 'summer-default' 'resources/summer'
-build_style 'summer-dark' 'resources/summer/dark'

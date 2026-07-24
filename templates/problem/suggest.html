@@ -1,8 +1,7 @@
 {% extends "problem/editor.html" %}
 
 {% block body %}
-<div class="form-shell form-shell--wide">
-
+<div>
     {% if request.path == url('problem_suggest') %}
         <div class="alert alert-warning alert-dismissable">
             <a class="close">x</a>
@@ -14,18 +13,16 @@
         </div>
     {% endif %}
     {% if perms.judge.import_polygon_package %}
-        <div class="alert alert-info alert-dismissable">
+        <div class="alert alert-warning alert-dismissable">
             <a class="close">x</a>
             <a href="{{ url('problem_import_polygon') }}">{{ _('Import problem from Codeforces Polygon package') }}</a>
         </div>
     {% endif %}
-    <form action="" method="post" class="form-area form-shell__body" enctype="multipart/form-data">
+    <form action="" method="post" class="form-area" enctype="multipart/form-data" style="display: flex; justify-content: center; flex-direction: column;">
         {% csrf_token %}
         <table class="django-as-table">{{ form.as_table() }}</table>
-        <div class="form-shell__actions">
-            <a href="{{ url('problem_list') }}" class="button btn-secondary">{{ _('Cancel') }}</a>
-            <input type="submit" value="{{ _('Create') }}" class="button">
-        </div>
+        <hr>
+        <div style="display: flex; justify-content: flex-end;"><input type="submit" value="{{ _('Create') }}" class="button"></div>
     </form>
 </div>
 {% endblock %}

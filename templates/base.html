@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" data-palette="{{ SITE_PALETTE }}">
+<html lang="{{ LANGUAGE_CODE }}">
 
 <head>
     <title>{% block title %}{{ title }} - {{ SITE_LONG_NAME }}{% endblock %}</title>
@@ -42,39 +42,38 @@
         content="{{ DMOJ_SCHEME }}://{% if DMOJ_CANONICAL %}{{ DMOJ_CANONICAL }}{% else %}{{ site.domain }}{% endif %}{{ request.path }}">
 
     {% block meta %}{% endblock %}
-    {# Design-system UI (Lato) + mono (JetBrains Mono) fonts. Progressive enhancement:
-       system fonts render first, these swap in via font-display=swap. See
-       docs/design-system/03-design-tokens.md §6.1. #}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
     {% if not INLINE_FONTAWESOME %}
     <link rel="stylesheet" href="{{ FONTAWESOME_CSS }}">
     {% endif %}
+    {% compress css %}
     {# TODO: once dark mode support is better, enable for all users by deleting the else branch #}
+    {% if perms.judge.test_site %}
     {% if PREFERRED_STYLE_CSS is not none %}
     <link rel="stylesheet" href="{{ static(PREFERRED_STYLE_CSS) }}">
+    {% else %}
+    <link rel="stylesheet" href="{{ static(LIGHT_STYLE_CSS) }}" media="(prefers-color-scheme: light)">
+    <link rel="stylesheet" href="{{ static(DARK_STYLE_CSS) }}" media="(prefers-color-scheme: dark)">
+    {% endif %}
     {% else %}
     <link rel="stylesheet" href="{{ static(LIGHT_STYLE_CSS) }}">
     {% endif %}
     {% if INLINE_FONTAWESOME %}
     <link rel="stylesheet" href="{{ static('libs/fontawesome/font-awesome.css') }}">{% endif %}
     <link rel="stylesheet" href="{{ static('source_sans_pro.css') }}">
-    <link rel="stylesheet" href="{{ static('lato-vietnamese.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ static('libs/clipboard/tooltip.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/select2.css') }}">
+    {% endcompress %}
     <link rel="canonical"
         href="{{ DMOJ_SCHEME }}://{% if DMOJ_CANONICAL %}{{ DMOJ_CANONICAL }}{% else %}{{ site.domain }}{% endif %}{{ request.path }}">
     <style>
         #page-container { min-height: 100vh; display: flex; flex-direction: column; }
         #content { flex: 1 0 auto; margin-top: 20px; }
-        #navigation { position: sticky; top: 0; z-index: 1000; width: 100%; height: var(--nav-height); }
-        footer { content-visibility: auto; contain-intrinsic-size: 0 200px; }
+        #navigation { position: sticky; top: 0; z-index: 1000; width: 100%; height: 48px; background: #231F20; }
+        footer { content-visibility: auto; contain-intrinsic-size: 0 40px; }
     </style>
     {% if request.user.is_impersonate %}
         <style>
-            #nav-container { background: var(--color-navbar-impersonate) !important; }
+            #nav-container { background: #893e89 !important; }
         </style>
     {% endif %}
     {% block media %}{% endblock %}
@@ -231,16 +230,7 @@
     </svg>
     <nav id="navigation" class="unselectable">
         <div id="nav-container">
-            <button id="navicon" type="button" aria-controls="nav-list" aria-expanded="false"
-                    aria-label="{{ _('Open navigation menu') }}">
-                <i class="fa fa-bars" aria-hidden="true"></i>
-            </button>
-            {% if request.organization is not defined %}
-            <a id="mobile-nav-logo" href="{{ url('home') }}">{% include "site-logo-fragment.html" %}</a>
-            {% else %}
-            <a id="mobile-nav-logo" href="{{ url('organization_home', request.organization.slug) }}">{% include
-                    "site-logo-fragment.html" %}</a>
-            {% endif %}
+            <a id="navicon" href="javascript:void(0)"><i class="fa fa-bars"></i></a>
             <ul id="nav-list">
                 {% if request.organization is not defined %}
                 <li class="home-nav-element"><a href="{{ url('home') }}">{% include "site-logo-fragment.html" %}</a>
@@ -251,6 +241,9 @@
                 <li>
                     <a href="{{ node.path }}" class="nav-{{ node.key }}{% if node.key in nav_tab %} active{% endif %}">
                         {{ _(node.label) }}
+                        {% if not node.is_leaf_node() %}
+                        <div class="nav-expand">&gt;</div>
+                        {% endif %}
                     </a>
                     {% with children=node.get_children() %}
                     {% if children %}<ul>{{ loop(children) }}</ul>{% endif %}
@@ -278,33 +271,31 @@
             </ul>
 
             <span id="user-links">
-                <a class="nav-utility nav-report" href={% if request.resolver_match.view_name=="problem_detail" and problem
+                <a href={% if request.resolver_match.view_name=="problem_detail" and problem
                     %} "{{ url('new_problem_ticket', problem.code) }}" {% else
                     %} "/tickets/new?issue_url={{ request.build_absolute_uri()|urlencode }}" {% endif %}
-                    title="{{ _('Report issue') }}" aria-label="{{ _('Report issue') }}">
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    style="margin-right: 5px;">
+                    <span title="{{ _('Report issue') }}">
+                        <i class="fa fa-exclamation-triangle" style="color: yellow;"></i>
+                    </span>
                 </a>
-                <a class="nav-utility nav-language" id="flag_vi" href="#"
-                   onclick="return submmit_language('vi', event)" aria-label="{{ _('Switch language to Vietnamese') }}">
-                    <img src="{{ static('icons/vi_flag.svg') }}" alt="" height="24" loading="lazy" decoding="async">
+                <a id="flag_vi" href="#" onclick="return submmit_language('vi', event)" style="margin-right: 5px; margin-top: 4px;">
+                    <img src="{{ static('icons/vi_flag.svg') }}" alt="VI" height="24" loading="lazy" decoding="async">
                 </a>
-                <a class="nav-utility nav-language" id="flag_en" href="#"
-                   onclick="return submmit_language('en', event)" aria-label="{{ _('Switch language to English') }}">
-                    <img src="{{ static('icons/gb_flag.svg') }}" alt="" height="24" loading="lazy" decoding="async">
+                <a id="flag_en" href="#" onclick="return submmit_language('en', event)" style="margin-right: 5px; margin-top: 4px;">
+                    <img src="{{ static('icons/gb_flag.svg') }}" alt="EN" height="24" loading="lazy" decoding="async">
                 </a>
                 {% if request.user.is_authenticated %}
                 <ul>
                     <li>
-                        <button id="user-menu-toggle" type="button" aria-controls="user-menu" aria-expanded="false">
+                        <a href="{{ url('user_page') }}">
                             <span>
-                                <img src="{{ gravatar(request.user, 32) }}" height="28" width="28" alt="">{# -#}
-                                <span class="nav-username">{{ _('Hello, %(username)s.', username=bold(request.user.first_name or
+                                <img src="{{ gravatar(request.user, 32) }}" height="24" width="24">{# -#}
+                                <span>{{ _('Hello, %(username)s.', username=bold(request.user.first_name or
                                     request.profile.display_name)) }}</span>
-                                <i class="fa fa-angle-down" aria-hidden="true"></i>
                             </span>
-                        </button>
-                        <ul id="user-menu">
-                            <li><a href="{{ url('user_page') }}">{{ _('Profile') }}</a></li>
+                        </a>
+                        <ul style="width: 150px">
                             {% if request.user.is_staff or request.user.is_superuser %}
                             <li><a href="{{ url('admin:index') }}">{{ _('Admin') }}</a></li>
                             {% endif %}
@@ -326,8 +317,8 @@
                 <span class="anon">
                     <a href="{{ url('auth_login') }}?next={{ LOGIN_RETURN_PATH|urlencode }}"><b>{{ _('Log in')
                             }}</b></a>
-                    <span class="anon-separator">{{ _('or') }}</span>
-                    <a class="anon-signup" href="{{ url('registration_register') }}"><b>{{ _('Sign up') }}</b></a>
+                    &nbsp;{{ _('or') }}&nbsp;
+                    <a href="{{ url('registration_register') }}"><b>{{ _('Sign up') }}</b></a>
                 </span>
                 {% endif %}
             </span>
@@ -385,76 +376,23 @@
 
         {% block bodyend %}{% endblock %}
 
-        <footer class="site-footer">
-            <div class="site-footer__inner">
-                <div class="site-footer__brand">
-                    <a class="site-footer__identity" href="{{ url('home') }}">
-                        <span class="site-footer__mark" aria-hidden="true"><i class="fa fa-code"></i></span>
-                        <span class="site-footer__logo">{{ SITE_NAME }}</span>
-                    </a>
-                    <p class="site-footer__tagline">{{ SITE_LONG_NAME }}</p>
-                    <p class="site-footer__about">
-                        {{ _('A community-run online judge for competitive programming. Practice problems, join contests, and climb the ranks.') }}
-                    </p>
-                    <div class="site-footer__social">
-                        <a href="https://www.facebook.com/sqrtoj" title="Facebook" aria-label="Facebook" rel="noopener" target="_blank">
-                            <i class="fa fa-facebook-official" aria-hidden="true"></i>
-                        </a>
-                        {% if misc_config.discord_invite_link %}
-                        <a href="{{ misc_config.discord_invite_link }}" title="Discord" aria-label="Discord" rel="noopener" target="_blank">
-                            <i class="fa fa-comments" aria-hidden="true"></i>
-                        </a>
-                        {% endif %}
-                        <a href="{{ url('blog_post_list') }}" title="{{ _('Blog') }}" aria-label="{{ _('Blog') }}">
-                            <i class="fa fa-rss" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="site-footer__links">
-                    <div class="site-footer__section">
-                        <h2 class="site-footer__section-title">{{ _('Explore') }}</h2>
-                        <nav class="site-footer__nav" aria-label="{{ _('Explore') }}">
-                            <a href="{{ url('problem_list') }}">{{ _('Problems') }}</a>
-                            <a href="{{ url('contest_list') }}">{{ _('Contests') }}</a>
-                            <a href="{{ url('organization_list') }}">{{ _('Organizations') }}</a>
-                            <a href="{{ url('problem_random') }}">{{ _('Random problem') }}</a>
-                        </nav>
-                    </div>
-                    <div class="site-footer__section">
-                        <h2 class="site-footer__section-title">{{ _('Community') }}</h2>
-                        <nav class="site-footer__nav" aria-label="{{ _('Community') }}">
-                            <a href="{{ url('user_list') }}">{{ _('Leaderboard') }}</a>
-                            <a href="{{ url('status_all') }}">{{ _('Status') }}</a>
-                            <a href="{{ url('version_matrix') }}">{{ _('Runtimes') }}</a>
-                        </nav>
-                    </div>
-                    <div class="site-footer__section">
-                        <h2 class="site-footer__section-title">{{ _('Support') }}</h2>
-                        <nav class="site-footer__nav" aria-label="{{ _('Support') }}">
-                            <a href="{{ url('ticket_list') }}">{{ _('Tickets') }}</a>
-                            {% if misc_config.discord_invite_link %}
-                                <a href="{{ misc_config.discord_invite_link }}" rel="noopener" target="_blank">{{ _('Discord') }}</a>
-                            {% endif %}
-                            <a href="https://www.facebook.com/sqrtoj" rel="noopener" target="_blank">{{ _('Facebook') }}</a>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-            <div class="site-footer__bar">
-                <span class="site-footer__copyright">
-                    &copy; <span class="js-current-year">2026</span> {{ SITE_NAME }}.
-                    {{ _('All rights reserved.') }}
-                </span>
-                <span class="site-footer__credit">
-                    {{_('proudly powered by %(dmoj)s and %(vnoi)s', dmoj=safe('<a href="https://dmoj.ca">DMOJ</a>'), vnoi=safe('<a href="https://vnoi.info">VNOI</a>'))}}
-                    {% if misc_config.footer %}<span class="site-footer__sep">|</span> {{ misc_config.footer|safe }}{% endif %}
-                </span>
-                <form id="set_language" action="{{ url('set_language') }}" method="post" style="display: none">
+        <footer>
+            <span id="footer-content">
+                <br>
+                {{_('proudly powered by %(dmoj)s and %(vnoi)s', dmoj=safe('<a style="color: #808080"
+                    href="https://dmoj.ca"><b>DMOJ</b></a>'), vnoi=safe('<a style="color: #808080"
+                    href="https://vnoi.info"><b>VNOI</b></a>'))}} |
+                {{_('follow us on %(facebook)s', facebook=safe('<a style="color: #808080"
+                    href="https://www.facebook.com/sqrtoj"><b>Facebook</b></a>'))}}
+                {% if misc_config.footer %}
+                {{ misc_config.footer|safe }} |
+                {% endif %}
+                <form id="set_language" action="{{ url('set_language') }}" method="post" style="display: inline">
                     {% csrf_token %}
                     <input name="next" type="hidden" value="{{ request.path }}">
                     <input name="language" type="hidden" value="{{LANGUAGE_CODE}}">
                 </form>
-            </div>
+            </span>
         </footer>
     </div>
     {% if misc_config.analytics %}

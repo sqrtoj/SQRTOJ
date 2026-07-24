@@ -79,30 +79,6 @@ msgctxt "time format without day"
 msgid "%h:%m:%s"
 msgstr "%h:%m:%s"
 
-#: resources/common.js:194
-#, javascript-format
-msgid "%s day"
-msgid_plural "%s days"
-msgstr[0] "%s ngày"
-
-#: resources/common.js:195
-#, javascript-format
-msgid "%s hour"
-msgid_plural "%s hours"
-msgstr[0] "%s giờ"
-
-#: resources/common.js:196
-#, javascript-format
-msgid "%s minute"
-msgid_plural "%s minutes"
-msgstr[0] "%s phút"
-
-#: resources/common.js:197
-#, javascript-format
-msgid "%s second"
-msgid_plural "%s seconds"
-msgstr[0] "%s giây"
-
 #: resources/user_profile.js:47 static/user_profile.a1429590b724.js:47
 #: static/user_profile.c79a20924f8b.js:47 static/user_profile.js:47
 msgid "past year"

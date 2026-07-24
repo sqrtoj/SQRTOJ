@@ -255,23 +255,11 @@ DMOJ_API_PAGE_SIZE = 1000
 DMOJ_PASSWORD_RESET_LIMIT_WINDOW = 3600
 DMOJ_PASSWORD_RESET_LIMIT_COUNT = 10
 
-# At the bare minimum, dark and light theme CSS file locations must be declared.
-# This is the default (Warm Harvest) palette, kept as the canonical mapping for
-# backward compatibility.
+# At the bare minimum, dark and light theme CSS file locations must be declared
 DMOJ_THEME_CSS = {
     'light': 'style.css',
     'dark': 'dark/style.css',
 }
-# CSS files per selectable palette (see judge.models.choices.SITE_PALETTES). The
-# 'warm' palette reuses DMOJ_THEME_CSS; 'summer' is the classic green/blue palette.
-DMOJ_THEME_PALETTE_CSS = {
-    'warm': DMOJ_THEME_CSS,
-    'summer': {
-        'light': 'summer/style.css',
-        'dark': 'summer/dark/style.css',
-    },
-}
-DMOJ_DEFAULT_SITE_PALETTE = 'warm'
 # At the bare minimum, dark and light ace themes must be declared
 DMOJ_THEME_DEFAULT_ACE_THEME = {
     'light': 'github',
@@ -651,28 +639,15 @@ MARTOR_UPLOAD_URL_PREFIX = '/martor'
 
 # Directory under MEDIA_ROOT to use to store image uploaded through martor.
 MARTOR_UPLOAD_MEDIA_DIR = 'martor'
-MARTOR_UPLOAD_SAFE_EXTS = {'.jpg', '.jpeg', '.png', '.gif'}
-MARTOR_UPLOAD_MAX_FILE_SIZE = 10 * 1024 * 1024
-MARTOR_UPLOAD_MAX_PIXELS = 25_000_000
+MARTOR_UPLOAD_SAFE_EXTS = {'.jpg', '.png', '.gif', '.svg'}
 
 PDF_STATEMENT_UPLOAD_URL_PREFIX = '/pdf'
 PDF_STATEMENT_UPLOAD_MEDIA_DIR = 'pdf'
 PDF_STATEMENT_SAFE_EXTS = {'pdf'}
-PDF_STATEMENT_MAX_FILE_SIZE = 5 * 1024 * 1024
+PDF_STATEMENT_MAX_FILE_SIZE = 5242880
 
 SUBMISSION_FILE_UPLOAD_URL_PREFIX = '/submission_file'
 SUBMISSION_FILE_UPLOAD_MEDIA_DIR = 'submission_file'
-
-VNOJ_PROBLEM_ARCHIVE_MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024
-VNOJ_PROBLEM_ARCHIVE_MAX_METADATA_SIZE = 64 * 1024 * 1024
-VNOJ_PROBLEM_ARCHIVE_MAX_ENTRIES = 20_000
-VNOJ_PROBLEM_ARCHIVE_MAX_MEMBER_SIZE = 512 * 1024 * 1024
-VNOJ_PROBLEM_ARCHIVE_MAX_EXPANDED_SIZE = 4 * 1024 * 1024 * 1024
-VNOJ_PROBLEM_ARCHIVE_MAX_COMPRESSION_RATIO = 1000
-
-VNOJ_UPLOAD_SCAN_MODE = 'disabled'
-VNOJ_CLAMAV_SOCKET = '/run/clamav/clamd.ctl'
-VNOJ_CLAMAV_TIMEOUT = 300
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

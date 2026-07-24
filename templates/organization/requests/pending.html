@@ -26,7 +26,6 @@
         <form action="" method="post">
             {% csrf_token %}
             {{ formset.management_form }}
-            <div class="h-scrollable-table">
             <table class="table">
                 <tr>
                     <th>{{ _('User') }}</th>
@@ -51,7 +50,6 @@
                     </tr>
                 {% endfor %}
             </table>
-            </div>
             <button type="submit">{{ _('Update') }}</button>
         </form>
     {% else %}

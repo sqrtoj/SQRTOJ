@@ -109,7 +109,6 @@
         {% if contest_problem_formset.non_form_errors() %}
             {{ contest_problem_formset.non_form_errors() }}
         {% endif %}
-        <div class="h-scrollable-table">
         <table class="table">
             <thead>
                 <tr>
@@ -134,7 +133,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        </div>
         <div style="display: flex; justify-content: flex-end;"><button class="submit-bar" type="submit">
             {% if request.resolver_match.url_name == 'contest_edit' %}
                 {{ _('Update') }}

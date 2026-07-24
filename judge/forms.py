@@ -24,7 +24,6 @@ from django_ace import AceWidget
 from judge.models import BlogPost, Contest, ContestAnnouncement, ContestProblem, Language, LanguageLimit, \
     Organization, Problem, Profile, Solution, Submission, Tag, WebAuthnCredential
 from judge.utils.subscription import newsletter_id
-from judge.utils.upload_security import validate_pdf_upload
 from judge.widgets import HeavySelect2MultipleWidget, HeavySelect2Widget, MartorWidget, \
     Select2MultipleWidget, Select2Widget
 
@@ -57,14 +56,13 @@ class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         fields = ['about', 'display_badge', 'organizations', 'timezone', 'language', 'ace_theme',
-                  'site_theme', 'site_palette', 'user_script']
+                  'site_theme', 'user_script']
         widgets = {
             'display_badge': Select2Widget(attrs={'style': 'width:200px'}),
             'timezone': Select2Widget(attrs={'style': 'width:200px'}),
             'language': Select2Widget(attrs={'style': 'width:200px'}),
             'ace_theme': Select2Widget(attrs={'style': 'width:200px'}),
             'site_theme': Select2Widget(attrs={'style': 'width:200px'}),
-            'site_palette': Select2Widget(attrs={'style': 'width:200px'}),
         }
 
         # Make sure that users cannot change their `about` in contest mode
@@ -207,10 +205,13 @@ class ProblemEditForm(ModelForm):
     def clean_statement_file(self):
         content = self.files.get('statement_file', None)
         if content is not None:
+            if content.size > settings.PDF_STATEMENT_MAX_FILE_SIZE:
+                raise forms.ValidationError(_('File size is too big! Maximum file size is %s') %
+                                            filesizeformat(settings.PDF_STATEMENT_MAX_FILE_SIZE),
+                                            'big_file_size')
             if self.user and not self.user.has_perm('judge.upload_file_statement'):
                 raise forms.ValidationError(_("You don't have permission to upload file-type statement."),
                                             'pdf_upload_permission_denined')
-            validate_pdf_upload(content, user_id=self.user.pk if self.user else None)
 
         return content
 

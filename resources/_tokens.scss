@@ -1,192 +1,83 @@
-// Design-system token layer.
+// Design-system token layer (Phase 0).
 //
 // Emits the semantic design tokens from docs/design-system/03-design-tokens.md as
-// CSS custom properties on :root. Imported once by style.scss, after the theme
-// `vars` file has defined `$is_light_theme` and `$is_summer`, so each of the four
-// compiled builds (warm light/dark, summer light/dark) emits its own values.
+// CSS custom properties on :root. This partial is imported once by style.scss,
+// after the theme `vars` file has defined `$is_light_theme`, so the light build
+// (style.css) emits the light values and the dark build (dark/style.css) emits the
+// dark values.
 //
-// Values are branched on palette + mode and mirror the documented token tables:
-//   - Warm Harvest (default): 03-design-tokens.md §2.2 (as remapped by 08 §3)
-//   - Summer (classic): the original green/blue palette
-// Components consume var(--...) from Phase 2 onward.
+// Phase 0 is additive and backward compatible: these variables are DEFINED but not
+// yet CONSUMED by component partials. The values below intentionally match the
+// current green/blue palette so there is no visual change. Later phases migrate
+// components to `var(--...)` and swap the palette (see 06-implementation-roadmap.md).
 
 @import "vars";
 
-$is_summer: false !default;
-
 :root {
     // --- Color: surfaces & text ---
-    @if $is_summer {
-        @if $is_light_theme {
-            // Summer = the classic palette; tokens mirror the legacy $color_* values
-            // exactly so migrated components render identically to the original look.
-            --color-canvas: #f8f8f8;
-            --color-surface: #ffffff;
-            --color-surface-raised: #ffffff;
-            --color-surface-alt: #eeeeee;
-            --color-border: #cccccc;
-            --color-border-strong: #808080;
-            --color-text: #111111;
-            --color-text-secondary: #555555;
-            --color-text-muted: #808080;
-            --color-text-inverse: #ffffff;
+    @if $is_light_theme {
+        --color-canvas: #f8f9fa;
+        --color-surface: #ffffff;
+        --color-surface-raised: #ffffff;
+        --color-surface-alt: #eef0f2;
+        --color-border: #dfe3e6;
+        --color-border-strong: #c4cbd1;
+        --color-text: #20262b;
+        --color-text-secondary: #4b545c;
+        --color-text-muted: #9aa4ad;
+        --color-text-inverse: #ffffff;
 
-            --color-accent: #1ba94c;
-            --color-accent-hover: #158a3e;
-            --color-accent-contrast: #ffffff;
-            --color-accent-2: #5fc27e;
-            --color-navbar: #045c20;
-            --color-navbar-gradient-start: #0a7c32;
-            --color-navbar-gradient-end: #045c20;
-            --color-footer-gradient-start: #f4fcf6;
-            --color-footer-gradient-end: #d9f2e1;
+        --color-accent: #1ba94c;
+        --color-accent-hover: #158a3e;
+        --color-accent-contrast: #ffffff;
+        --color-accent-2: #5fc27e;
+        --color-navbar: #045c20;
 
-            --color-link: #1958c1;
-            --color-link-hover: #0645ad;
-            --color-focus-ring: #1958c1;
-            --color-focus-ring-soft: rgba(25, 88, 193, 0.25);
+        --color-link: #1958c1;
+        --color-link-hover: #0645ad;
+        --color-focus-ring: #1958c1;
 
-            --color-info-bg: #ddeeff;
-            --color-info-fg: #26536b;
-            --color-success-bg: #ddf3e4;
-            --color-success-fg: #177a3a;
-            --color-warning-bg: #fff3cd;
-            --color-warning-fg: #8a6100;
-            --color-danger-bg: #f8dcdc;
-            --color-danger-fg: #a52222;
-        } @else {
-            // Summer dark = classic dark palette; tokens mirror the legacy values.
-            --color-canvas: #222222;
-            --color-surface: #111111;
-            --color-surface-raised: #181818;
-            --color-surface-alt: #181818;
-            --color-border: #3b3b3b;
-            --color-border-strong: #808080;
-            --color-text: #f8f8f8;
-            --color-text-secondary: #aaaaaa;
-            --color-text-muted: #808080;
-            --color-text-inverse: #ffffff;
-
-            --color-accent: #1ba94c;
-            --color-accent-hover: #5fc27e;
-            --color-accent-contrast: #ffffff;
-            --color-accent-2: #5fc27e;
-            --color-navbar: #0f1214;
-            --color-navbar-gradient-start: #174c2b;
-            --color-navbar-gradient-end: #0f1214;
-            --color-footer-gradient-start: #1d3425;
-            --color-footer-gradient-end: #0f1214;
-
-            --color-link: #6bb0f5;
-            --color-link-hover: #8fc4ff;
-            --color-focus-ring: #6bb0f5;
-            --color-focus-ring-soft: rgba(107, 176, 245, 0.25);
-
-            --color-info-bg: #002233;
-            --color-info-fg: #77ddff;
-            --color-success-bg: #0e3a22;
-            --color-success-fg: #66ff88;
-            --color-warning-bg: #3a2e05;
-            --color-warning-fg: #ffdd66;
-            --color-danger-bg: #3a1414;
-            --color-danger-fg: #ff9999;
-        }
+        --color-info-bg: #ddeeff;
+        --color-info-fg: #26536b;
+        --color-success-bg: #ddf3e4;
+        --color-success-fg: #177a3a;
+        --color-warning-bg: #fff3cd;
+        --color-warning-fg: #8a6100;
+        --color-danger-bg: #f8dcdc;
+        --color-danger-fg: #a52222;
     } @else {
-        // Warm Harvest (default palette)
-        @if $is_light_theme {
-            --color-canvas: #fbf6ef;
-            --color-surface: #ffffff;
-            --color-surface-raised: #ffffff;
-            --color-surface-alt: #f4ebdd;
-            --color-border: #e4d5c1;
-            --color-border-strong: #d3bfa4;
-            --color-text: #2e241c;
-            --color-text-secondary: #6e5d4e;
-            --color-text-muted: #8a7360;
-            --color-text-inverse: #ffffff;
+        --color-canvas: #161b1f;
+        --color-surface: #20262b;
+        --color-surface-raised: #333b42;
+        --color-surface-alt: #333b42;
+        --color-border: #333b42;
+        --color-border-strong: #4b545c;
+        --color-text: #eef0f2;
+        --color-text-secondary: #9aa4ad;
+        --color-text-muted: #6b757e;
+        --color-text-inverse: #ffffff;
 
-            --color-accent: #c1440e;
-            --color-accent-hover: #9e3609;
-            --color-accent-contrast: #ffffff;
-            --color-accent-2: #e0a82e;
-            --color-navbar: #a84210; // Adjusted for a prettier orange/autumn look
-            --color-navbar-gradient-start: #973307;
-            --color-navbar-gradient-end: #7a2906;
-            --color-footer-gradient-start: #fbf3e8;
-            --color-footer-gradient-end: #ead8c2;
-            --bg-texture: url('#{$path_to_root}/autumn/seamless-light.webp');
+        --color-accent: #1ba94c;
+        --color-accent-hover: #5fc27e;
+        --color-accent-contrast: #ffffff;
+        --color-accent-2: #5fc27e;
+        --color-navbar: #0f1214;
 
-            // Links use the warm sienna family (not teal) to match the autumn
-            // brand. #c1440e clears AA on white (5.12:1) and paper (~4.8:1).
-            --color-link: #c1440e;
-            --color-link-hover: #7a2906;
-            --color-focus-ring: #c1440e;
-            --color-focus-ring-soft: rgba(193, 68, 14, 0.25);
+        --color-link: #6bb0f5;
+        --color-link-hover: #8fc4ff;
+        --color-focus-ring: #6bb0f5;
 
-            --color-info-bg: #d9eef2;
-            --color-info-fg: #1f5c6b;
-            --color-success-bg: #ddf3e4;
-            --color-success-fg: #177a3a;
-            --color-warning-bg: #fff3cd;
-            --color-warning-fg: #8a6100;
-            --color-danger-bg: #f8dcdc;
-            --color-danger-fg: #a52222;
-
-            // --- Autumn artwork (warm light) ---
-            // A-1 homepage hero banner + A-3 seamless page background. Paths are
-            // relative to the compiled stylesheet ($path_to_root), so they resolve
-            // to /static/autumn/... for every build variant.
-            --hero-image: url("#{$path_to_root}/autumn/hero-banner.webp");
-            --bg-texture: url("#{$path_to_root}/autumn/seamless-light.webp");
-            --bg-texture-opacity: 1;
-        } @else {
-            // Warm Harvest dark: a deep-espresso autumn palette with a genuine
-            // canvas -> surface -> raised elevation ladder and a visible border
-            // tier (the old build collapsed raised/alt/border into one flat brown).
-            --color-canvas: #140f0a;
-            --color-surface: #211812;
-            --color-surface-raised: #2c2018;
-            --color-surface-alt: #271d15;
-            --color-border: #3d2e22;
-            --color-border-strong: #5b4636;
-            --color-text: #f7efe4;
-            --color-text-secondary: #cbb6a0;
-            --color-text-muted: #9c8770;
-            --color-text-inverse: #ffffff;
-
-            --color-accent: #ef8544;
-            --color-accent-hover: #ffa066;
-            --color-accent-contrast: #1a120b;
-            --color-accent-2: #ecc061;
-            --color-navbar: #100b07;
-            --color-navbar-gradient-start: #2f180c;
-            --color-navbar-gradient-end: #100b07;
-            --color-footer-gradient-start: #2c2018;
-            --color-footer-gradient-end: #140f0a;
-
-            // Links use the warm pumpkin/gold family (not teal) to match autumn.
-            --color-link: #f2985a;
-            --color-link-hover: #ecc061;
-            --color-focus-ring: #ef8544;
-            --color-focus-ring-soft: rgba(239, 133, 68, 0.3);
-
-            --color-info-bg: #0d2b33;
-            --color-info-fg: #6fc0d1;
-            --color-success-bg: #10371f;
-            --color-success-fg: #6fe08c;
-            --color-warning-bg: #3a2c08;
-            --color-warning-fg: #f2c85a;
-            --color-danger-bg: #3a1616;
-            --color-danger-fg: #ff9b9b;
-
-            // --- Autumn artwork (warm dark) ---
-            --hero-image: url("#{$path_to_root}/autumn/hero-banner.webp");
-            --bg-texture: url("#{$path_to_root}/autumn/seamless-dark.webp");
-            --bg-texture-opacity: 1;
-        }
+        --color-info-bg: #002233;
+        --color-info-fg: #77ddff;
+        --color-success-bg: #0e3a22;
+        --color-success-fg: #66ff88;
+        --color-warning-bg: #3a2e05;
+        --color-warning-fg: #ffdd66;
+        --color-danger-bg: #3a1414;
+        --color-danger-fg: #ff9999;
     }
 
-    // --- Color: rating tiers (protected layer, identical across palettes) ---
+    // --- Color: rating tiers ---
     @if $is_light_theme {
         --rating-none: #999999;
         --rating-newbie: #808080;
@@ -207,39 +98,6 @@ $is_summer: false !default;
         --rating-grandmaster: #ff1a1a;
     }
 
-    // --- Color: verdict badges (protected layer; theme-dependent, palette-
-    // independent). Solid-fill bg + fg, AA-verified per 03-design-tokens.md §2.3. ---
-    @if $is_light_theme {
-        --verdict-ac-bg: #1a7f37;   --verdict-ac-fg: #ffffff;
-        --verdict-partial-bg: #8a6d00;  --verdict-partial-fg: #ffffff;
-        --verdict-wa-bg: #c1121f;   --verdict-wa-fg: #ffffff;
-        --verdict-tle-bg: #1f6feb;  --verdict-tle-fg: #ffffff;
-        --verdict-mle-bg: #0b5fa4;  --verdict-mle-fg: #ffffff;
-        --verdict-ole-bg: #8a4b00;  --verdict-ole-fg: #ffffff;
-        --verdict-rte-bg: #9a3412;  --verdict-rte-fg: #ffffff;
-        --verdict-ir-bg: #7a2e0e;   --verdict-ir-fg: #ffffff;
-        --verdict-ce-bg: #5a4a2a;   --verdict-ce-fg: #ffffff;
-        --verdict-ie-bg: #a11043;   --verdict-ie-fg: #ffffff;
-        --verdict-ab-bg: #5b5b5b;   --verdict-ab-fg: #ffffff;
-        --verdict-queued-bg: #e4d5c1;   --verdict-queued-fg: #2e241c;
-    } @else {
-        --verdict-ac-bg: #2ea043;   --verdict-ac-fg: #0a0a0a;
-        --verdict-partial-bg: #d9b310;  --verdict-partial-fg: #0a0a0a;
-        --verdict-wa-bg: #f28b96;   --verdict-wa-fg: #2a0608;
-        --verdict-tle-bg: #6cb0f5;  --verdict-tle-fg: #08132b;
-        --verdict-mle-bg: #4aa3df;  --verdict-mle-fg: #06121f;
-        --verdict-ole-bg: #e0913b;  --verdict-ole-fg: #241202;
-        --verdict-rte-bg: #f08a4b;  --verdict-rte-fg: #2a1102;
-        --verdict-ir-bg: #e08a5b;   --verdict-ir-fg: #25100a;
-        --verdict-ce-bg: #c9b184;   --verdict-ce-fg: #1c150a;
-        --verdict-ie-bg: #f2789f;   --verdict-ie-fg: #2a0512;
-        --verdict-ab-bg: #b8b8b8;   --verdict-ab-fg: #141414;
-        --verdict-queued-bg: #4a3b2f;   --verdict-queued-fg: #f4ebdd;
-    }
-
-    // --- Navbar impersonation state (palette-independent) ---
-    --color-navbar-impersonate: #893e89;
-
     // --- Spacing (4px base) ---
     --space-0: 0;
     --space-1: 4px;
@@ -257,47 +115,21 @@ $is_summer: false !default;
     --radius-lg: 12px;
     --radius-pill: 999px;
 
-    // --- Layout (Phase 6) ---
-    --container-max: 1120px;
-    --container-wide: 1320px;
-    --section-gap: 48px;
-    --card-pad: 24px;
-
     // --- Elevation ---
-    // Warm Harvest tints its shadows with the brand brown so surfaces feel like
-    // they sit on warm paper rather than under a cold grey light; Summer keeps
-    // the neutral blue-grey shadow it always had.
-    @if $is_summer {
-        @if $is_light_theme {
-            --shadow-0: none;
-            --shadow-1: 0 1px 2px rgba(16, 24, 32, 0.08);
-            --shadow-2: 0 2px 8px rgba(16, 24, 32, 0.1);
-            --shadow-3: 0 8px 24px rgba(16, 24, 32, 0.14);
-        } @else {
-            --shadow-0: none;
-            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
-            --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.55);
-            --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.6);
-        }
+    @if $is_light_theme {
+        --shadow-0: none;
+        --shadow-1: 0 1px 2px rgba(16, 24, 32, 0.08);
+        --shadow-2: 0 2px 8px rgba(16, 24, 32, 0.1);
+        --shadow-3: 0 8px 24px rgba(16, 24, 32, 0.14);
     } @else {
-        @if $is_light_theme {
-            --shadow-0: none;
-            --shadow-1: 0 1px 2px rgba(74, 45, 24, 0.10);
-            --shadow-2: 0 4px 12px rgba(74, 45, 24, 0.12);
-            --shadow-3: 0 12px 30px rgba(74, 45, 24, 0.18);
-        } @else {
-            --shadow-0: none;
-            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.45);
-            --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.55);
-            --shadow-3: 0 14px 34px rgba(0, 0, 0, 0.65);
-        }
+        --shadow-0: none;
+        --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+        --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.55);
+        --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.6);
     }
 
     // --- Typography ---
-    // The bundled Lato subset does not include the Vietnamese tone-mark range.
-    // Source Sans Pro is loaded locally with that range, so it is the glyph-level
-    // fallback while Lato remains the primary UI face.
-    --font-ui: "Lato", "Source Sans Pro", "Segoe UI", "Lucida Grande", Arial, sans-serif;
+    --font-ui: "Inter", "Segoe UI", "Lucida Grande", Arial, sans-serif;
     --font-mono: "JetBrains Mono", "Fira Code", Consolas, "DejaVu Sans Mono", monospace;
 
     --text-xs: 12px;

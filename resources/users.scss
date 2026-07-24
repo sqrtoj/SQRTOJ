@@ -57,33 +57,12 @@ span.organization {
         width: 100%;
     }
 
-    // Medal tints for the top three ranks (gold / silver / bronze).
-    .rank-cell--medal {
-        font-weight: var(--weight-bold);
-        font-variant-numeric: tabular-nums;
-        white-space: nowrap;
-    }
-
-    .rank-cell--1 .rank-medal { color: #d4af37; }
-    .rank-cell--2 .rank-medal { color: #9aa2ad; }
-    .rank-cell--3 .rank-medal { color: #cd7f32; }
-
     .personal-info {
 
         a,
         span {
-            color: var(--color-text-muted);
+            color: $color_primary50;
             font-weight: 600;
-        }
-    }
-
-    // The full-name column is secondary identity info; drop it on narrow
-    // screens so rank + username + scores stay readable. The table is wrapped
-    // in .h-scrollable-table for any residual overflow.
-    @media (max-width: 700px) {
-        th.full-name,
-        td.full-name {
-            display: none;
         }
     }
 }
@@ -91,23 +70,23 @@ span.organization {
 .users-table,
 .organization-table {
     tr {
-        transition: background-color var(--motion-fast) var(--ease-standard);
+        transition: background-color linear .2s;
 
         &:hover {
-            background: var(--color-surface-alt);
+            background: rgba($color_primary100, 0.05);
         }
 
         &.highlight {
-            background: var(--color-focus-ring-soft);
+            background: rgba($color_link200, 0.2);
         }
     }
 
     th a {
-        color: var(--color-text-inverse);
+        color: #ccc;
 
         &:link,
         &:visited {
-            color: var(--color-text-inverse);
+            color: #ccc;
         }
     }
 }
@@ -150,248 +129,44 @@ span.organization {
     top: 50%;
     width: 100000px;
     height: 1px;
-    background: var(--color-border);
+    background: $color_primary25;
     right: 100%;
     margin-right: 5px;
 }
 
+.user-info-page {
+    display: flex;
+}
+
+.user-sidebar {
+    width: 150px;
+    padding-left: 15px;
+}
+
 img.user-gravatar {
     display: block;
-    border-radius: var(--radius-lg);
+    border-radius: 6px;
     background-color: white;
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-1);
-}
-
-// ---------------------------------------------------------------------------
-// Modern profile page (docs/design-system/12-profile-page-redesign.md).
-// A full-width identity header with metric tiles, then stacked content
-// sections. Replaces the legacy 150px label:value sidebar.
-// ---------------------------------------------------------------------------
-.user-profile {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-}
-
-.profile-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-5);
-}
-
-.profile-header__identity {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    min-width: 0;
-}
-
-.profile-avatar {
-    width: 96px;
-    height: 96px;
-    flex: 0 0 auto;
-    border-radius: var(--radius-lg);
-    background-color: #fff;
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-1);
-}
-
-.profile-header__meta {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-
-// Codeforces-style rank title sitting just above the handle, colored by the
-// rating tier (the .rate-* class supplies the color).
-.profile-rank-title {
-    font-size: var(--text-sm);
-    font-weight: var(--weight-bold);
-    text-transform: capitalize;
-    letter-spacing: 0.02em;
-    line-height: 1.2;
-}
-
-.profile-name {
-    margin: 0;
-    font-size: var(--text-2xl);
-    font-weight: var(--weight-bold);
-    line-height: var(--leading-2xl);
-    word-break: break-word;
-}
-
-.profile-realname {
-    color: var(--color-text-secondary);
-    font-size: var(--text-md);
-}
-
-.profile-tags {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-// Rank pill inherits the rating color for its text via the rate-* class; the
-// background stays a neutral surface so it reads as a chip in both themes.
-.profile-rank-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: 2px var(--space-2);
-    border-radius: var(--radius-pill);
-    font-size: var(--text-sm);
-    font-weight: var(--weight-semibold);
-    background: var(--color-surface-alt);
-    border: 1px solid var(--color-border);
-}
-
-.profile-org-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: 2px var(--space-2);
-    border-radius: var(--radius-pill);
-    font-size: var(--text-sm);
-    background: var(--color-surface-alt);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
-    transition: background-color var(--motion-fast) var(--ease-standard),
-        border-color var(--motion-fast) var(--ease-standard);
-
-    &:hover {
-        background: var(--color-surface);
-        border-color: var(--color-border-strong);
-        color: var(--color-text);
-    }
-}
-
-.profile-header__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-top: var(--space-1);
-
-    .button {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-1);
-    }
-}
-
-// Metric tiles: a responsive row of key numbers with uppercase micro-labels.
-.profile-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-    gap: var(--space-2);
-    flex: 1 1 340px;
-}
-
-.profile-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-3) var(--space-2);
-    border-radius: var(--radius-md);
-    background: var(--color-surface-alt);
-
-    &__value {
-        font-size: var(--text-lg);
-        font-weight: var(--weight-bold);
-        color: var(--color-text);
-        font-variant-numeric: tabular-nums;
-        line-height: 1.1;
-    }
-
-    &__label {
-        font-size: var(--text-xs);
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        color: var(--color-text-muted);
-        text-align: center;
-    }
-}
-
-// Content sections below the header.
-.profile-section {
-    margin-bottom: var(--space-6);
-
-    &:last-child {
-        margin-bottom: 0;
-    }
-
-    &__title {
-        font-size: var(--text-lg);
-        font-weight: var(--weight-semibold);
-        color: var(--color-text);
-        margin-bottom: var(--space-3);
-        padding-bottom: var(--space-2);
-        border-bottom: 1px solid var(--color-border);
-    }
-}
-
-.profile-admin-notes {
-    margin: 0;
-    white-space: pre-wrap;
-}
-
-// Badge grid: image tiles in tokenized cards.
-.profile-badges {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: var(--space-4);
-}
-
-.profile-badge {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-2);
-    margin: 0;
-    padding: var(--space-4);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-1);
-
-    &__img {
-        height: 8em;
-        width: auto;
-        object-fit: contain;
-    }
-
-    &__name {
-        text-align: center;
-        font-weight: var(--weight-semibold);
-        text-transform: uppercase;
-        font-size: var(--text-sm);
-        letter-spacing: 0.02em;
-    }
-}
-
-@media (max-width: 600px) {
-    .profile-header {
-        justify-content: center;
-    }
-
-    .profile-header__identity {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .profile-tags,
-    .profile-header__actions {
-        justify-content: center;
-    }
 }
 
 .user-content {
+    flex: 1 1;
+    overflow: hidden;
     word-wrap: break-word;
+}
+
+@media not all and (min-width: 600px) {
+    .user-info-page {
+        display: block;
+    }
+
+    .user-sidebar {
+        margin: 0 auto;
+    }
+
+    .user-content {
+        overflow: visible;
+    }
 }
 
 .pp-table {
@@ -401,7 +176,7 @@ img.user-gravatar {
     }
 
     .pp-weighted {
-        color: var(--color-text-muted);
+        color: $color_primary50;
     }
 
     div.sub-pp {
@@ -414,7 +189,7 @@ img.user-gravatar {
 
 #pp-load-link-wrapper {
     text-align: center;
-    border: 1px solid var(--color-border);
+    border: 1px solid $color_primary25;
 }
 
 #pp-load-more-link {
@@ -436,18 +211,16 @@ img.user-gravatar {
 #rating-tooltip {
     display: none;
     position: absolute;
-    background: var(--color-surface-raised);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-2);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 3px;
+    border-radius: 3px;
     transition: all .1s ease;
     pointer-events: none;
     transform: translate(-50%, 0);
 
     .rate-group {
-        color: var(--color-text);
+        color: white;
     }
 }
 
@@ -462,69 +235,24 @@ img.user-gravatar {
 
         #year {
             font-size: 1.25em;
-            color: var(--color-text);
+            color: $color_primary75;
         }
     }
 
     #submission-activity-display {
-        width: 100%;
-        box-sizing: border-box;
-        border: 1px solid var(--color-border);
+        border: 1px solid $color_primary25;
         border-radius: $table_header_rounding;
-        background: var(--color-surface);
-        overflow: hidden;
-
-        .submission-activity-scroll {
-            width: 100%;
-            overflow-x: auto;
-            padding: var(--space-3);
-            box-sizing: border-box;
-        }
 
         .info-bar {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: var(--space-4);
-            padding: 0 var(--space-3) var(--space-3);
 
             .info-table {
-                width: auto;
+                width: 15%;
                 min-width: 130px;
-                margin: 0;
-                table-layout: auto;
-                border-spacing: 2px;
 
                 .info-table-text {
-                    width: auto;
-                    white-space: nowrap;
-                }
-
-                td {
-                    width: 0.9rem;
-                    height: 0.9rem;
-                    padding: 0;
-                    border-radius: 20%;
-
-                    &.activity-0 {
-                        background-color: $color_user_submission_activity0;
-                    }
-
-                    &.activity-1 {
-                        background-color: $color_user_submission_activity1;
-                    }
-
-                    &.activity-2 {
-                        background-color: $color_user_submission_activity2;
-                    }
-
-                    &.activity-3 {
-                        background-color: $color_user_submission_activity3;
-                    }
-
-                    &.activity-4 {
-                        background-color: $color_user_submission_activity4;
-                    }
+                    width: 8%;
                 }
             }
         }
@@ -533,58 +261,36 @@ img.user-gravatar {
             font-size: 0.75em;
             line-height: 1;
             font-weight: 100;
-            color: var(--color-text);
+            color: $color_primary75;
         }
 
         #submission-total-count {
             align-self: center;
+            padding-left: 8%;
             font-size: 0.85em;
+
+            @media (max-width: 1000px) {
+                padding-left: 5px;
+            }
         }
 
-        #submission-activity-table {
-            width: 100% !important;
-            min-width: 720px;
-            margin: 0 auto;
-            padding: 0;
-            display: block;
-            border-collapse: collapse;
-            border-spacing: 0;
-
-            tbody {
-                display: block;
-            }
-
-            tr {
-                display: grid;
-                grid-template-columns: 3.5rem repeat(53, minmax(8px, 1fr));
-                column-gap: 3px;
-                align-items: center;
-                margin-bottom: 3px;
-            }
+        table {
+            width: 100%;
+            padding: 5px;
 
             th.submission-date-col {
-                width: auto;
-                padding: 0 var(--space-1);
-                text-align: right;
-                white-space: nowrap;
+                width: 8%;
 
                 @media (max-width: 1000px) {
-                    display: table-cell;
-                    font-size: 0.65em;
+                    display: none;
                 }
             }
 
             td {
-                width: 100%;
-                min-width: 0;
-                padding: 0;
                 border-radius: 20%;
-                aspect-ratio: 1;
 
                 div {
-                    width: 100%;
-                    height: 100%;
-                    margin: 0;
+                    margin-top: 100%;
                 }
 
                 &.activity-label {

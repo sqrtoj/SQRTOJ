@@ -1,21 +1,9 @@
-// Brand accent + navbar surface. Each palette file reassigns these after it
-// forwards vars-common (last assignment wins in the legacy @import global scope),
-// so Warm Harvest gets sienna/pumpkin while Summer keeps the original green.
-// They live here (not in a palette-only file) because shared component partials
-// (navbar, table, widgets) reference them through the `vars` import chain.
 $highlight_blue: #1ba94c;
-$color_navbar_bg: #045c20;
 $announcement_red: #ae0000;
-
-// When true, the page uses a flat theme-canvas background instead of the legacy
-// tiled/cover photo images. Warm Harvest sets this true so its warm palette is
-// not hidden behind a photo; Summer leaves it false to keep the original look.
-// A seasonal leaf/paper texture (artwork A-3) can be layered in later.
-$flat_background: false;
 
 $base_font_size: 15px;
 $widget_border_radius: 4px;
 
 $table_header_rounding: 6px;
 
-$monospace-fonts: "JetBrains Mono", "Fira Code", Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+$monospace-fonts: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;

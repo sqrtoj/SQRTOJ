@@ -55,14 +55,19 @@
         .ranking-notification {
             pointer-events: auto;
             margin-bottom: 0;
-            background-color: var(--color-surface-raised);
-            border: 1px solid var(--color-border);
-            color: var(--color-text);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-2);
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             display: none;
             overflow-wrap: break-word;
             word-wrap: break-word;
+        }
+        body[data-theme='dark'] .ranking-notification {
+            background-color: #121212;
+            border-color: #333;
+            color: #ccc;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
         .ranking-notification .close {
             float: right;
@@ -80,12 +85,15 @@
             opacity: 1;
         }
         .ranking-notification a:not(.close) {
-            color: var(--color-link);
+            color: #0056b3;
             text-decoration: none;
             font-weight: bold;
         }
         .ranking-notification a:not(.close):hover {
             text-decoration: underline;
+        }
+        body[data-theme='dark'] .ranking-notification a:not(.close) {
+            color: #63b3ed;
         }
         @media (max-width: 480px) {
             #ranking-notifications-container {
@@ -97,41 +105,38 @@
         .ranking-status {
             font-weight: bold;
         }
-        /* Verdict text colors map to the shared verdict token layer so the contest
-           ranking stays consistent with the submissions/status pages in both
-           palettes and themes (no manual dark-mode overrides needed). */
         .ranking-status-AC {
-            color: var(--verdict-ac-bg);
+            color: #2ecc71;
         }
         .ranking-status-WA {
-            color: var(--verdict-wa-bg);
+            color: #e74c3c;
         }
         .ranking-status-TLE {
-            color: var(--verdict-tle-bg);
+            color: #ef8a17;
         }
         .ranking-status-MLE {
-            color: var(--verdict-mle-bg);
+            color: #ef8a17;
         }
         .ranking-status-OLE {
-            color: var(--verdict-ole-bg);
+            color: #ef8a17;
         }
         .ranking-status-RTE {
-            color: var(--verdict-rte-bg);
+            color: #9b59b6;
         }
         .ranking-status-IR {
-            color: var(--verdict-ir-bg);
+            color: #9b59b6;
         }
         .ranking-status-CE {
-            color: var(--verdict-ce-bg);
+            color: #7f8c8d;
         }
         .ranking-status-IE {
-            color: var(--verdict-ie-bg);
+            color: #e74c3c;
         }
         .ranking-status-PA {
-            color: var(--verdict-partial-bg);
+            color: #f39c12;
         }
         .ranking-status-pending {
-            color: var(--color-info-fg);
+            color: #3498db;
         }
         .ranking-badge {
             display: inline-block;
@@ -139,55 +144,45 @@
             font-size: 0.85em;
             font-weight: bold;
             line-height: 1;
+            color: #fff;
             text-align: center;
             white-space: nowrap;
             vertical-align: baseline;
-            border-radius: var(--radius-sm);
+            border-radius: 4px;
             margin-left: 5px;
         }
         .ranking-badge-AC {
-            background-color: var(--verdict-ac-bg);
-            color: var(--verdict-ac-fg);
+            background-color: #2ecc71;
         }
         .ranking-badge-WA {
-            background-color: var(--verdict-wa-bg);
-            color: var(--verdict-wa-fg);
+            background-color: #e74c3c;
         }
         .ranking-badge-TLE {
-            background-color: var(--verdict-tle-bg);
-            color: var(--verdict-tle-fg);
+            background-color: #ef8a17;
         }
         .ranking-badge-MLE {
-            background-color: var(--verdict-mle-bg);
-            color: var(--verdict-mle-fg);
+            background-color: #ef8a17;
         }
         .ranking-badge-OLE {
-            background-color: var(--verdict-ole-bg);
-            color: var(--verdict-ole-fg);
+            background-color: #ef8a17;
         }
         .ranking-badge-RTE {
-            background-color: var(--verdict-rte-bg);
-            color: var(--verdict-rte-fg);
+            background-color: #9b59b6;
         }
         .ranking-badge-IR {
-            background-color: var(--verdict-ir-bg);
-            color: var(--verdict-ir-fg);
+            background-color: #9b59b6;
         }
         .ranking-badge-CE {
-            background-color: var(--verdict-ce-bg);
-            color: var(--verdict-ce-fg);
+            background-color: #7f8c8d;
         }
         .ranking-badge-IE {
-            background-color: var(--verdict-ie-bg);
-            color: var(--verdict-ie-fg);
+            background-color: #e74c3c;
         }
         .ranking-badge-PA {
-            background-color: var(--verdict-partial-bg);
-            color: var(--verdict-partial-fg);
+            background-color: #f39c12;
         }
         .ranking-badge-pending {
-            background-color: var(--color-info-bg);
-            color: var(--color-info-fg);
+            background-color: #3498db;
         }
     </style>
 {% endblock %}
@@ -345,15 +340,14 @@
                             if (isICPC) {
                                 displayScore = formatICPCScore(problemIsSolved, problemIsFailed, problemIsPending, problemTries);
                             } else {
-                                // Non-ICPC formats are scored on points alone, so the
-                                // notification shows only the score and hides the
-                                // submission attempt number.
                                 var ptsBase = ptsStr;
                                 if (maxPoints && !isNaN(ptsStr) && !isNaN(maxPoints)) {
                                     ptsBase = ptsStr + '/' + maxPoints;
                                 }
-                                var pointsNotifFormat = {{ _('%(points)s points', points='%(points)s')|htmltojs }};
-                                displayScore = pointsNotifFormat.replace('%(points)s', ptsBase);
+                                var submissionNotifFormat = {{ _('%(points)s points - submission #%(tries)s', points='%(points)s', tries='%(tries)s')|htmltojs }};
+                                displayScore = submissionNotifFormat
+                                    .replace('%(points)s', ptsBase)
+                                    .replace('%(tries)s', problemTries);
                             }
                             if (problemResult) {
                                 var innerText = problemResult;

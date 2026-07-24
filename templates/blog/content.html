@@ -13,8 +13,26 @@
 {% endblock %}
 
 {% block title_row %}
-<div id="post-{{ post.id }}" class="blog-post-title">
-    <div class="blog-post-title__main">
+<div id="post-{{ post.id }}" style="display: flex; gap: 0.5em;">
+    <div class="vote">
+        {% if logged_in %}
+            <a href="javascript:blog_upvote({{ post.id }})"
+            class="upvote-link fa fa-chevron-up fa-fw{% if post.vote_score == 1 %} voted{% endif %}"></a>
+        {% else %}
+            <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
+            class="upvote-link fa fa-chevron-up fa-fw"></a>
+        {% endif %}
+        <br>
+        <div id="post-score" class="comment-score">{{ post.score }}</div>
+        {% if logged_in %}
+            <a href="javascript:blog_downvote({{ post.id }})"
+            class="downvote-link fa fa-chevron-down fa-fw{% if post.vote_score == -1 %} voted{% endif %}"></a>
+        {% else %}
+            <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
+            class="downvote-link fa fa-chevron-down fa-fw"></a>
+        {% endif %}
+    </div>
+    <div style="width: 100%;">
         <h2 style="display:inline">
             {% block content_title %}
                 {% if content_title %}{{ content_title }}{% else %}{{ title }}{% endif %}
@@ -30,24 +48,7 @@
         {% if post.is_editable_by(request.user) %}
             <div class="title-line-action">[<a href="{{ url('blog_post_edit', post.id, post.slug) }}">{{ _('Edit') }}</a>]</div>
         {% endif %}
-        <div class="time blog-post-meta-row">
-            <div class="vote">
-                {% if logged_in %}
-                    <a href="javascript:blog_upvote({{ post.id }})"
-                    class="upvote-link fa fa-chevron-up fa-fw{% if post.vote_score == 1 %} voted{% endif %}"></a>
-                {% else %}
-                    <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
-                    class="upvote-link fa fa-chevron-up fa-fw"></a>
-                {% endif %}
-                <div id="post-score" class="comment-score">{{ post.score }}</div>
-                {% if logged_in %}
-                    <a href="javascript:blog_downvote({{ post.id }})"
-                    class="downvote-link fa fa-chevron-down fa-fw{% if post.vote_score == -1 %} voted{% endif %}"></a>
-                {% else %}
-                    <a href="javascript:alert({{ _('Please log in to vote')|htmltojs }})" title="{{ _('Please log in to vote') }}"
-                    class="downvote-link fa fa-chevron-down fa-fw"></a>
-                {% endif %}
-            </div>
+        <div class="time">
             {% with authors=post.authors.all() %}
                 {%- if authors -%}
                     <span class="post-authors">{{ link_users(authors) }}</span>

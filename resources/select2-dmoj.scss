@@ -2,9 +2,9 @@
 
 /* Hack to make dropdown background follow theming */
 .select2-dropdown {
-    background-color: var(--color-surface) !important;
-    border: 1px solid var(--color-border) !important;
-    color: var(--color-text) !important;
+    background-color: $color_primary0 !important;
+    border: 1px solid $color_primary33 !important;
+    color: $color_primary100 !important;
 }
 
 .select2-container--dmoj {
@@ -27,9 +27,9 @@
 
     .select2-search--dropdown {
         .select2-search__field {
-            border: 1px solid var(--color-border);
-            background-color: var(--color-surface);
-            color: var(--color-text);
+            border: 1px solid $color_primary33;
+            background-color: $color_select2_search_dropdown;
+            color: $color_primary100;
         }
     }
 
@@ -39,7 +39,7 @@
             border: none;
             outline: 0;
             box-shadow: none;
-            color: var(--color-text);
+            color: $color_primary100;
             -webkit-appearance: textfield;
         }
     }
@@ -47,7 +47,7 @@
     .select2-results > .select2-results__options {
         max-height: 200px;
         overflow-y: auto;
-        color: var(--color-text);
+        color: $color_primary100;
     }
 
     .select2-results__option {
@@ -56,12 +56,11 @@
         }
 
         &[aria-disabled=true] {
-            color: var(--color-text-muted);
+            color: $color_primary50;
         }
 
         &[aria-selected=true] {
-            background-color: var(--color-accent);
-            color: var(--color-accent-contrast);
+            background-color: $color_primary25;
         }
 
         .select2-results__option {
@@ -99,8 +98,8 @@
     }
 
     .select2-results__option--highlighted[aria-selected] {
-        background-color: var(--color-accent);
-        color: var(--color-accent-contrast);
+        background-color: $highlight_blue;
+        color: white;
     }
 
     .select2-results__group {

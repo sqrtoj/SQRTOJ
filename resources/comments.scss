@@ -3,42 +3,20 @@
 .comment-score {
     font-weight: bold;
     text-align: center;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-text);
-    padding: 2px 0;
 }
 
 a {
     &.upvote-link, &.downvote-link {
-        display: block;
-        color: var(--color-text-muted);
-        border-radius: var(--radius-sm);
-        transition: color var(--motion-fast) var(--ease-standard),
-            background-color var(--motion-fast) var(--ease-standard);
-
-        &:hover {
-            color: var(--color-accent);
-            background: var(--color-surface-alt);
-        }
-
-        &:focus-visible {
-            outline: 2px solid var(--color-focus-ring);
-            outline-offset: 2px;
-        }
+        color: $color_primary100;
     }
 
     &.voted {
-        color: var(--color-accent);
-        text-shadow: 0 0 7px var(--color-text), 0 0 15px $color_voted_mark;
+        text-shadow: 0 0 7px $color_primary100, 0 0 15px $color_voted_mark;
     }
 }
 
 .no-comments-message {
-    margin: var(--space-4) 0 var(--space-5);
-    padding: var(--space-5) var(--space-4);
-    text-align: center;
-    color: var(--color-text-muted);
-    font-style: italic;
+    margin: 10px 0 15px 2.75em;
 }
 
 .comment-header-space {
@@ -60,40 +38,18 @@ a {
 
 .comment-edits:not(:empty) {
     padding-right: 2px;
-    color: var(--color-text);
+    color: $color_primary75;
 }
 
 .comment-operation {
     flex: auto;
 
     .fa {
-        color: var(--color-text);
-    }
-
-    // Interactive action icons (link/reply/edit/vote/hide). Padded hit area plus
-    // hover/focus affordance so the dense action row reads as interactive.
-    a {
-        display: inline-flex;
-        align-items: center;
-        padding: var(--space-1) var(--space-2);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-secondary);
-        transition: background-color var(--motion-fast) var(--ease-standard),
-            color var(--motion-fast) var(--ease-standard);
-
-        &:hover {
-            background: var(--color-surface-alt);
-            color: var(--color-text);
-        }
-
-        &:focus-visible {
-            outline: 2px solid var(--color-focus-ring);
-            outline-offset: 2px;
-        }
+        color: $color_primary75;
     }
 
     a + a {
-        padding-left: var(--space-2);
+        padding-left: 2px;
     }
 }
 
@@ -105,7 +61,7 @@ a {
 }
 
 .comment-edit-form {
-    max-width: 100%;
+    min-width: 60em;
 }
 
 .comment-post-wrapper {
@@ -144,7 +100,7 @@ a {
 }
 
 .previous-revision, .next-revision {
-    color: var(--color-text);
+    color: $color_primary75;
 }
 
 .new-comments {
@@ -152,23 +108,14 @@ a {
         display: flex;
         padding-left: 1em;
         padding-top: 0.5em !important;
-        border: 1px solid var(--color-border);
-        background: var(--color-surface);
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-1);
-        transition: box-shadow var(--motion-fast) var(--ease-standard),
-            border-color var(--motion-fast) var(--ease-standard);
-    }
-
-    .comment-display:hover {
-        box-shadow: var(--shadow-2);
-        border-color: var(--color-border-strong);
+        border: 1px solid $color_primary25;
+        background: $color_primary5;
+        border-radius: $widget_border_radius;
     }
 
     .comment .detail {
         margin: 0px 15px 0px;
         width: 100%;
-        min-width: 0;
 
         .header {
             display: flex;
@@ -176,15 +123,15 @@ a {
             justify-content: space-between;
             padding: 2px 0px;
             font-weight: normal;
-            border-bottom: 1px var(--color-border-strong) solid;
-            color: var(--color-text-muted);
+            border-bottom: 1px $color_primary50 solid;
+            color: $color_primary50;
             text-align: right;
         }
     }
 
     .comment:target > .comment-display {
-        border: 1px solid var(--color-accent);
-        border-left: 10px solid var(--color-accent);
+        border: 1px solid $highlight_blue;
+        border-left: 10px solid $highlight_blue;
         padding-left: 5px;
     }
 
@@ -193,7 +140,7 @@ a {
     }
 
     .header i {
-        color: var(--color-text-muted) !important;
+        color: $color_primary50 !important;
     }
 
     .info {
@@ -211,17 +158,8 @@ a {
 
     .vote {
         margin-right: 1em;
+        height: 75px;
         padding-top: 0.4em;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.1em;
-
-        // The vote arrows are anchors that emit a trailing <br>; collapse those
-        // line breaks so the flex column controls spacing evenly.
-        br {
-            display: none;
-        }
     }
 
     @media (max-width: 760px) {
@@ -240,25 +178,6 @@ a {
 
         .vote {
             margin-right: 0em;
-        }
-
-        // Reclaim horizontal space on phones: trim the reading-column margins and
-        // let the body shrink instead of forcing the whole thread to overflow.
-        .comment .detail {
-            margin: 0 0 0 10px;
-            width: auto;
-        }
-
-        .comment-display {
-            padding-left: 0.5em !important;
-        }
-    }
-
-    // Deeply nested reply threads flatten their indentation on narrow screens so
-    // the innermost comments still have room to breathe.
-    @media (max-width: 480px) {
-        .comments {
-            padding-left: 0.5em;
         }
     }
 }
