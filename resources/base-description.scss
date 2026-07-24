@@ -235,6 +235,25 @@
         overflow-wrap: anywhere;
     }
 
+    // The Markdown renderer wraps every table in this element. Size both the
+    // wrapper and its internal table explicitly; otherwise the wrapper can
+    // span the article while the table formatting context still hugs its
+    // intrinsic column widths, leaving a large empty area to the right.
+    .table-responsive {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+
+        > table {
+            display: table !important;
+            width: 100% !important;
+            min-width: 100%;
+            table-layout: fixed;
+        }
+    }
+
     td {
         vertical-align: top;
     }
