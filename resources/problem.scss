@@ -73,32 +73,8 @@ $is_light_theme: true;
             word-break: break-all;
         }
 
-        &.problem-name {
-            width: 46%;
-        }
-
-        &.category {
-            width: 16%;
-        }
-
-        &.types {
-            width: 14%;
-        }
-
-        &.solved, &.editorial {
-            width: 2.25rem;
-        }
-
-        &.points {
-            width: 5rem;
-        }
-
-        &.ac-rate {
-            width: 5.5rem;
-        }
-
-        &.users {
-            width: 4.5rem;
+        &.category, &.types {
+            white-space: nowrap;
         }
     }
 
