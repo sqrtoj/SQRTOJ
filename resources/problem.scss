@@ -67,6 +67,10 @@ $is_light_theme: true;
         &.problem-code {
             word-break: break-all;
         }
+
+        &.category, &.types {
+            white-space: nowrap;
+        }
     }
 
     th a {
