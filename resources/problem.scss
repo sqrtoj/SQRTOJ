@@ -50,12 +50,16 @@ $is_light_theme: true;
 #problem-table {
     width: 100%;
     min-width: 760px;
+    table-layout: fixed;
 
     td, th {
         // Text columns are left-aligned
         &.problem-code, &.problem-name, &.category, &.types {
             text-align: left;
             padding: 0 1rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         // Numeric columns are center-aligned
@@ -65,7 +69,27 @@ $is_light_theme: true;
         }
 
         &.problem-code {
-            word-break: break-all;
+            width: 7rem;
+        }
+
+        &.category {
+            width: 11rem;
+        }
+
+        &.types {
+            width: 10rem;
+        }
+
+        &.solved, &.editorial {
+            width: 2.5rem;
+        }
+
+        &.points, &.ac-rate {
+            width: 5rem;
+        }
+
+        &.users {
+            width: 4.5rem;
         }
     }
 
