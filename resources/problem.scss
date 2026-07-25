@@ -85,12 +85,14 @@ $is_light_theme: true;
 
     #content-left.problems {
         flex: 1 1 0;
+        min-width: 0;
     }
 
     #content-right.problems {
         flex: 0 0 clamp(15rem, 18vw, 19rem);
         max-width: 19rem;
         padding-left: 0;
+        padding-top: 0;
     }
 }
 
@@ -131,19 +133,6 @@ $is_light_theme: true;
 
     .filter-form-group {
         margin-top: 5px;
-    }
-}
-
-#content-right {
-    &.problems {
-        max-width: unset;
-        padding-top: 0;
-    }
-}
-
-#content-left {
-    &.problems {
-        flex: 3;
     }
 }
 
