@@ -2,6 +2,15 @@
 
 {% block js_media %}
 {{ form.media.js }}
+<script src="/static/plugins/js/ace.js"></script>
+<script src="/static/plugins/js/semantic.min.js"></script>
+<script src="/static/plugins/js/mode-markdown.js"></script>
+<script src="/static/plugins/js/ext-language_tools.js"></script>
+<script src="/static/plugins/js/theme-github.js"></script>
+<script src="/static/plugins/js/highlight.min.js"></script>
+<script src="/static/plugins/js/resizable.min.js"></script>
+<script src="/static/plugins/js/emojis.min.js"></script>
+<script src="/static/martor/js/martor.js"></script>
 {% include "leave-warning.html" %}
 
 <script src="{{ static('vnoj/jquery.formset.js') }}"></script>
@@ -59,6 +68,12 @@
 
 {% block media %}
 {{ form.media.css }}
+<link rel="stylesheet" type="text/css" href="/static/plugins/css/ace.min.css">
+<link rel="stylesheet" type="text/css" href="/static/plugins/css/semantic.css">
+<link rel="stylesheet" type="text/css" href="/static/plugins/css/resizable.min.css">
+<link rel="stylesheet" type="text/css" href="/static/martor/css/martor.css">
+<link rel="stylesheet" type="text/css" href="/static/martor/css/martor-admin.css">
+<link rel="stylesheet" type="text/css" href="/static/martor/css/martor-preview.css">
 <link rel="stylesheet" type="text/css" href="{{ static('ui_form.css') }}">
 <style>
     .hidden {
