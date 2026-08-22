@@ -43,3 +43,33 @@ local_urls.py
 *.zip
 problems/
 .DS_Store
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+service-account*.json
+secrets/
+
+# Local databases, dumps and backups
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql
+*.tar
+*.tar.*
+*.gz
+*.zip
+backups/
+*.before-*
+
+# Runtime and user data
+media/
+staticfiles/
+logs/

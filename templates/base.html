@@ -460,6 +460,169 @@
     {% if misc_config.analytics %}
     {{ misc_config.analytics|safe }}
     {% endif %}
-</body>
+<style id="sqrtoj-global-verdict-toast-css">
+    #sqrtoj-global-verdict-toast {
+        position: fixed;
+        left: 1rem;
+        bottom: 1rem;
+        z-index: 2147483647;
+        display: none;
+        width: min(23rem, calc(100vw - 2rem));
+        padding: 0.9rem 1rem;
+        border-left: 5px solid #777;
+        border-radius: 0.55rem;
+        background: #fff;
+        color: #202124;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
+        font: 500 0.95rem/1.35 Arial, sans-serif;
+        cursor: pointer;
+    }
+    #sqrtoj-global-verdict-toast strong { display: block; font-size: 1rem; }
+    #sqrtoj-global-verdict-toast small { display: block; margin-top: 0.2rem; color: #5f6368; font-weight: 400; }
+    #sqrtoj-global-verdict-toast.sqrtoj-ac { border-left-color: #16803c; }
+    #sqrtoj-global-verdict-toast.sqrtoj-wa { border-left-color: #d93025; }
+    #sqrtoj-global-verdict-toast.sqrtoj-error { border-left-color: #b3261e; }
+</style>
+<script id="sqrtoj-global-verdict-toast-js">
+(function () {
+    'use strict';
+    window.__SQRTOJ_GLOBAL_TOAST = true;
 
+    var STORAGE_KEY = 'sqrtoj.pending.submissions.v2';
+    var SINGLE_URL = '{{ url('submission_single_query') }}';
+    var TERMINAL = {
+        AC: true, WA: true, TLE: true, MLE: true, OLE: true,
+        RTE: true, CE: true, IE: true, AB: true
+    };
+    var LABELS = {
+        AC: ['Accepted', 'sqrtoj-ac'],
+        WA: ['Wrong Answer', 'sqrtoj-wa'],
+        TLE: ['Time Limit Exceeded', 'sqrtoj-error'],
+        MLE: ['Memory Limit Exceeded', 'sqrtoj-error'],
+        OLE: ['Output Limit Exceeded', 'sqrtoj-error'],
+        RTE: ['Runtime Error', 'sqrtoj-error'],
+        CE: ['Compilation Error', 'sqrtoj-error'],
+        IE: ['Internal Error', 'sqrtoj-error'],
+        AB: ['Aborted', 'sqrtoj-error']
+    };
+
+    function readPending() {
+        try {
+            var value = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
+            return Array.isArray(value) ? value.filter(function (id) { return /^\d+$/.test(String(id)); }) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function writePending(ids) {
+        try {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(ids.slice(-10)));
+        } catch (e) {}
+    }
+
+    function track(id) {
+        id = String(id || '');
+        if (!/^\d+$/.test(id)) return;
+        var ids = readPending();
+        if (ids.indexOf(id) === -1) {
+            ids.push(id);
+            writePending(ids);
+        }
+    }
+
+    function removePending(id) {
+        writePending(readPending().filter(function (item) { return String(item) !== String(id); }));
+        document.cookie = 'sqrtoj_pending_submission=; Max-Age=0; path=/; SameSite=Lax';
+    }
+
+    function readSubmissionCookie() {
+        var match = document.cookie.match(/(?:^|; )sqrtoj_pending_submission=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function showToast(result, id) {
+        var item = LABELS[result];
+        if (!item) return;
+        var old = document.getElementById('sqrtoj-global-verdict-toast');
+        if (old && old.parentNode) old.parentNode.removeChild(old);
+        var toast = document.createElement('div');
+        toast.id = 'sqrtoj-global-verdict-toast';
+        toast.className = item[1];
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = '<strong></strong><small></small>';
+        toast.querySelector('strong').textContent = item[0];
+        toast.querySelector('small').textContent = 'Submission #' + id + ' đã có kết quả';
+        toast.onclick = function () {
+            window.location.href = '/submission/' + encodeURIComponent(id);
+        };
+        document.body.appendChild(toast);
+        toast.style.display = 'block';
+        window.setTimeout(function () {
+            if (toast && toast.parentNode) {
+                toast.style.transition = 'opacity .35s ease';
+                toast.style.opacity = '0';
+                window.setTimeout(function () {
+                    if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 380);
+            }
+        }, 5000);
+    }
+
+    function extractResult(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var node = doc.querySelector('.sub-result .status');
+        if (!node) node = doc.querySelector('.sub-result');
+        if (!node) return null;
+        var result = (node.textContent || '').replace(/\s+/g, ' ').trim();
+        var match = result.match(/\b(AC|WA|TLE|MLE|OLE|RTE|CE|IE|AB|QU|P|G)\b/);
+        return match ? match[1] : null;
+    }
+
+    function pollOne(id) {
+        var separator = SINGLE_URL.indexOf('?') === -1 ? '?' : '&';
+        return window.fetch(SINGLE_URL + separator + 'id=' + encodeURIComponent(id) + '&show_problem=1&_=' + Date.now(), {
+            credentials: 'same-origin',
+            cache: 'no-store',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function (response) {
+            if (!response.ok) throw new Error('submission endpoint ' + response.status);
+            return response.text();
+        }).then(function (html) {
+            var result = extractResult(html);
+            if (result && TERMINAL[result]) {
+                removePending(id);
+                showToast(result, id);
+            }
+        }).catch(function () {
+            // Keep the ID for the next page/tick. A transient request failure is harmless.
+        });
+    }
+
+    function pollAll() {
+        var cookieSubmission = readSubmissionCookie();
+        if (cookieSubmission) track(cookieSubmission);
+        var ids = readPending();
+        if (!ids.length) return;
+        Promise.all(ids.map(pollOne));
+    }
+
+    function start() {
+        if (window.__SQRTOJ_TRACK_SUBMISSION) track(window.__SQRTOJ_TRACK_SUBMISSION);
+        var cookieSubmission = readSubmissionCookie();
+        if (cookieSubmission) track(cookieSubmission);
+        pollAll();
+        window.setInterval(pollAll, 2000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
+    }
+}());
+</script>
+</body>
+{% include "contest/global-submit-widget.html" %}
+</body>
 </html>

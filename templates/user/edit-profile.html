@@ -87,6 +87,178 @@
             padding-top: 5px;
             font-size: 12px;
         }
+        /* SQRT-style Martor: dark toolbar, compact tabs, white code editor. */
+        #edit-form .main-martor,
+        #edit-form .main-martor .section-martor {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+        }
+        #edit-form .main-martor .section-martor {
+            overflow: visible !important;
+            border: 1px solid #263653 !important;
+            border-radius: 7px !important;
+            background: #0d1b35 !important;
+            box-shadow: 0 8px 24px rgba(5, 15, 35, .18) !important;
+        }
+        #edit-form .main-martor .tab-martor-menu {
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+            min-height: 48px !important;
+            margin: 0 !important;
+            padding: 0 10px !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(255,255,255,.12) !important;
+            border-radius: 6px 6px 0 0 !important;
+            background: #0d1b35 !important;
+            overflow: visible !important;
+        }
+        #edit-form .main-martor .tab-martor-menu > a.item {
+            display: inline-flex !important;
+            align-items: center !important;
+            align-self: stretch !important;
+            gap: 6px !important;
+            margin: 0 !important;
+            padding: 0 14px !important;
+            border: 0 !important;
+            color: #8fa6cd !important;
+            background: transparent !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+        }
+        #edit-form .main-martor .tab-martor-menu > a.item.active {
+            color: #eef5ff !important;
+            border-bottom: 3px solid #ff9b52 !important;
+        }
+        #edit-form .main-martor .tab-martor-menu > a.item:hover {
+            color: #ffffff !important;
+            background: rgba(255,255,255,.06) !important;
+        }
+        #edit-form .main-martor .martor-toolbar {
+            display: flex !important;
+            align-items: center !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            margin: 0 0 0 auto !important;
+            padding: 0 !important;
+            float: none !important;
+            border: 0 !important;
+            background: transparent !important;
+            overflow: visible !important;
+        }
+        #edit-form .main-martor .martor-toolbar > .ui.icon.buttons {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+            width: 100% !important;
+            margin: 0 !important;
+            background: transparent !important;
+        }
+        #edit-form .main-martor .martor-toolbar .ui.icon.button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            margin: 0 1px !important;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 4px !important;
+            color: #b9c8e2 !important;
+            background: transparent !important;
+        }
+        #edit-form .main-martor .martor-toolbar .ui.icon.button:hover,
+        #edit-form .main-martor .martor-toolbar .ui.icon.button.active {
+            color: #ffffff !important;
+            background: rgba(255,255,255,.12) !important;
+        }
+        #edit-form .main-martor .martor-toolbar .ui.dropdown {
+            position: relative !important;
+        }
+        #edit-form .main-martor .martor-toolbar .ui.dropdown > .menu {
+            display: none !important;
+            position: absolute !important;
+            top: calc(100% + 2px) !important;
+            right: 0 !important;
+            left: auto !important;
+            z-index: 10050 !important;
+            min-width: 180px !important;
+            margin: 0 !important;
+            padding: 4px !important;
+            border: 1px solid #2d4266 !important;
+            border-radius: 6px !important;
+            background: #132746 !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,.3) !important;
+        }
+        #edit-form .main-martor .martor-toolbar .ui.dropdown.visible > .menu,
+        #edit-form .main-martor .martor-toolbar .ui.dropdown.active > .menu,
+        #edit-form .main-martor .martor-toolbar .ui.dropdown.open > .menu {
+            display: block !important;
+        }
+        #edit-form .main-martor .martor-toolbar .ui.dropdown > .menu > .item {
+            display: block !important;
+            padding: 8px 10px !important;
+            color: #e7eefb !important;
+            white-space: nowrap !important;
+            text-align: left !important;
+        }
+        #edit-form .main-martor .martor-toolbar .ui.dropdown > .menu > .item:hover {
+            color: #ffffff !important;
+            background: #24508b !important;
+        }
+        #edit-form .main-martor .section-martor > .ui.bottom.attached.tab.segment {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-height: 430px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0 0 6px 6px !important;
+            background: #ffffff !important;
+            overflow: hidden !important;
+        }
+        #edit-form .main-martor .martor-field {
+            width: 100% !important;
+            height: 430px !important;
+            min-height: 430px !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            background: #ffffff !important;
+        }
+        #edit-form .main-martor .martor-field .ace_editor,
+        #edit-form .main-martor .martor-field .ace_scroller,
+        #edit-form .main-martor .martor-field .ace_content {
+            background: #ffffff !important;
+            color: #1f2937 !important;
+        }
+        #edit-form .main-martor .martor-field .ace_gutter {
+            background: #eef1f5 !important;
+            color: #6b7280 !important;
+        }
+        #edit-form .main-martor .martor-field .ace_active-line,
+        #edit-form .main-martor .martor-field .ace_gutter-active-line {
+            background: #f5f7fa !important;
+        }
+        #edit-form .main-martor .martor-preview {
+            min-height: 430px !important;
+            padding: 18px !important;
+            color: #1f2937 !important;
+            background: #ffffff !important;
+            overflow: auto !important;
+        }
+        #edit-form .main-martor .expand-editor {
+            color: #667085 !important;
+        }
+        @media (max-width: 800px) {
+            #edit-form .main-martor .martor-toolbar .ui.icon.button {
+                width: 28px !important;
+            }
+            #edit-form .main-martor .tab-martor-menu > a.item {
+                padding: 0 9px !important;
+            }
+        }
     </style>
 {% endblock %}
 
@@ -321,6 +493,14 @@
                         <tr>
                             <td><label class="inline-header grayed">{{ _('Color palette:') }}</label></td>
                             <td><span class="fullwidth">{{ form.site_palette }}</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                {{ form.quick_submit_enabled }}
+                                <label for="id_quick_submit_enabled" class="inline-header grayed">
+                                    {{ _('Bật / Tắt nộp bài nhanh') }}
+                                </label>
+                            </td>
                         </tr>
                         <tr{% if not perms.judge.test_site %} style="display: none"{% endif %}>
                             <td><label class="inline-header grayed">{{ _('Site theme:') }}</label></td>

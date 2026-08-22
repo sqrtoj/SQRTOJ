@@ -6,11 +6,141 @@
         <style>#category, #types {
             visibility: visible;
         }
-        </style>
+        /* compact AC status column */
+        #problem-table th.solved,
+        #problem-table td.solved {
+            width: 1.8rem !important;
+            min-width: 1.8rem !important;
+            max-width: 1.8rem;
+            padding-left: 0.15rem !important;
+            padding-right: 0.15rem !important;
+            text-align: center;
+            white-space: nowrap;
+        }
+        #problem-table td.solved > a,
+        #problem-table td.solved > i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.05rem;
+            min-width: 1.05rem;
+        }
+    </style>
     </noscript>
+<style id="problem-list-final-overrides">
+    /* Final active overrides for the problem list table */
+    #problem-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+    #problem-table th.solved,
+    #problem-table td.solved {
+        width: 1.55rem !important;
+        min-width: 1.55rem !important;
+        max-width: 1.55rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+    #problem-table td.solved > a,
+    #problem-table td.solved > i {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        min-width: 1rem;
+        margin: 0 auto;
+    }
+    #problem-table th.problem-name,
+    #problem-table td.problem-name,
+    #problem-table td.problem-name a {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        overflow-wrap: anywhere !important;
+        word-break: normal !important;
+    }
+    #problem-table td.problem-name a {
+        display: block !important;
+        line-height: 1.3;
+    }
+    @media (max-width: 760px) {
+        #problem-table th.solved,
+        #problem-table td.solved {
+            width: 1.45rem !important;
+            min-width: 1.45rem !important;
+            max-width: 1.45rem !important;
+        }
+        #problem-table td.problem-name,
+        #problem-table td.problem-name a {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+        }
+    }
+</style>
     <style>
         #problem-table th {
             padding: 0;
+        }
+
+        /* responsive-problem-table */
+        #content-left.problems {
+            min-width: 0;
+            width: 100%;
+        }
+        #problem-table {
+            width: 100%;
+            max-width: 100%;
+            table-layout: fixed;
+            font-size: clamp(0.72rem, 1.15vw, 0.92rem);
+        }
+        #problem-table th,
+        #problem-table td {
+            min-width: 0;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: normal;
+            line-height: 1.25;
+        }
+        #problem-table th {
+            padding: 0.45rem 0.25rem;
+        }
+        #problem-table td {
+            padding: 0.4rem 0.3rem;
+        }
+        #problem-table .solved { width: 5%; }
+        #problem-table .problem-code { width: 12%; }
+        #problem-table .problem-name { width: 29%; }
+        #problem-table .category { width: 14%; }
+        #problem-table .types { width: 15%; }
+        #problem-table .points { width: 7%; }
+        #problem-table .ac-rate { width: 7%; }
+        #problem-table .users { width: 6%; }
+        #problem-table .editorial { width: 5%; }
+        #problem-table .problem-code a,
+        #problem-table .problem-name a {
+            overflow-wrap: anywhere;
+        }
+        #content-left.problems.h-scrollable-table {
+            overflow-x: visible;
+        }
+        @media (max-width: 700px) {
+            #problem-table { font-size: 0.78rem; }
+            #problem-table th, #problem-table td { padding: 0.35rem 0.2rem; }
+            #problem-table .category, #problem-table .types { display: none; }
+            #problem-table .problem-name { width: 48%; }
+            #problem-table .problem-code { width: 20%; }
+        }
+        @media (max-width: 480px) {
+            #problem-table .users, #problem-table .ac-rate, #problem-table .editorial { display: none; }
+            #problem-table .problem-name { width: 55%; }
+            #problem-table .problem-code { width: 25%; }
         }
     </style>
 {% endblock %}

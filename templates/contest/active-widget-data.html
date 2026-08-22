@@ -1,0 +1,34 @@
+{% if is_in_contest %}
+<script id="sqrtoj-active-contest-widget-data">
+(function(){
+  try {
+    var previous = null;
+    try { previous = JSON.parse(localStorage.getItem('sqrtoj_active_contest_widget_v1') || 'null'); } catch (ignore) {}
+    var joinNavigationAt = 0;
+    try { joinNavigationAt = Number(localStorage.getItem('sqrtoj_popup_join_navigation_v1') || 0); } catch (ignore) {}
+    if (joinNavigationAt > 0 && Date.now() - joinNavigationAt < 60000) {
+      try { sessionStorage.setItem('sqrtoj_popup_join_grace_v1', String(Date.now())); } catch (ignore) {}
+    } else if (!previous || String(previous.key || '') !== String({{ contest.key|tojson }} || '')) {
+      try { sessionStorage.setItem('sqrtoj_popup_join_grace_v1', String(Date.now())); } catch (ignore) {}
+    }
+    localStorage.setItem('sqrtoj_active_contest_widget_v1', JSON.stringify({
+      key: {{ contest.key|tojson }},
+      name: {{ contest.name|tojson }},
+      problems: [
+        {% for problem in contest_problems %}
+        {label: {{ contest.get_label_for_problem(loop.index0)|tojson }}, code: {{ problem.code|tojson }}, name: {{ (problem.i18n_name or problem.name)|tojson }}, submitUrl: {{ url('problem_submit', problem.code)|tojson }}}{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }));
+  } catch (e) {}
+}());
+</script>
+{% else %}
+<script>
+try {
+  localStorage.removeItem('sqrtoj_active_contest_widget_v1');
+  localStorage.removeItem('sqrtoj_popup_enabled_v1');
+  localStorage.removeItem('sqrtoj_popup_contest_key_v1');
+} catch (e) {}
+</script>
+{% endif %}
