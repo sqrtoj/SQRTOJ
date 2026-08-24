@@ -114,15 +114,15 @@
         #problem-table td {
             padding: 0.4rem 0.3rem;
         }
-        #problem-table .solved { width: 5%; }
-        #problem-table .problem-code { width: 12%; }
-        #problem-table .problem-name { width: 29%; }
+        #problem-table .solved { width: 1.55rem; }
+        #problem-table .problem-code { width: 12%; min-width: 4.5rem; }
+        #problem-table .problem-name { width: auto; }
         #problem-table .category { width: 14%; }
         #problem-table .types { width: 15%; }
-        #problem-table .points { width: 7%; }
-        #problem-table .ac-rate { width: 7%; }
-        #problem-table .users { width: 6%; }
-        #problem-table .editorial { width: 5%; }
+        #problem-table .points { width: 7%; min-width: 3.5rem; }
+        #problem-table .ac-rate { width: 7%; min-width: 3.5rem; }
+        #problem-table .users { width: 6%; min-width: 3rem; }
+        #problem-table .editorial { width: 5%; min-width: 2.5rem; }
         #problem-table .problem-code a,
         #problem-table .problem-name a {
             overflow-wrap: anywhere;
@@ -134,13 +134,13 @@
             #problem-table { font-size: 0.78rem; }
             #problem-table th, #problem-table td { padding: 0.35rem 0.2rem; }
             #problem-table .category, #problem-table .types { display: none; }
-            #problem-table .problem-name { width: 48%; }
-            #problem-table .problem-code { width: 20%; }
+            #problem-table .problem-code { width: 22%; }
+            #problem-table .problem-name { width: auto; }
         }
         @media (max-width: 480px) {
             #problem-table .users, #problem-table .ac-rate, #problem-table .editorial { display: none; }
-            #problem-table .problem-name { width: 55%; }
-            #problem-table .problem-code { width: 25%; }
+            #problem-table .problem-code { width: 28%; }
+            #problem-table .problem-name { width: auto; }
         }
     </style>
 {% endblock %}

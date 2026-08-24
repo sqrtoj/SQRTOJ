@@ -1,6 +1,6 @@
 @import "vars";
 
-$is_light_theme: true;
+$is_light_theme: true !default;
 
 .social i {
     display: inline;
