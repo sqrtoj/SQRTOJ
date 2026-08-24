@@ -265,20 +265,70 @@ label[for="language"], label[for="status"], label[for="organization"] {
     color: var(--color-text);
 }
 
-.source-ln {
-    color: var(--color-text-muted);
-    border-right: 1px solid var(--color-border);
-    padding: 0 var(--space-3) 0 var(--space-3);
-    text-align: right;
-    user-select: none;
-    background: var(--color-surface-alt);
+// ---------------------------------------------------------------------------
+// Submission source viewer (Code Box)
+// ---------------------------------------------------------------------------
 
-    a {
+$source-font-size: 13px;
+$source-line-height: 20px;
+
+.source-wrap {
+    .source-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+        padding: 0 0 var(--space-2);
+    }
+
+    .source-meta {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-2);
+        min-width: 0;
+    }
+
+    .source-lang {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .source-lines {
+        flex-shrink: 0;
+        font-size: 12px;
         color: var(--color-text-muted);
-        display: block;
+        white-space: nowrap;
+    }
+
+    .source-copy-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        flex-shrink: 0;
+        padding: var(--space-1) var(--space-2);
+        font-size: 12px;
+        color: var(--color-text-muted);
+        background: transparent;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition:
+            color 0.15s ease,
+            background-color 0.15s ease,
+            border-color 0.15s ease;
 
         &:hover {
-            text-decoration: underline;
+            color: var(--color-text);
+            background: var(--color-surface);
+            border-color: var(--color-text-muted);
+        }
+
+        &:active {
+            transform: translateY(1px);
         }
 
         &:focus-visible {
@@ -286,43 +336,122 @@ label[for="language"], label[for="status"], label[for="organization"] {
             outline-offset: 2px;
         }
 
-        &::before {
-            display: block;
-            content: " ";
-            margin-top: -50px;
-            height: 50px;
-            visibility: hidden;
+        &.copied {
+            color: var(--color-success-fg);
+            border-color: var(--color-success-fg);
+        }
+
+        .copy-icon {
+            flex-shrink: 0;
+        }
+    }
+
+    // Scrolling container: thin, unobtrusive scrollbars in both directions.
+    .source-body {
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border) transparent;
+
+        &::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: var(--radius-pill);
+
+            &:hover {
+                background: var(--color-text-muted);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        .source-ln {
+            color: var(--color-text-muted);
+            border-right: 1px solid var(--color-border);
+            width: 1%;
+            min-width: 2.75rem;
+            white-space: nowrap;
+            padding: var(--space-3) 0.75rem var(--space-3) var(--space-3);
+            text-align: right;
+            user-select: none;
+
+            a {
+                display: block;
+                color: var(--color-text-muted);
+                text-align: right;
+                transition: color 0.15s ease;
+
+                &:hover {
+                    color: var(--color-text);
+                    text-decoration: none;
+                }
+
+                &:focus-visible {
+                    outline: 2px solid var(--color-focus-ring);
+                    outline-offset: -2px;
+                }
+
+                &.line-active {
+                    color: var(--color-text);
+                    background: var(--color-focus-ring-soft);
+
+                    pre.line {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+        .source-code {
+            padding: var(--space-3) var(--space-4) var(--space-3) 0.75rem;
+
+            // Pygments wrapper must not impose its own box styling inside the card.
+            .codehilite {
+                background: transparent;
+                border-radius: 0;
+            }
+        }
+
+        // Shared monospace typography for gutter and code so rows stay
+        // perfectly aligned; identical line-height and font-size are critical.
+        .source-ln pre,
+        .source-code pre,
+        .source-code code {
+            margin: 0;
+            padding: 0;
+            font-family: Consolas, Menlo, Monaco, "Fira Code", monospace;
+            font-size: $source-font-size;
+            line-height: $source-line-height;
+            white-space: pre;
+            tab-size: 4;
+            -moz-tab-size: 4;
         }
     }
 }
 
-.source-code pre, .source-ln pre {
-    margin: 0;
-    padding: 0;
-    white-space: pre;
-}
-
-.source-code {
-    padding: 0 var(--space-4);
-}
-
-// Card treatment for the submission source viewer: rounded surface, subtle
-// border, and a full-height gutter so line numbers read as a distinct rail.
-.source-wrap {
-    overflow-x: auto;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-1);
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    td {
-        vertical-align: top;
-        padding: var(--space-3) 0;
+@media (max-width: 768px) {
+    .source-body {
+        .source-ln pre,
+        .source-code pre,
+        .source-code code {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
     }
 }
 
@@ -477,25 +606,6 @@ label[for="language"], label[for="status"], label[for="organization"] {
 .half-hr {
     float: left;
     width: 30%;
-}
-
-.source-wrap {
-    .line {
-        position: relative;
-    }
-
-    .highlighter {
-        position: absolute;
-        width: 9999px;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
-
-    a:active .line .highlighter {
-        background: var(--color-focus-ring-soft);
-    }
 }
 
 .submission-info {
