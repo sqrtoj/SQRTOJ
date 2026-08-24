@@ -1,22 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
     <style>
-        table {
+        #org-requests-pending-table {
             width: 100%;
-            table-layout: fixed;
         }
 
-        .reason{
+        #org-requests-pending-table .reason {
+            max-width: 18rem;
             overflow: hidden;
             text-overflow: ellipsis;
-            word-break: break-all;
             white-space: nowrap;
-            width: 30%;
-        }
-
-        .reason:hover {
-            overflow: visible;
-            white-space: unset;
         }
     </style>
     {% include "messages.html" %}
@@ -27,7 +20,7 @@
             {% csrf_token %}
             {{ formset.management_form }}
             <div class="h-scrollable-table">
-            <table class="table">
+            <table id="org-requests-pending-table" class="table">
                 <tr>
                     <th>{{ _('User') }}</th>
                     <th>{{ _('Time') }}</th>
@@ -44,7 +37,7 @@
                             {{ form.instance.time|date(_("N j, Y, H:i")) }}
                         </a></td>
                         <td>{{ form.state }}</td>
-                        <td class="reason">{{ form.instance.reason }}</td>
+                        <td class="reason" title="{{ form.instance.reason }}">{{ form.instance.reason }}</td>
                         {% if formset.can_delete %}
                             <td>{{ form.DELETE }}</td>
                         {% endif %}

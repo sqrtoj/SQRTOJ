@@ -5,6 +5,13 @@ form .martor-preview {
     @include base-description.content-description;
 
     min-height: 400px;
+    background: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border: 1px solid var(--color-border) !important;
+    border-top: 0 !important;
+    border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+    padding: var(--space-4) !important;
+    box-sizing: border-box;
 
     ul li {
         list-style: unset !important;
@@ -19,15 +26,25 @@ form .martor-preview {
     }
 }
 
-.main-martor-fullscreen {
-    z-index: 99999 !important;
+form .martor-preview-stale {
+    opacity: 0.55 !important;
+    transition: opacity var(--motion-fast) var(--ease-standard);
+    background: transparent !important;
 }
 
-.main-martor:not(.main-martor-fullscreen) {
+.main-martor {
     width: 100%;
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
+
+    .section-martor {
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-1);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
 }
 
 .ace_editor {
@@ -35,7 +52,14 @@ form .martor-preview {
     font-size: 14px;
     font-family: var(--font-mono) !important;
     line-height: 1.55;
+    background: var(--color-surface-raised) !important;
+    color: var(--color-text) !important;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
+
+    .ace_scroller {
+        background: var(--color-surface-raised) !important;
+        color: var(--color-text) !important;
+    }
 
     .ace_gutter {
         background: var(--color-surface-alt);
@@ -57,12 +81,13 @@ form .martor-preview {
 }
 
 .section-martor {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-
     div[data-tab^="editor-tab-"] {
-        padding: 0;
+        padding: 0 !important;
+        background: var(--color-surface-raised) !important;
+        border: 1px solid var(--color-border) !important;
+        border-top: 0 !important;
+        border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+        position: relative;
     }
 
     .markdown-selector.markdown-emoji {
@@ -72,7 +97,7 @@ form .martor-preview {
     .tab-martor-menu {
         display: grid !important;
         grid-template-columns: max-content max-content minmax(0, 1fr);
-        grid-template-rows: minmax(48px, auto);
+        grid-template-rows: minmax(42px, auto);
         align-items: stretch;
         width: 100%;
         max-width: 100%;
@@ -83,7 +108,7 @@ form .martor-preview {
         border: 1px solid var(--color-border) !important;
         border-radius: var(--radius-md) var(--radius-md) 0 0;
         background: var(--color-surface-alt) !important;
-        overflow: hidden;
+        overflow: visible !important;
 
         a.item {
             grid-row: 1;
@@ -129,7 +154,7 @@ form .martor-preview {
         box-sizing: border-box;
         float: none !important;
         overflow-x: auto;
-        overflow-y: hidden;
+        overflow-y: visible !important;
 
         .ui.basic.icon.buttons {
             display: flex !important;
@@ -138,93 +163,131 @@ form .martor-preview {
             min-width: max-content;
             height: 100%;
             margin: 0 0 0 auto !important;
+            border-color: transparent !important;
+            background: transparent !important;
         }
 
-        .ui.basic.icon.buttons,
         .ui.basic.icon.buttons .button,
         .ui.basic.icon.button {
-            background: transparent !important;
+            min-width: 32px;
+            min-height: 32px;
+            padding: var(--space-1) !important;
+            margin: 0 1px !important;
+            border-radius: var(--radius-sm) !important;
             border-color: transparent !important;
+            background: transparent !important;
             color: var(--color-text-secondary) !important;
+            transition: background-color var(--motion-fast) var(--ease-standard),
+                color var(--motion-fast) var(--ease-standard);
+
+            > .icon {
+                color: currentColor !important;
+                opacity: 1;
+            }
+
+            &:hover,
+            &:focus-visible {
+                background: var(--color-surface) !important;
+                color: var(--color-accent) !important;
+            }
         }
 
-        .ui.basic.icon.buttons .button > .icon,
-        .ui.basic.icon.button > .icon {
-            color: currentColor !important;
-            opacity: 1;
+        // Dropdown menus in the toolbar (Heading, Code, Math)
+        .ui.dropdown {
+            .menu {
+                background: var(--color-surface-raised, #ffffff) !important;
+                border: 1px solid var(--color-border) !important;
+                border-radius: var(--radius-md) !important;
+                box-shadow: var(--shadow-2) !important;
+                z-index: 1000 !important;
+                margin-top: var(--space-1) !important;
+
+                > .item {
+                    color: var(--color-text) !important;
+                    padding: var(--space-2) var(--space-3) !important;
+                    font-size: var(--text-sm) !important;
+                    border-top: 1px solid var(--color-border) !important;
+                    white-space: nowrap !important;
+                    transition: background-color var(--motion-fast) var(--ease-standard),
+                        color var(--motion-fast) var(--ease-standard);
+
+                    &:first-child {
+                        border-top: 0 !important;
+                    }
+
+                    &:hover,
+                    &:focus-visible,
+                    &.selected {
+                        background: var(--color-surface-hover) !important;
+                        color: var(--color-accent) !important;
+                    }
+                }
+            }
         }
 
-        .ui.basic.icon.buttons .button:hover,
-        .ui.basic.icon.buttons .button:focus-visible,
-        .ui.basic.icon.button:hover,
-        .ui.basic.icon.button:focus-visible {
-            background: var(--color-surface) !important;
-            color: var(--color-accent) !important;
+        .ui.icon .markdown-image-upload {
+            position: relative;
+            overflow: hidden;
+
+            input[type=file] {
+                position: absolute;
+                top: 0;
+                right: 0;
+                min-width: 100%;
+                min-height: 100%;
+                font-size: 25px;
+                padding: 0;
+                padding-left: 35px;
+                text-align: right;
+                filter: alpha(opacity=0);
+                opacity: 0;
+                outline: none;
+                cursor: inherit;
+                display: block;
+            }
         }
     }
 
     .martor-field {
         height: 400px;
-        border: 1px solid var(--color-border);
-        border-top: 0;
-        background: var(--color-surface-raised);
+        border: 0 !important;
+        background: transparent !important;
         color: var(--color-text);
     }
 
     .main-martor,
-    .ui.bottom.attached.segment,
-    form .martor-preview {
+    .ui.bottom.attached.segment {
         width: 100% !important;
         max-width: 100%;
         min-width: 0;
         box-sizing: border-box;
     }
 
-    .ui.tabular.menu + .attached:not(.top).segment,
-    .ui.tabular.menu + .attached:not(.top).segment + .attached:not(.top).segment {
-        width: 100% !important;
-        max-width: 100%;
-        overflow: hidden;
-    }
-
     .resizable .resizable-b {
-        background: $color_martor_resize_dragger !important;
-    }
+        background: var(--color-border) !important;
+        height: 6px;
+        cursor: ns-resize;
+        transition: background-color var(--motion-fast) var(--ease-standard);
 
-    // Keep editor frame visible in both themes.
-    .ui.basic.inverted.buttons .button, .ui.basic.inverted.button {
-        box-shadow: 0px 0px 0px 0px $color_primary0 inset !important;
-    }
-
-    .ui.attached.inverted.menu {
-        border-bottom: 2px solid $color_primary33 !important;
-    }
-
-    .ui.bottom.attached.segment {
-        border-color: var(--color-border) !important;
-        background: var(--color-surface) !important;
-        color: var(--color-text);
-        padding: var(--space-4) !important;
-    }
-
-    @if not $is_light_theme {
-        /* Scroll bar */
-        ::-webkit-scrollbar-track {
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-            border-radius: 10px;
-            background-color: $color_primary5;
+        &:hover {
+            background: var(--color-accent) !important;
         }
+    }
 
-        ::-webkit-scrollbar {
-            height: 6px;
-            width: 6px;
-            background-color: $color_primary5;
-        }
+    .upload-progress.ui.dimmer {
+        background: rgba(0, 0, 0, 0.65) !important;
+        border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
 
-        ::-webkit-scrollbar-thumb {
-            border-radius: 10px;
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-            background-color: $color_primary66;
+        .ui.loader {
+            color: var(--color-text-inverse) !important;
+
+            &:before {
+                border-color: rgba(255, 255, 255, 0.2) !important;
+            }
+
+            &:after {
+                border-color: var(--color-accent) transparent transparent !important;
+            }
         }
     }
 }
@@ -233,139 +296,97 @@ form .martor-preview {
     cursor: ns-resize;
 }
 
-.main-martor {}
-
-.martor-toolbar {
-    padding: 0 0.85714286em !important;
-    padding-bottom: 4px !important;
-
-    .ui.icon .markdown-image-upload {
-        position: relative;
-        overflow: hidden;
-
-        input[type=file] {
-            position: absolute;
-            top: 0;
-            right: 0;
-            min-width: 100%;
-            min-height: 100%;
-            font-size: 25px;
-            padding: 0;
-            padding-left: 35px;
-            text-align: right;
-            filter: alpha(opacity=0);
-            opacity: 0;
-            outline: none;
-            cursor: inherit;
-            display: block;
-        }
-    }
-}
-
-.main-martor {
-    .section-martor {
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-1);
-    }
-
-    .martor-toolbar .ui.basic.icon.buttons,
-    .martor-toolbar .ui.basic.icon.buttons .button {
-        border-color: transparent !important;
-        background: transparent !important;
-    }
-
-    .martor-toolbar .ui.basic.icon.buttons .button,
-    .martor-toolbar .ui.basic.icon.button {
-        min-width: 30px;
-        min-height: 30px;
-        padding: var(--space-1) !important;
-        border-radius: var(--radius-sm) !important;
-        color: var(--color-text-secondary) !important;
-        transition: background-color var(--motion-fast) var(--ease-standard),
-            color var(--motion-fast) var(--ease-standard);
-
-        &:hover,
-        &:focus-visible {
-            background: var(--color-surface) !important;
-            color: var(--color-accent) !important;
-        }
-    }
-
-    .ace_editor,
-    .ace_editor .ace_scroller {
-        background: var(--color-surface-raised) !important;
-        color: var(--color-text);
-    }
-}
-
-.emoji-loader-init {
-    min-height: 200px !important;
-}
-
-.insert-emoji {
-    cursor: pointer;
-}
-
-/* Full Screen Mode */
-.main-martor-fullscreen {
-    background: $color_primary0;
-    position: fixed;
-    z-index: 999;
-    max-height: 100%;
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    left: 0;
-    top: 0;
-
-    .fields.martor-toolbar {
-        border-bottom: 1px solid $color_primary10;
-        margin: 0;
-    }
-
-    .section-martor {
-        height: 90%;
-        position: relative;
-    }
-
-    // In fullscreen the editor/preview should grow to fill the section (which is
-    // sized to the viewport) rather than staying pinned to the fixed 400px
-    // authoring height.
-    .martor-field,
-    .ace_editor,
-    form .martor-preview {
-        height: 100%;
-        max-height: none;
-    }
-}
-
-.marked-emoji {
-    max-width: 20px;
-}
-
-.martor {
-    height: 500px;
-    max-height: 500px;
-}
-
-.martor-field {
-    width: 100%;
-    height: 250px;
-    min-height: 100px;
-}
-
-form .martor-preview-stale {
-    background: repeating-linear-gradient(-45deg, $color_primary0, $color_primary0 10px, $color_primary5 10px, $color_primary5 20px) !important;
-}
-
 .icon.expand-editor {
     position: absolute;
-    bottom: .8em;
-    right: 0;
+    bottom: 0.8em;
+    right: 0.5em;
+    color: var(--color-text-muted) !important;
+    cursor: pointer;
+    transition: color var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        color: var(--color-accent) !important;
+    }
 }
 
 .no-border {
     border: none !important;
+}
+
+/* Full Screen Mode */
+.main-martor-fullscreen {
+    background: var(--color-canvas) !important;
+    position: fixed !important;
+    z-index: 99999 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: var(--space-3) !important;
+    box-sizing: border-box !important;
+
+    .section-martor {
+        height: 100% !important;
+        max-height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .tab-martor-menu {
+        flex: 0 0 auto !important;
+    }
+
+    div[data-tab^="editor-tab-"],
+    div[data-tab^="preview-tab-"] {
+        flex: 1 1 auto !important;
+        height: 100% !important;
+        max-height: none !important;
+        overflow: auto !important;
+    }
+
+    .martor-field,
+    .ace_editor,
+    form .martor-preview {
+        height: 100% !important;
+        max-height: none !important;
+    }
+}
+
+/* Help Guide Modal */
+.modal-help-guide {
+    color: var(--color-text);
+
+    h2 {
+        color: var(--color-text);
+        margin-bottom: var(--space-3);
+
+        .icon {
+            color: var(--color-accent);
+            margin-right: var(--space-2);
+        }
+    }
+
+    p {
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-4);
+
+        a {
+            color: var(--color-link);
+            text-decoration: underline;
+
+            &:hover {
+                color: var(--color-link-hover);
+            }
+        }
+    }
+
+    table {
+        margin-top: var(--space-3);
+    }
 }
 
 /* Live Preview */
@@ -379,15 +400,6 @@ form .enable-living {
     }
 }
 
-/* Django Admin */
-.submit-row a {
-    box-sizing: content-box;
-}
-
 body.overflow {
     overflow: hidden !important;
-}
-
-.button, input[type=submit], input[type=button], .submit-row input, a.button {
-    padding: 5px 15px;
 }

@@ -1,7 +1,7 @@
 @use 'sass:color';
 @import "vars";
 
-$is_light_theme: true;
+$is_light_theme: true !default;
 
 .h-scrollable-table {
     overflow-x: auto;
@@ -45,7 +45,7 @@ $is_light_theme: true;
         transition: background-color var(--motion-fast) var(--ease-standard);
 
         &:hover {
-            background: var(--color-surface-alt);
+            background: var(--color-surface-hover);
         }
     }
 
@@ -59,6 +59,7 @@ $is_light_theme: true;
             $color_navbar_bg);
         box-shadow: inset 0 -2px 0 var(--color-accent);
         border: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
         padding: var(--space-3) var(--space-3);
         vertical-align: middle;
         text-align: center;
@@ -67,18 +68,25 @@ $is_light_theme: true;
         font-size: 1.02em;
         letter-spacing: 0.02em;
         border-radius: 0;
+
+        &:last-child {
+            border-right: 0;
+        }
     }
 
-    // Rows read as rows: soft horizontal separators only, no internal vertical
-    // grid. Keeps the scoreboard/submission density while dropping the
-    // spreadsheet look.
+    // Rows and cells: horizontal and vertical dividers for clear grid separation.
     td {
         border: 0;
+        border-right: 1px solid var(--color-border);
         border-bottom: 1px solid var(--color-border);
         padding: var(--space-3) var(--space-2);
         vertical-align: middle;
         text-align: center;
         border-radius: 0;
+
+        &:last-child {
+            border-right: 0;
+        }
 
         // Numeric columns line up when digits share a fixed width (spec 5.3).
         &.points, &.score, &.time, &.memory, &.ac-rate {

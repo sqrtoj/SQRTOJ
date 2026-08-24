@@ -32,10 +32,17 @@
         left: 0;
         z-index: 1;
         background: var(--color-surface-alt);
+        color: var(--color-text);
+        text-align: left;
+        padding-left: var(--space-3);
+        box-shadow: none;
     }
 
     tr:first-child th:first-child {
         z-index: 3;
+        background: var(--color-navbar);
+        color: var(--color-text-inverse);
+        box-shadow: inset 0 -2px 0 var(--color-accent);
     }
 }
 

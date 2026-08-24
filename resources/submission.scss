@@ -304,6 +304,7 @@ $source-line-height: 20px;
         white-space: nowrap;
     }
 
+    button.source-copy-btn,
     .source-copy-btn {
         display: inline-flex;
         align-items: center;
@@ -311,24 +312,38 @@ $source-line-height: 20px;
         flex-shrink: 0;
         padding: var(--space-1) var(--space-2);
         font-size: 12px;
-        color: var(--color-text-muted);
-        background: transparent;
-        border: 1px solid var(--color-border);
+        font-weight: var(--weight-medium, 500);
+        color: var(--color-text-secondary) !important;
+        background: var(--color-surface, #ffffff) !important;
+        border: 1px solid var(--color-border) !important;
         border-radius: var(--radius-sm);
         cursor: pointer;
+        box-shadow: none !important;
+        transform: none !important;
+        line-height: 1.4;
         transition:
             color 0.15s ease,
             background-color 0.15s ease,
             border-color 0.15s ease;
 
+        .copy-icon {
+            flex-shrink: 0;
+            color: currentColor !important;
+            stroke: currentColor !important;
+        }
+
+        .copy-label {
+            color: currentColor !important;
+        }
+
         &:hover {
-            color: var(--color-text);
-            background: var(--color-surface);
-            border-color: var(--color-text-muted);
+            color: var(--color-text) !important;
+            background: var(--color-surface-hover) !important;
+            border-color: var(--color-border-strong) !important;
         }
 
         &:active {
-            transform: translateY(1px);
+            transform: translateY(1px) !important;
         }
 
         &:focus-visible {
@@ -337,17 +352,21 @@ $source-line-height: 20px;
         }
 
         &.copied {
-            color: var(--color-success-fg);
-            border-color: var(--color-success-fg);
-        }
-
-        .copy-icon {
-            flex-shrink: 0;
+            color: var(--color-success-fg) !important;
+            border-color: var(--color-success-fg) !important;
+            background: var(--color-surface, #ffffff) !important;
         }
     }
 
-    // Scrolling container: thin, unobtrusive scrollbars in both directions.
+    // Scrolling container: white background in light mode, thin scrollbars.
     .source-body {
+        background: #ffffff;
+        @if not $is_light_theme {
+            background: var(--color-surface-raised);
+        }
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-1);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
@@ -374,15 +393,21 @@ $source-line-height: 20px;
         table {
             width: 100%;
             border-collapse: collapse;
+            background: transparent !important;
+            margin: 0;
+            border: 0;
         }
 
         td {
             vertical-align: top;
+            border: 0 !important;
         }
 
         .source-ln {
+            background: var(--color-surface-alt);
             color: var(--color-text-muted);
-            border-right: 1px solid var(--color-border);
+            border-right: 1px solid var(--color-border) !important;
+            border-bottom: 0 !important;
             width: 1%;
             min-width: 2.75rem;
             white-space: nowrap;
@@ -418,6 +443,12 @@ $source-line-height: 20px;
         }
 
         .source-code {
+            background: #ffffff;
+            @if not $is_light_theme {
+                background: var(--color-surface-raised);
+            }
+            border-bottom: 0 !important;
+            border-right: 0 !important;
             padding: var(--space-3) var(--space-4) var(--space-3) 0.75rem;
 
             // Pygments wrapper must not impose its own box styling inside the card.
@@ -429,6 +460,62 @@ $source-line-height: 20px;
 
         // Shared monospace typography for gutter and code so rows stay
         // perfectly aligned; identical line-height and font-size are critical.
+        .source-ln pre,
+        .source-code pre,
+        .source-code code {
+            margin: 0;
+            padding: 0;
+            font-family: Consolas, Menlo, Monaco, "Fira Code", monospace;
+            font-size: $source-font-size;
+            line-height: $source-line-height;
+            white-space: pre;
+            tab-size: 4;
+            -moz-tab-size: 4;
+        }
+    }
+
+    > table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #ffffff;
+        @if not $is_light_theme {
+            background: var(--color-surface-raised);
+        }
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-1);
+        overflow: hidden;
+        margin: var(--space-3) 0;
+
+        td {
+            vertical-align: top;
+            border: 0 !important;
+        }
+
+        .source-ln {
+            background: var(--color-surface-alt);
+            color: var(--color-text-muted);
+            border-right: 1px solid var(--color-border) !important;
+            border-bottom: 0 !important;
+            width: 1%;
+            min-width: 2.75rem;
+            white-space: nowrap;
+            padding: var(--space-3) 0.75rem var(--space-3) var(--space-3);
+            text-align: right;
+            user-select: none;
+        }
+
+        .source-code {
+            background: #ffffff;
+            @if not $is_light_theme {
+                background: var(--color-surface-raised);
+            }
+            border-bottom: 0 !important;
+            border-right: 0 !important;
+            padding: var(--space-3) var(--space-4) var(--space-3) 0.75rem;
+        }
+
         .source-ln pre,
         .source-code pre,
         .source-code code {
