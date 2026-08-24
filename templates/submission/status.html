@@ -1,4 +1,9 @@
 {% extends "submission/info-base.html" %}
+    {% if not submission.is_graded %}
+    <script>
+        window.__SQRTOJ_TRACK_SUBMISSION = '{{ submission.id }}';
+    </script>
+    {% endif %}
 
 {% block media %}
     <style>
@@ -33,6 +38,48 @@
         .contest-toast.error { border-left-color: #dc3545; }
         .rank-up { color: #28a745; font-weight: bold; }
         .rank-down { color: #dc3545; font-weight: bold; }
+        #submission-verdict-toast {
+            position: fixed;
+            left: 1rem;
+            bottom: 1rem;
+            z-index: 100000;
+            display: none;
+            width: min(22rem, calc(100vw - 2rem));
+            padding: 0.85rem 1rem;
+            border-left: 4px solid #777;
+            border-radius: 0.55rem;
+            background: rgba(35, 25, 20, 0.96);
+            color: #fff;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.35);
+            font-size: 0.95rem;
+            line-height: 1.35;
+            pointer-events: none;
+            animation: submissionToastIn 0.25s ease-out;
+        }
+        #submission-verdict-toast strong {
+            display: block;
+            margin-bottom: 0.15rem;
+            font-size: 1rem;
+        }
+        #submission-verdict-toast small {
+            opacity: 0.8;
+        }
+        #submission-verdict-toast.toast-ac { border-left-color: #35d07f; }
+        #submission-verdict-toast.toast-wa,
+        #submission-verdict-toast.toast-error { border-left-color: #ff6374; }
+        #submission-verdict-toast.toast-info { border-left-color: #62b0ff; }
+        @keyframes submissionToastIn {
+            from { transform: translateY(0.75rem); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @media (max-width: 600px) {
+            #submission-verdict-toast {
+                left: 0.65rem;
+                right: 0.65rem;
+                bottom: 0.65rem;
+                width: auto;
+            }
+        }
     </style>
 {% endblock %}
 
@@ -67,6 +114,44 @@
 
                 fetch_status(function(status) { last_status = status; });
 
+                var submissionToastShown = window.__submissionToastShown || false;
+                var submissionToastTimer = null;
+                function show_submission_verdict_toast(result, detail) {
+                    if (submissionToastShown) return;
+                    result = (result || '').toString().toUpperCase();
+                    var labels = {
+                        'AC': ['Accepted', 'toast-ac'],
+                        'WA': ['Wrong Answer', 'toast-wa'],
+                        'TLE': ['Time Limit Exceeded', 'toast-error'],
+                        'MLE': ['Memory Limit Exceeded', 'toast-error'],
+                        'OLE': ['Output Limit Exceeded', 'toast-error'],
+                        'RTE': ['Runtime Error', 'toast-error'],
+                        'CE': ['Compilation Error', 'toast-error'],
+                        'IE': ['Internal Error', 'toast-error'],
+                        'AB': ['Aborted', 'toast-error'],
+                        'QU': ['Queued', 'toast-info'],
+                        'G': ['Grading', 'toast-info'],
+                        'P': ['Processing', 'toast-info']
+                    };
+                    if (!labels[result]) return;
+                    submissionToastShown = true; window.__submissionToastShown = true;
+                    var item = labels[result];
+                    var toast = $('<div id="submission-verdict-toast" class="' + item[1] + '">');
+                    toast.append($('<strong>').text(item[0]));
+                    toast.append($('<small>').text(detail || '{{ submission.problem.code }} · submission #{{ submission.id }}'));
+                    $('body').append(toast);
+                    toast.stop(true, true).fadeIn(180);
+                    submissionToastTimer = setTimeout(function () {
+                        toast.fadeOut(350, function () { $(this).remove(); });
+                    }, 5000);
+                }
+                function read_submission_verdict() {
+                    var result = $('#test-cases .sub-result').attr('class') || '';
+                    var match = result.match(/(?:^|\s)(AC|WA|TLE|MLE|OLE|RTE|CE|IE|AB)(?:\s|$)/);
+                    if (match) {
+                        show_submission_verdict_toast(match[1], $('#test-cases .sub-result').text().trim());
+                    }
+                }
                 function update_ui() {
                     if (blocked) { request = true; return; }
                     request = false;
@@ -114,6 +199,9 @@
                         $('#abort-button, #grading-label').remove();
                     }
                     update_ui();
+                    if (['aborted', 'internal-error', 'grading-end', 'compile-error'].indexOf(message.type) !== -1) {
+                        setTimeout(read_submission_verdict, 900);
+                    }
                 });
 
                 var contest_id = '{% if submission.contest_object %}{{ submission.contest_object.id }}{% elif submission.contest %}{{ submission.contest.participation.contest.id }}{% endif %}';
@@ -124,6 +212,122 @@
                         }
                     });
                 }
+            });
+        </script>
+    {% endif %}
+    {% if submission.is_graded %}
+        <script type="text/javascript">
+            $(function () {
+                var verdict = '{{ submission.result }}';
+                var labels = {
+                    'AC': ['Accepted', 'toast-ac'],
+                    'WA': ['Wrong Answer', 'toast-wa'],
+                    'TLE': ['Time Limit Exceeded', 'toast-error'],
+                    'MLE': ['Memory Limit Exceeded', 'toast-error'],
+                    'OLE': ['Output Limit Exceeded', 'toast-error'],
+                    'RTE': ['Runtime Error', 'toast-error'],
+                    'CE': ['Compilation Error', 'toast-error'],
+                    'IE': ['Internal Error', 'toast-error'],
+                    'AB': ['Aborted', 'toast-error']
+                };
+                var item = labels[verdict];
+                var key = 'sqrtoj-submission-toast-{{ submission.id }}';
+                if (item && !window.sessionStorage.getItem(key)) {
+                    window.sessionStorage.setItem(key, '1');
+                    setTimeout(function () {
+                        var toast = $('<div id="submission-verdict-toast" class="' + item[1] + '">');
+                        toast.append($('<strong>').text(item[0]));
+                        toast.append($('<small>').text('{{ submission.problem.code }} · submission #{{ submission.id }}'));
+                        $('body').append(toast);
+                        toast.fadeIn(180);
+                        setTimeout(function () {
+                            toast.fadeOut(350, function () { $(this).remove(); });
+                        }, 5000);
+                    }, 350);
+                }
+            });
+        </script>
+    {% endif %}
+    {% if not submission.is_graded %}
+        <script type="text/javascript">
+            $(function () {
+                var pollStopped = false;
+                var pollFailures = 0;
+                var pollUrl = '{{ url('submission_testcases_query') }}';
+                var rowUrl = '{{ url('submission_single_query') }}';
+                var pollData = {id: '{{ submission.id }}'};
+                var terminalResults = ['AC', 'WA', 'TLE', 'MLE', 'OLE', 'RTE', 'CE', 'IE', 'AB'];
+
+                function show_poll_toast(result, detail) {
+                    if (window.__SQRTOJ_GLOBAL_TOAST) return;
+                    if (window.__submissionToastShown) return;
+                    var labels = {
+                        'AC': ['Accepted', 'toast-ac'],
+                        'WA': ['Wrong Answer', 'toast-wa'],
+                        'TLE': ['Time Limit Exceeded', 'toast-error'],
+                        'MLE': ['Memory Limit Exceeded', 'toast-error'],
+                        'OLE': ['Output Limit Exceeded', 'toast-error'],
+                        'RTE': ['Runtime Error', 'toast-error'],
+                        'CE': ['Compilation Error', 'toast-error'],
+                        'IE': ['Internal Error', 'toast-error'],
+                        'AB': ['Aborted', 'toast-error']
+                    };
+                    if (!labels[result]) return;
+                    window.__submissionToastShown = true;
+                    var item = labels[result];
+                    var toast = $('<div id="submission-verdict-toast" class="' + item[1] + '">');
+                    toast.append($('<strong>').text(item[0]));
+                    toast.append($('<small>').text(detail || '{{ submission.problem.code }} · submission #{{ submission.id }}'));
+                    $('body').append(toast);
+                    toast.stop(true, true).fadeIn(180);
+                    setTimeout(function () {
+                        toast.fadeOut(350, function () { $(this).remove(); });
+                    }, 5000);
+                }
+
+                function extract_verdict(rowHtml) {
+                    var $wrapper = $('<div>').html(rowHtml);
+                    var classes = $wrapper.find('.sub-result').first().attr('class') || '';
+                    var match = classes.match(/(?:^|\s)(AC|WA|TLE|MLE|OLE|RTE|CE|IE|AB)(?:\s|$)/);
+                    return match ? match[1] : null;
+                }
+
+                function refresh_testcases(done) {
+                    $.ajax({url: pollUrl, data: pollData, cache: false, timeout: 12000})
+                        .done(function (html) {
+                            $('#test-cases').stop(true, true).html(html);
+                            $('#test-cases .toggle').each(function () {
+                                if (typeof register_toggle === 'function') register_toggle($(this));
+                            });
+                        })
+                        .always(function () { if (done) done(); });
+                }
+
+                function poll_submission() {
+                    if (pollStopped) return;
+                    $.ajax({
+                        url: rowUrl,
+                        data: {id: pollData.id, show_problem: 0},
+                        cache: false,
+                        timeout: 12000
+                    }).done(function (rowHtml) {
+                        var verdict = extract_verdict(rowHtml);
+                        refresh_testcases(function () {
+                            pollFailures = 0;
+                            if (verdict && terminalResults.indexOf(verdict) !== -1) {
+                                pollStopped = true;
+                                show_poll_toast(verdict);
+                                return;
+                            }
+                            setTimeout(poll_submission, 2000);
+                        });
+                    }).fail(function () {
+                        pollFailures += 1;
+                        setTimeout(poll_submission, pollFailures > 5 ? 5000 : 2000);
+                    });
+                }
+
+                poll_submission();
             });
         </script>
     {% endif %}

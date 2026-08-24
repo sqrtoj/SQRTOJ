@@ -25,6 +25,16 @@
                 count_down($(this));
             });
         });
+        $(document).on('submit', 'form[action*="/join"]', function () {
+            try {
+                if (window.__SQRTOJ_OPEN_PIP) {
+                    window.__SQRTOJ_OPEN_PIP();
+                } else {
+                    var popup = window.open(window.location.origin + '/?sqrtoj_submit_window=1', 'sqrtoj-submit-window', 'popup,width=440,height=700,resizable=yes,scrollbars=yes');
+                    if (popup) popup.focus();
+                }
+            } catch (e) {}
+        });
     </script>
     {% include "contest/media-js.html" %}
     {% if not comment_lock %}
@@ -33,6 +43,234 @@
 {% endblock %}
 
 {% block content_media %}
+    <style>
+        /* Keep contest title, organization badge and tabs visually separated. */
+        #content > .tabs {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 0.65rem;
+        }
+
+        #content > .tabs + .organization-tags {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.45rem;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.15rem 0 0.65rem;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+            line-height: 1.35;
+        }
+
+        #content > .tabs + .organization-tags .organization-tag {
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0.38rem 0.7rem;
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            border-radius: 0.55rem;
+            background: rgba(48, 25, 16, 0.78);
+            box-shadow: 0 0.25rem 0.7rem rgba(40, 17, 8, 0.2);
+            transform: none;
+            line-height: 1.25;
+        }
+
+        #content > .tabs + .organization-tags .organization-tag a {
+            display: block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        #content > .tabs + .organization-tags + hr {
+            clear: both;
+            margin-top: 0.15rem;
+            margin-bottom: 1rem;
+        }
+
+        #banner {
+            position: relative;
+            z-index: 1;
+            clear: both;
+            margin-top: 0.75rem;
+        }
+
+        #banner .contest-countdown {
+            box-sizing: border-box;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        #banner #time {
+            box-sizing: border-box;
+            max-width: 100%;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        @media (max-width: 700px) {
+            #content > .tabs + .organization-tags {
+                padding-bottom: 0.55rem;
+            }
+
+            #content > .tabs + .organization-tags .organization-tag {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            #banner .contest-countdown {
+                padding: 1rem 0.85rem;
+            }
+
+            #banner #time {
+                width: 100%;
+                margin-top: 0.75rem;
+                padding: 0.6rem 0.7rem;
+                font-size: clamp(0.78rem, 3.4vw, 0.98rem);
+                text-align: center;
+            }
+        }
+        /* SQRTOJ contest UI refinement */
+        #banner .contest-countdown {
+            padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2.25rem);
+        }
+        #banner #time {
+            display: inline-block;
+            max-width: 100%;
+            margin: 1rem auto 0;
+            padding: 0.55rem 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.16);
+            line-height: 1.45;
+            font-size: clamp(0.78rem, 1.5vw, 0.95rem);
+        }
+        #banner #time b {
+            color: inherit;
+        }
+        .contest-problems > .h-scrollable-table {
+            overflow-x: visible;
+        }
+        #contest-problems-table {
+            width: 100%;
+            max-width: 100%;
+            table-layout: fixed;
+        }
+        #contest-problems-table th,
+        #contest-problems-table td {
+            min-width: 0;
+            vertical-align: middle;
+            line-height: 1.35;
+        }
+        #contest-problems-table th:first-child,
+        #contest-problems-table td:first-child,
+        #contest-problems-table .contest-problem-number {
+            width: 3.2rem;
+            min-width: 3.2rem;
+            padding-left: 0.45rem;
+            padding-right: 0.45rem;
+            text-align: center;
+            white-space: nowrap;
+            word-break: keep-all;
+            overflow-wrap: normal;
+        }
+        #contest-problems-table th:nth-child(2),
+        #contest-problems-table td:nth-child(2) {
+            width: auto;
+            min-width: 0;
+            text-align: left;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: normal;
+        }
+        #contest-problems-table .contest-problem-limit {
+            width: 5.5rem;
+            min-width: 5.5rem;
+            white-space: nowrap;
+            text-align: center;
+        }
+        #contest-problems-table th,
+        #contest-problems-table td {
+            padding-top: 0.55rem;
+            padding-bottom: 0.55rem;
+        }
+        @media (max-width: 700px) {
+            #banner #time {
+                display: block;
+                border-radius: var(--radius-md);
+                text-align: center;
+            }
+            #contest-problems-table {
+                font-size: 0.82rem;
+            }
+            #contest-problems-table th,
+            #contest-problems-table td {
+                padding: 0.42rem 0.25rem;
+            }
+            #contest-problems-table th:first-child,
+            #contest-problems-table td:first-child,
+            #contest-problems-table .contest-problem-number {
+                width: 2.9rem;
+                min-width: 2.9rem;
+            }
+            #contest-problems-table th:nth-child(2),
+            #contest-problems-table td:nth-child(2) {
+                width: auto;
+                min-width: 0;
+            }
+            #contest-problems-table .contest-problem-limit {
+                width: 4.2rem;
+                min-width: 4.2rem;
+            }
+        }
+        @media (max-width: 480px) {
+            #contest-problems-table .contest-problem-limit {
+                width: 3.7rem;
+                min-width: 3.7rem;
+                font-size: 0.76rem;
+            }
+        }
+        /* ultra-narrow contest layout */
+        @media (max-width: 480px) {
+            #contest-problems-table {
+                width: 100% !important;
+                min-width: 0 !important;
+                table-layout: fixed !important;
+            }
+            #contest-problems-table .contest-problem-limit {
+                display: none !important;
+            }
+            #contest-problems-table th:nth-child(2),
+            #contest-problems-table td:nth-child(2) {
+                width: auto !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+                word-break: normal !important;
+            }
+        }
+        @media (max-width: 240px) {
+            #contest-problems-table th:first-child,
+            #contest-problems-table td:first-child {
+                width: 2.2rem !important;
+                min-width: 2.2rem !important;
+            }
+            #contest-problems-table th:nth-child(2),
+            #contest-problems-table td:nth-child(2) {
+                width: auto !important;
+                min-width: 0 !important;
+            }
+        }
+
+{% include "contest/quick-submit-styles.html" %}
+    </style>
     {% if not comment_lock %}
         {% include "comments/media-css.html" %}
     {% endif %}
@@ -190,15 +428,22 @@
         <div class="contest-problems">
             <div class="contest-section-head">
                 <h2><i class="fa fa-fw fa-list-ol"></i> {{ _('Problems') }}</h2>
+                {% if request.user.is_authenticated %}
+                    <div class="contest-section-actions">
+                        <a class="contest-my-submissions" href="{{ url('all_user_submissions', request.user.username) }}">
+                            <i class="fa fa-list-alt"></i> {{ _('My submissions') }}
+                        </a>
+                    </div>
+                {% endif %}
                 {% if can_edit and can_download_data %}
                     <a class="button" href="{{ url('contest_prepare_data', contest.key) }}">{{ _('Download data') }}</a>
                 {% endif %}
             </div>
             <div class="h-scrollable-table">
-            <table class="table striped">
+            <table id="contest-problems-table" class="table striped">
                 <thead>
                 <tr>
-                    <th>#</th>
+                    <th class="contest-problem-number">#</th>
                     {% if request.user.is_authenticated %}
                         <th><i class="fa fa-check"></i></th>
                     {% endif %}
@@ -211,12 +456,15 @@
                     {% if metadata.has_public_editorials %}
                         <th>{{ _('Editorials') }}</th>
                     {% endif %}
+                    {% if request.user.is_authenticated and is_in_contest %}
+                        <th class="contest-submit-heading">{{ _('Submit') }}</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
                 {% for problem in contest_problems %}
                     <tr>
-                        <td style="width: 1em;">{{contest.get_label_for_problem(loop.index0)}}</td>
+                        <td class="contest-problem-number">{{contest.get_label_for_problem(loop.index0)}}</td>
                         {% if request.user.is_authenticated %}
                             {% if problem.id in completed_problem_ids %}
                                 <td style="width: 1em;">
@@ -264,6 +512,19 @@
                             <td>
                                 {% if problem.is_public and problem.has_public_editorial %}
                                     <a href="{{ url('problem_editorial', problem.code) }}">{{ _('Editorial') }}</a>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        {% if request.user.is_authenticated and is_in_contest %}
+                            <td class="contest-submit-cell">
+                                {% if problem.is_public or can_view_all_problems %}
+                                    <button type="button" class="contest-quick-submit"
+                                            data-submit-url="{{ url('problem_submit', problem.code) }}"
+                                            data-problem-name="{{ (problem.i18n_name or problem.name)|escapejs }}">
+                                        <i class="fa fa-paper-plane"></i> {{ _('Submit') }}
+                                    </button>
+                                {% else %}
+                                    <span aria-label="{{ _('Problem unavailable') }}">—</span>
                                 {% endif %}
                             </td>
                         {% endif %}
@@ -366,6 +627,214 @@
     {% endif %}
 
     <div style="clear: both;"></div>
+
+{% include "contest/active-widget-data.html" %}
+
+    {% if request.user.is_authenticated and is_in_contest %}
+    <div id="contest-submit-overlay" aria-hidden="true">
+        <div id="contest-submit-dialog" role="dialog" aria-modal="true" aria-labelledby="contest-submit-dialog-title">
+            <div id="contest-submit-dialog-header">
+                <h2 id="contest-submit-dialog-title">{{ _('Quick submit') }}</h2>
+                <div class="contest-submit-header-actions">
+                    <button type="button" id="contest-submit-pip" title="{{ _('Open floating window') }}" aria-label="{{ _('Open floating window') }}">
+                        <i class="fa fa-external-link" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" id="contest-submit-close" aria-label="{{ _('Close') }}">&times;</button>
+                </div>
+            </div>
+            <div id="contest-submit-body" aria-live="polite">
+                <div class="contest-submit-loading">{{ _('Loading submit form...') }}</div>
+            </div>
+            <div id="contest-submit-dialog-footer">
+                <button type="button" id="contest-submit-footer-button" disabled>
+                    <i class="fa fa-paper-plane" aria-hidden="true"></i><span>{{ _('Nộp bài') }}</span>
+                </button>
+                <a id="contest-submit-full-link" href="#" target="_blank" rel="noopener">{{ _('Open full submit page') }}</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var overlay = document.getElementById('contest-submit-overlay');
+            var body = document.getElementById('contest-submit-body');
+            var title = document.getElementById('contest-submit-dialog-title');
+            var closeButton = document.getElementById('contest-submit-close');
+            var pipButton = document.getElementById('contest-submit-pip');
+            var footerButton = document.getElementById('contest-submit-footer-button');
+            var dialog = document.getElementById('contest-submit-dialog');
+            var fullLink = document.getElementById('contest-submit-full-link');
+            var lastFocus = null;
+            var pipWindow = null;
+            var dialogPlaceholder = null;
+            // The contest content has animated/transformed ancestors; move the overlay
+            // to body so position:fixed is measured against the real viewport.
+            if (overlay && overlay.parentNode !== document.body) {
+                document.body.appendChild(overlay);
+            }
+            var activeForm = null;
+
+            function restoreFromPip() {
+                if (!pipWindow) return;
+                if (dialogPlaceholder && dialogPlaceholder.parentNode) {
+                    dialogPlaceholder.parentNode.insertBefore(dialog, dialogPlaceholder);
+                    dialogPlaceholder.remove();
+                }
+                pipWindow = null;
+                dialogPlaceholder = null;
+                overlay.classList.remove('contest-submit-pip-hidden');
+                if (pipButton) pipButton.setAttribute('aria-label', '{{ _('Open floating window') }}');
+            }
+
+            async function togglePip() {
+                if (pipWindow) {
+                    pipWindow.close();
+                    restoreFromPip();
+                    return;
+                }
+                if (!window.documentPictureInPicture || !window.documentPictureInPicture.requestWindow) {
+                    window.open(window.location.href, 'sqrtoj-submit-window', 'popup,width=520,height=720,resizable=yes,scrollbars=yes');
+                    return;
+                }
+                try {
+                    pipWindow = await window.documentPictureInPicture.requestWindow({
+                        width: 440,
+                        height: 680,
+                    });
+                    var pipStyle = pipWindow.document.createElement('style');
+                    pipStyle.textContent = 'html,body{margin:0;min-height:100%;background:#241a16;color:#f7eee9;font-family:system-ui,sans-serif}.contest-submit-pip-shell{min-height:100vh;box-sizing:border-box;padding:10px;background:#241a16}.contest-submit-pip-shell #contest-submit-dialog{width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none}.contest-submit-pip-shell #contest-submit-dialog-header{position:sticky;top:0;z-index:4}.contest-submit-pip-shell #contest-submit-dialog-footer{position:sticky;bottom:0;z-index:5}.contest-submit-pip-shell #contest-submit-close{display:none}';
+                    pipWindow.document.head.appendChild(pipStyle);
+                    var shell = pipWindow.document.createElement('div');
+                    shell.className = 'contest-submit-pip-shell';
+                    pipWindow.document.body.appendChild(shell);
+                    dialogPlaceholder = document.createComment('sqrtoj-submit-dialog-placeholder');
+                    dialog.parentNode.insertBefore(dialogPlaceholder, dialog);
+                    shell.appendChild(dialog);
+                    overlay.classList.add('contest-submit-pip-hidden');
+                    pipButton.setAttribute('aria-label', '{{ _('Close floating window') }}');
+                    pipWindow.addEventListener('pagehide', restoreFromPip, {once: true});
+                } catch (error) {
+                    pipWindow = null;
+                    window.open(window.location.href, 'sqrtoj-submit-window', 'popup,width=520,height=720,resizable=yes,scrollbars=yes');
+                }
+            }
+
+            function footerLabel(text) {
+                var label = footerButton.querySelector('span');
+                if (label) label.textContent = text;
+            }
+
+            function resetFooter() {
+                footerButton.disabled = true;
+                footerLabel('{{ _('Nộp bài') }}');
+            }
+
+            function closeOverlay() {
+                if (pipWindow) {
+                    pipWindow.close();
+                    restoreFromPip();
+                }
+                overlay.classList.remove('is-open');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('contest-submit-modal-open');
+                activeForm = null;
+                resetFooter();
+                body.innerHTML = '<div class="contest-submit-loading">{{ _('Loading submit form...') }}</div>';
+                if (lastFocus) lastFocus.focus();
+            }
+
+            function decorateForm() {
+                var form = body.querySelector('#problem_submit');
+                if (!form) return;
+                activeForm = form;
+                form.setAttribute('action', form.getAttribute('action') + (form.getAttribute('action').indexOf('?') >= 0 ? '&' : '?') + 'overlay=1');
+                var editor = form.querySelector('#editor');
+                var source = form.querySelector('#id_source');
+                var fileSubmit = form.querySelector('#file-submit');
+                if (editor) editor.classList.remove('hidden');
+                if (fileSubmit) fileSubmit.classList.add('hidden');
+                if (source) {
+                    source.hidden = false;
+                    source.style.display = 'block';
+                    source.classList.add('contest-source-editor');
+                    source.rows = 18;
+                    source.placeholder = '{{ _('Paste your source code here...') }}';
+                }
+                var sourceLabel = form.querySelector('label[for="file_select"]');
+                if (sourceLabel) sourceLabel.innerHTML = '<i>{{ _('Source code') }}</i>';
+                var language = form.querySelector('#language');
+                if (language) language.classList.add('contest-submit-language');
+                var submitBar = form.querySelector('.submit-bar');
+                if (submitBar) submitBar.classList.add('contest-submit-judge');
+                var submitInput = form.querySelector('input[type="submit"]');
+                if (submitInput) submitInput.style.display = 'none';
+                footerButton.disabled = false;
+                footerLabel('{{ _('Nộp bài') }}');
+                form.addEventListener('submit', function () {
+                    footerButton.disabled = true;
+                    footerLabel('{{ _('Đang nộp...') }}');
+                });
+            }
+
+            function submitActiveForm() {
+                if (!activeForm) return;
+                var source = activeForm.querySelector('#id_source');
+                if (source && !source.value.trim()) {
+                    source.focus();
+                    source.setCustomValidity('{{ _('Please paste your source code first.') }}');
+                    source.reportValidity();
+                    source.setCustomValidity('');
+                    return;
+                }
+                footerButton.disabled = true;
+                footerLabel('{{ _('Đang nộp...') }}');
+                if (activeForm.requestSubmit) activeForm.requestSubmit();
+                else activeForm.submit();
+            }
+
+            function openOverlay(button) {
+                var url = button.getAttribute('data-submit-url');
+                if (!url) return;
+                lastFocus = button;
+                activeForm = null;
+                resetFooter();
+                title.textContent = '{{ _('Quick submit') }} — ' + (button.getAttribute('data-problem-name') || '');
+                fullLink.href = url;
+                overlay.classList.add('is-open');
+                overlay.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('contest-submit-modal-open');
+                closeButton.focus();
+                body.innerHTML = '<div class="contest-submit-loading">{{ _('Loading submit form...') }}</div>';
+                fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'overlay=1', {credentials: 'same-origin', headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                    .then(function (response) { if (!response.ok) throw new Error('HTTP ' + response.status); return response.text(); })
+                    .then(function (html) {
+                        var parsed = new DOMParser().parseFromString(html, 'text/html');
+                        var form = parsed.querySelector('#problem_submit');
+                        if (!form) throw new Error('submit form missing');
+                        body.innerHTML = '';
+                        body.appendChild(document.importNode(form, true));
+                        decorateForm();
+                    })
+                    .catch(function () {
+                        resetFooter();
+                        body.innerHTML = '<div class="contest-submit-error">{{ _('Unable to load the submit form. Please use the full submit page.') }}</div>';
+                    });
+            }
+
+            document.querySelectorAll('.contest-quick-submit').forEach(function (button) {
+                button.addEventListener('click', function () { openOverlay(button); });
+            });
+            footerButton.addEventListener('click', submitActiveForm);
+            pipButton.addEventListener('click', togglePip);
+            closeButton.addEventListener('click', closeOverlay);
+            overlay.addEventListener('click', function (event) {
+                if (event.target === overlay) closeOverlay();
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && overlay.classList.contains('is-open')) closeOverlay();
+            });
+        }());
+    </script>
+    {% endif %}
 {% endblock %}
 
 {% block description_end %}{% endblock %}

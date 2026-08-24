@@ -2,6 +2,83 @@
 {% block meta %}
     <meta name="description" property="og:description" content={% trans %}"The {{ SITE_NAME }}'s contest list - past, present, and future."{% endtrans %}>
 {% endblock %}
+{% block media %}
+    <style>
+        /* Contest action buttons: compact, readable and touch-friendly on mobile. */
+        .contest-list .contest-action {
+            width: 10.5rem;
+            min-width: 10.5rem;
+            padding: 0.75rem 0.65rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .contest-list .contest-action form {
+            display: block;
+            width: 100%;
+            margin: 0;
+        }
+
+        .contest-list .participate-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-width: 0;
+            min-height: 2.75rem;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 0.8rem;
+            background: linear-gradient(135deg, #ffad5a 0%, #f47b37 100%);
+            color: #251912;
+            box-shadow: 0 0.35rem 0.8rem rgba(79, 34, 12, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            font-size: 0.94rem;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: 0.01em;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+        }
+
+        .contest-list .participate-button:hover,
+        .contest-list .participate-button:focus-visible {
+            background: linear-gradient(135deg, #ffc477 0%, #ff8d49 100%);
+            box-shadow: 0 0.5rem 1rem rgba(79, 34, 12, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            filter: saturate(1.08);
+            outline: none;
+            transform: translateY(-1px);
+        }
+
+        .contest-list .participate-button:active {
+            box-shadow: 0 0.2rem 0.45rem rgba(79, 34, 12, 0.22);
+            transform: translateY(1px) scale(0.985);
+        }
+
+        .contest-list .contest-action .contest-registered-label,
+        .contest-list .contest-action > span {
+            display: inline-block;
+            max-width: 100%;
+            line-height: 1.35;
+        }
+
+        @media (max-width: 600px) {
+            .contest-list .contest-action {
+                width: 9rem;
+                min-width: 9rem;
+                padding: 0.6rem 0.45rem;
+            }
+
+            .contest-list .participate-button {
+                min-height: 2.55rem;
+                padding: 0.58rem 0.65rem;
+                border-radius: 0.7rem;
+                font-size: 0.88rem;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block js_media %}
     <script src="{{ static('libs/featherlight/featherlight.min.js') }}" type="text/javascript"></script>
@@ -44,6 +121,13 @@
                             + '\n' + {{ _('Joining this contest will leave %(contest)s.', contest=request.participation.contest.name)|htmltojs }}
                         {% endif %}
                     );
+                });
+                $('.join-warning').closest('form').on('submit', function () {
+                    try {
+                        var joinAt = String(Date.now());
+                        sessionStorage.setItem('sqrtoj_popup_join_grace_v1', joinAt);
+                        localStorage.setItem('sqrtoj_popup_join_navigation_v1', joinAt);
+                    } catch (e) {}
                 });
             {% endif %}
 

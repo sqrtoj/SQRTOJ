@@ -1,0 +1,369 @@
+        /* Quick submit prototype: keep the contest page visible behind a focused overlay. */
+        .contest-section-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.55rem;
+            margin-left: auto;
+        }
+        .contest-quick-submit,
+        .contest-my-submissions {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            min-height: 2.35rem;
+            padding: 0.55rem 0.85rem;
+            border: 0;
+            border-radius: 0.65rem;
+            background: linear-gradient(135deg, #ffad5a, #f47b37);
+            color: #281812 !important;
+            box-shadow: 0 0.3rem 0.75rem rgba(79, 34, 12, 0.22);
+            font-size: 0.86rem;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+        }
+        .contest-my-submissions {
+            background: rgba(55, 30, 20, 0.86);
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .contest-quick-submit:hover,
+        .contest-my-submissions:hover,
+        .contest-quick-submit:focus-visible,
+        .contest-my-submissions:focus-visible {
+            filter: saturate(1.1) brightness(1.06);
+            box-shadow: 0 0.45rem 1rem rgba(79, 34, 12, 0.3);
+            transform: translateY(-1px);
+            outline: none;
+        }
+        .contest-submit-heading {
+            width: 6.1rem;
+            min-width: 6.1rem;
+            text-align: center;
+        }
+        .contest-submit-cell {
+            width: 6.1rem;
+            min-width: 6.1rem;
+            padding-left: 0.3rem !important;
+            padding-right: 0.3rem !important;
+            text-align: center;
+        }
+        .contest-submit-cell .contest-quick-submit {
+            width: 100%;
+            min-height: 2.15rem;
+            padding: 0.48rem 0.55rem;
+            font-size: 0.8rem;
+        }
+        #contest-submit-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(19, 12, 9, 0.72);
+            backdrop-filter: blur(5px);
+        }
+        #contest-submit-overlay.is-open { display: flex; }
+        #contest-submit-dialog {
+            position: relative;
+            color-scheme: dark;
+            display: flex;
+            flex-direction: column;
+            width: min(780px, calc(100vw - 2rem));
+            height: min(720px, calc(100dvh - 1.25rem));
+            max-height: calc(100dvh - 1.25rem);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 1rem;
+            background: #241a16;
+            box-shadow: 0 1.25rem 4rem rgba(0, 0, 0, 0.45);
+        }
+        #contest-submit-dialog-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.55rem 0.8rem;
+            background: linear-gradient(135deg, #3b2117, #2a1a15);
+            color: #fff;
+        }
+        #contest-submit-dialog-title { margin: 0; color: #fff; font-size: 0.95rem; }
+        .contest-submit-header-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        #contest-submit-pip,
+        #contest-submit-close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+        }
+        #contest-submit-pip {
+            width: 1.9rem;
+            height: 1.9rem;
+            border: 0;
+            border-radius: 0.45rem;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            cursor: pointer;
+        }
+        #contest-submit-pip:hover,
+        #contest-submit-pip:focus-visible { background: rgba(255, 255, 255, 0.22); outline: none; }
+        #contest-submit-overlay.contest-submit-pip-hidden { display: none !important; }
+        #contest-submit-close {
+            width: 1.9rem;
+            height: 1.9rem;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-size: 1.35rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+        #contest-submit-close:hover,
+        #contest-submit-close:focus-visible { background: rgba(255, 255, 255, 0.22); outline: none; }
+        #contest-submit-body {
+            flex: 1 1 0;
+            height: 0;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            padding: 0.7rem 0.7rem 5.2rem;
+            background: #241a16;
+            color: #f7eee9;
+        }
+        #contest-submit-body #problem_submit {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0.2rem;
+        }
+        #contest-submit-body #submit-wrapper {
+            display: block !important;
+            padding: 0;
+        }
+        #contest-submit-body #editor {
+            display: block !important;
+            margin: 0;
+        }
+        #contest-submit-body #editor > div:first-child {
+            margin-bottom: 0.5rem;
+            color: #5f4b42;
+            font-size: 0.86rem;
+        }
+        #contest-submit-body textarea.contest-source-editor,
+        #contest-submit-body #id_source {
+            display: block !important;
+            width: 100%;
+            min-height: 19rem;
+            box-sizing: border-box;
+            resize: vertical;
+            height: clamp(10rem, 30dvh, 16rem);
+            min-height: 10rem;
+            padding: 0.7rem 0.8rem;
+            border: 1px solid #d5c1b6;
+            border-radius: 0.65rem;
+            background: #211a17;
+            color: #f7eee9;
+            font: 0.86rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            tab-size: 4;
+        }
+        #contest-submit-body #id_source:focus {
+            border-color: #e9854a;
+            box-shadow: 0 0 0 3px rgba(233, 133, 74, 0.18);
+            outline: none;
+        }
+        #contest-submit-body .contest-submit-language {
+            margin-top: 0.9rem;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.7rem;
+            background: #30231d;
+        }
+        #contest-submit-body select,
+        #contest-submit-body input[type="file"] {
+            max-width: 100%;
+            box-sizing: border-box;
+            color: #f7eee9;
+        }
+        #contest-submit-body select {
+            min-height: 2.25rem;
+            padding: 0.45rem 0.65rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.45rem;
+            background: #3a2a22;
+            color: #f7eee9;
+        }
+        #contest-submit-body select:focus {
+            border-color: #e9854a;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(233, 133, 74, 0.18);
+        }
+        #contest-submit-body .contest-submit-language select,
+        #contest-submit-body .contest-submit-actions select {
+            max-width: 100%;
+        }
+        #contest-submit-body .contest-submit-judge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0.9rem auto 0;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.7rem;
+            background: #30231d;
+        }
+        #contest-submit-body .contest-submit-judge input[type="submit"] {
+            display: none !important;
+        }
+        #contest-submit-body .contest-submit-actions button[type="submit"],
+        #contest-submit-body .contest-submit-actions input[type="submit"] {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            min-width: 8.2rem;
+            min-height: 2.7rem;
+            padding: 0.65rem 1rem;
+            border: 0;
+            border-radius: 0.65rem;
+            background: linear-gradient(135deg, #ffad5a, #f47b37);
+            color: #251912;
+            font-weight: 800;
+            box-shadow: 0 0.3rem 0.75rem rgba(79, 34, 12, 0.22);
+            cursor: pointer;
+            margin-inline: auto;
+        }
+        #contest-submit-body .contest-submit-actions button[type="submit"] i,
+        #contest-submit-body .contest-submit-actions input[type="submit"] + i {
+            margin-right: 0.1rem;
+        }
+        #contest-submit-body .contest-submit-actions button[type="submit"]:hover,
+        #contest-submit-body .contest-submit-actions button[type="submit"]:focus-visible,
+        #contest-submit-body .contest-submit-actions input[type="submit"]:hover,
+        #contest-submit-body .contest-submit-actions input[type="submit"]:focus-visible {
+            filter: brightness(1.06) saturate(1.08);
+            outline: none;
+            transform: translateY(-1px);
+        }
+        #contest-submit-body #submit-wrapper {
+            max-width: 100%;
+        }
+        .contest-submit-loading,
+        .contest-submit-error {
+            display: grid;
+            min-height: 12rem;
+            place-items: center;
+            padding: 2rem;
+            color: #6b5146;
+            text-align: center;
+        }
+        .contest-submit-error { color: #a52a2a; }
+        #contest-submit-dialog-footer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-height: 3.7rem;
+            box-sizing: border-box;
+            padding: 0.45rem 0.65rem;
+            background: #1c1411;
+            box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.18);
+        }
+        #contest-submit-footer-button {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            min-width: 9rem;
+            min-height: 2.75rem;
+            padding: 0.65rem 1.05rem;
+            border: 0;
+            border-radius: 0.65rem;
+            background: linear-gradient(135deg, #ffad5a, #f47b37);
+            color: #251912;
+            font-weight: 800;
+            box-shadow: 0 0.3rem 0.75rem rgba(79, 34, 12, 0.22);
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+        #contest-submit-footer-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            filter: grayscale(0.15);
+        }
+        #contest-submit-footer-button:not(:disabled):hover,
+        #contest-submit-footer-button:not(:disabled):focus-visible {
+            filter: brightness(1.06) saturate(1.08);
+            outline: none;
+            box-shadow: 0 0.45rem 1rem rgba(79, 34, 12, 0.3);
+        }
+        #contest-submit-full-link { color: #ffc477; font-size: 0.82rem; }
+        body.contest-submit-modal-open { overflow: hidden; }
+        #contest-submit-dialog .fa { margin-right: 0.5rem; }
+        #contest-submit-footer-button { gap: 0.65rem; }
+        @media (prefers-color-scheme: light) {
+            #contest-submit-dialog {
+                color-scheme: light;
+                background: var(--color-surface-raised, #ffffff);
+                color: var(--color-text, #2e241c);
+            }
+            #contest-submit-body {
+                background: var(--color-surface, #ffffff);
+                color: var(--color-text, #2e241c);
+            }
+            #contest-submit-body textarea.contest-source-editor,
+            #contest-submit-body #id_source {
+                background: #fff;
+                color: #2e241c;
+                border-color: var(--color-border-strong, #d3bfa4);
+            }
+            #contest-submit-body .contest-submit-language,
+            #contest-submit-body .contest-submit-judge {
+                background: var(--color-surface-alt, #f4ebdd);
+                border-color: var(--color-border, #e4d5c1);
+            }
+            #contest-submit-body select {
+                background: #fff;
+                color: #2e241c;
+                border-color: var(--color-border-strong, #d3bfa4);
+            }
+            #contest-submit-dialog-footer {
+                background: var(--color-surface-alt, #f4ebdd);
+            }
+            #contest-submit-full-link { color: var(--color-link, #c1440e); }
+        }
+        @media (max-width: 700px) {
+            .contest-section-head { align-items: flex-start; gap: 0.7rem; }
+            .contest-section-actions { width: 100%; justify-content: flex-start; margin-left: 0; }
+            .contest-submit-cell { width: 5.5rem; min-width: 5.5rem; }
+            #contest-submit-overlay { padding: 0; }
+            #contest-submit-dialog { width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+            #contest-submit-body { padding: 0.55rem 0.55rem 5.7rem; }
+            #contest-submit-body textarea.contest-source-editor,
+            #contest-submit-body #id_source { height: 11rem; min-height: 9rem; font-size: 0.8rem; }
+            #contest-submit-dialog-footer { min-height: 5.3rem; padding-bottom: 2.35rem; }
+            #contest-submit-full-link { position: absolute; right: auto; bottom: 0.4rem; }
+            #contest-submit-footer-button { top: 1.25rem; }
+        }
