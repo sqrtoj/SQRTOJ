@@ -897,7 +897,8 @@ def make_contest_ranking_profile(contest, participation, contest_problems, first
             return mark_safe('<td>???</td>')
 
         best_results = getattr(participation, 'best_results', {})
-        res = best_results.get(contest_problem.id, {}).get('result', '')
+        res_info = best_results.get(contest_problem.id)
+        res = res_info.get('result', '') if res_info else ''
 
         format_data = (participation.format_data or {}).get(str(contest_problem.id))
         is_pending = False
@@ -908,44 +909,40 @@ def make_contest_ranking_profile(contest, participation, contest_problems, first
                 is_pending = True
 
         if is_pending:
-            res_translated = _('pending')
+            res_result = 'pending'
         else:
             points = 0
             if format_data:
                 prefix = 'frozen_' if (frozen and 'frozen_points' in format_data) else ''
                 points = format_data.get(prefix + 'points', 0)
-            else:
-                points = best_results.get(contest_problem.id, {}).get('points', 0)
+            elif res_info:
+                points = res_info.get('points', 0)
 
-            if points == contest_problem.points:
+            has_submission = (
+                res_info is not None or
+                (format_data is not None and (
+                    format_data.get('tries', 0) > 0 or
+                    format_data.get('points', 0) > 0 or
+                    format_data.get('pending', 0) > 0
+                ))
+            )
+
+            if not has_submission:
+                res = ''
+            elif points == contest_problem.points:
                 res = 'AC'
+            elif points > 0:
+                res = 'PA'
             else:
                 if can_see_submissions:
-                    if res == 'AC':
-                        res = 'PA'
-                    else:
-                        res = res or 'WA'
+                    res = res or 'WA'
                 else:
                     res = ''
 
-            RESULT_TRANSLATIONS = {
-                'AC': _('AC'),
-                'WA': _('WA'),
-                'TLE': _('TLE'),
-                'MLE': _('MLE'),
-                'OLE': _('OLE'),
-                'IR': _('IR'),
-                'RTE': _('RTE'),
-                'CE': _('CE'),
-                'IE': _('IE'),
-                'SC': _('SC'),
-                'AB': _('AB'),
-                'PA': _('PA'),
-            }
-            res_translated = RESULT_TRANSLATIONS.get(res, res)
+            res_result = res
 
-        if res_translated and html.startswith('<td'):
-            html = mark_safe(html.replace('<td', f'<td data-submission-result="{res_translated}"', 1))
+        if res_result and html.startswith('<td'):
+            html = mark_safe(html.replace('<td', f'<td data-submission-result="{res_result}"', 1))
         return html
 
     user = participation.user
@@ -997,7 +994,9 @@ def base_contest_ranking_list(
             if frozen_time:
                 submissions_qs = submissions_qs.filter(submission__date__lt=frozen_time)
 
-        submissions_qs = submissions_qs.select_related('submission').values(
+        submissions_qs = submissions_qs.select_related('submission').order_by(
+            'submission__date', 'id',
+        ).values(
             'participation_id', 'problem_id', 'points', 'submission__result', 'submission__status',
         )
 
@@ -1008,7 +1007,7 @@ def base_contest_ranking_list(
             result = sub['submission__result'] or sub['submission__status']
 
             existing = best_results[part_id].get(prob_id)
-            if not existing or points > existing['points']:
+            if not existing or points >= existing['points']:
                 best_results[part_id][prob_id] = {
                     'points': points,
                     'result': result,

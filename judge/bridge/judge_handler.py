@@ -491,6 +491,7 @@ class JudgeHandler(ZlibPacketHandler):
 
         if Submission.objects.filter(id=packet['submission-id']).update(status='CE', result='CE', error=packet['log']):
             event.post('sub_%s' % Submission.get_id_secret(packet['submission-id']), {'type': 'compile-error'})
+            self._post_contest_update_by_id(packet['submission-id'])
             self._post_update_submission(packet['submission-id'], 'compile-error', done=True)
             json_log.info(self._make_json_log(packet, action='compile-error', log=packet['log'],
                                               finish=True, result='CE'))
@@ -684,6 +685,8 @@ class JudgeHandler(ZlibPacketHandler):
         return self._submission_cache
 
     def _post_update_submission(self, id, state, done=False):
+        if done:
+            self._submission_cache_id = None
         data = self._get_submission_cache(id)
         if data['problem__is_public']:
             event.post('submissions', {
