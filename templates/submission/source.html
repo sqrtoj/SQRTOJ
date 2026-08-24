@@ -1,60 +1,82 @@
 {% extends "submission/info-base.html" %}
-{% block media %}
-    <style>
-        .line {
-            position: relative;
-        }
-
-        .highlighter {
-            position: absolute;
-            width: 9999px;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
-
-        a:active .line .highlighter {
-            background: rgba(255, 212, 0, 0.48);
-        }
-
-        .copy-clipboard {
-            margin-top: 0 !important;
-        }
-    </style>
-{% endblock %}
 
 {% block js_media %}
     {% compress js %}
-        <script src="{{ static('libs/clipboard/clipboard.js') }}"></script>
-        <script src="{{ static('libs/clipboard/tooltip.js') }}"></script>
         <script type="text/javascript">
             $(function () {
-                $(document).find('pre code').each(function () {
-                    var copyButton;
-                    $(this).closest('.source-wrap').before($('<div>', {'class': 'copy-clipboard'})
-                        .append(copyButton = $('<span>', {
-                            'class': 'btn-clipboard',
-                            'data-clipboard-text': $(this).text(),
-                            'title': 'Click to copy'
-                        }).text('Copy')));
+                var $code = $('.source-body').find('code').first();
+                var $btn = $('#copy-source-btn');
+                var copiedText = $btn.attr('data-copied-text') || 'Copied!';
+                var copyTimer;
 
-                    $(copyButton.get(0)).mouseleave(function () {
-                        $(this).attr('class', 'btn-clipboard');
-                        $(this).removeAttr('aria-label');
-                    });
+                function legacyCopy(text) {
+                    var $textarea = $('<textarea>').val(text).css({
+                        'position': 'fixed',
+                        'opacity': 0
+                    }).appendTo('body');
+                    $textarea[0].select();
+                    var ok = false;
+                    try {
+                        ok = document.execCommand('copy');
+                    } catch (err) {
+                        ok = false;
+                    }
+                    $textarea.remove();
+                    return ok;
+                }
 
-                    var curClipboard = new Clipboard(copyButton.get(0));
+                function markCopied() {
+                    $btn.addClass('copied');
+                    $btn.find('.copy-label').text(copiedText);
+                    if (copyTimer) {
+                        clearTimeout(copyTimer);
+                    }
+                    copyTimer = setTimeout(function () {
+                        $btn.removeClass('copied');
+                        $btn.find('.copy-label').text($btn.attr('data-copy-text'));
+                    }, 1500);
+                }
 
-                    curClipboard.on('success', function (e) {
-                        e.clearSelection();
-                        showTooltip(e.trigger, 'Copied!');
-                    });
+                function copySource() {
+                    var text = $code.text();
+                    if (!text || !$btn.length) {
+                        return;
+                    }
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(text).then(markCopied, function () {
+                            if (legacyCopy(text)) {
+                                markCopied();
+                            }
+                        });
+                    } else if (legacyCopy(text)) {
+                        markCopied();
+                    }
+                }
 
-                    curClipboard.on('error', function (e) {
-                        showTooltip(e.trigger, fallbackMessage(e.action));
-                    });
+                $btn.on('click', copySource);
+
+                // Line highlighting: clicking a line number highlights the row and
+                // scrolls smoothly to it, keeping the hash in sync without a jump.
+                var LINE_LINK_SELECTOR = '.source-ln a';
+
+                function highlightLine($link, scroll) {
+                    $(LINE_LINK_SELECTOR).removeClass('line-active');
+                    $link.addClass('line-active');
+                    if (scroll && $link.length) {
+                        $link[0].scrollIntoView({behavior: 'smooth', block: 'center'});
+                    }
+                }
+
+                $(document).on('click', LINE_LINK_SELECTOR, function (e) {
+                    e.preventDefault();
+                    history.replaceState(null, '', '#' + this.getAttribute('name'));
+                    highlightLine($(this), true);
                 });
+
+                var hash = window.location.hash;
+                if (hash.indexOf('#line-') === 0) {
+                    highlightLine($(LINE_LINK_SELECTOR).filter('[name="' + hash.slice(1) + '"]'), true);
+                }
             });
         </script>
     {% endcompress %}
@@ -82,19 +104,38 @@
     <br>
     <hr>
     <div class="source-wrap">
-        <table>
-            <tr>
-                <td class="source-ln">
-                    <div>
-                        {% for line in raw_source.split('\n') %}
-                            <a href="#line-{{ loop.index }}" name="line-{{ loop.index }}">
-                                <pre class="line">{{ loop.index }}</pre>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </td>
-                <td class="source-code">{{ highlighted_source }}</td>
-            </tr>
-        </table>
+        <div class="source-header">
+            <div class="source-meta">
+                <span class="source-lang">{{ submission.language }}</span>
+                <span class="source-lines">{{ raw_source.split('\n')|length }} {{ _('lines') }}</span>
+            </div>
+            <button type="button" class="source-copy-btn" id="copy-source-btn"
+                    aria-label="{{ _('Copy code to clipboard') }}"
+                    data-copy-text="{{ _('Copy') }}"
+                    data-copied-text="{{ _('Copied!') }}">
+                <svg class="copy-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <rect x="5.5" y="5.5" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M10.5 3.5v-.5A1.5 1.5 0 0 0 9 1.5H4A1.5 1.5 0 0 0 2.5 3v8A1.5 1.5 0 0 0 4 12.5h.5"
+                          stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <span class="copy-label">{{ _('Copy') }}</span>
+            </button>
+        </div>
+        <div class="source-body">
+            <table>
+                <tr>
+                    <td class="source-ln">
+                        <div>
+                            {% for line in raw_source.split('\n') %}
+                                <a href="#line-{{ loop.index }}" name="line-{{ loop.index }}">
+                                    <pre class="line">{{ loop.index }}</pre>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td class="source-code">{{ highlighted_source }}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 {% endblock %}
