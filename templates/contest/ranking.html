@@ -252,6 +252,8 @@
                     return cell.hasClass('full-score') || cell.hasClass('pending') || cell.hasClass('failed-score') ? 1 : 0;
                 }
 
+                var notifStorageKey = 'active-ranking-notifications-{{ contest.key }}';
+
                 function showRankingNotification(displayName, userUrl, problemLabel, problemPoints, oldRank, newRank, problemResult, maxPoints, problemIsSolved, problemIsFailed, problemIsPending, problemTries, remainingTime, notifId) {
                     if (localStorage.getItem('show-ranking-notifications') === 'false') {
                         return;
@@ -270,10 +272,10 @@
                     function removeNotifFromStorage(targetId) {
                         var list = [];
                         try {
-                            list = JSON.parse(localStorage.getItem('active-ranking-notifications') || '[]');
+                            list = JSON.parse(localStorage.getItem(notifStorageKey) || '[]');
                         } catch(e) {}
                         list = list.filter(function(item) { return item.id !== targetId; });
-                        localStorage.setItem('active-ranking-notifications', JSON.stringify(list));
+                        localStorage.setItem(notifStorageKey, JSON.stringify(list));
                     }
 
                     if (userUrl && problemLabel) {
@@ -293,7 +295,7 @@
                     if (!notifId) {
                         var list = [];
                         try {
-                            list = JSON.parse(localStorage.getItem('active-ranking-notifications') || '[]');
+                            list = JSON.parse(localStorage.getItem(notifStorageKey) || '[]');
                         } catch(e) {}
                         list.push({
                             id: id,
@@ -311,7 +313,7 @@
                             problemTries: problemTries,
                             expiresAt: Date.now() + timeout
                         });
-                        localStorage.setItem('active-ranking-notifications', JSON.stringify(list));
+                        localStorage.setItem(notifStorageKey, JSON.stringify(list));
                     }
 
                     var activeNotifications = container.children('.ranking-notification');
@@ -339,7 +341,7 @@
                     // Problem info
                     if (problemLabel) {
                         var scoreLabel = '';
-                        var ptsStr = problemPoints ? String(problemPoints).replace(/\s*\(\d+\)\s*$/, '') : '';
+                        var ptsStr = problemPoints ? String(problemPoints).replace(/\s*\(-?\d+(?:\.\d+)?\)\s*$/, '') : '';
                         if (isICPC || ptsStr) {
                             var displayScore = ptsStr;
                             if (isICPC) {
@@ -357,6 +359,9 @@
                             }
                             if (problemResult) {
                                 var innerText = problemResult;
+                                if (problemResult === 'pending') {
+                                    innerText = {{ _('pending')|htmltojs }};
+                                }
                                 if (displayScore) {
                                     innerText += ' (' + displayScore + ')';
                                 }
@@ -375,7 +380,11 @@
                                 scoreLabel = ' <span class="ranking-badge ranking-badge-' + badgeClass + '">' + displayScore + '</span>';
                             }
                         } else if (problemResult) {
-                            scoreLabel = ' <span class="ranking-badge ranking-badge-' + problemResult + '">' + problemResult + '</span>';
+                            var innerText = problemResult;
+                            if (problemResult === 'pending') {
+                                innerText = {{ _('pending')|htmltojs }};
+                            }
+                            scoreLabel = ' <span class="ranking-badge ranking-badge-' + problemResult + '">' + innerText + '</span>';
                         }
                         $('<div>').html('<strong>' + {{ _('Problem')|htmltojs }} + ':</strong> ' + problemLabel + scoreLabel).appendTo(content);
                     } else {
@@ -383,7 +392,7 @@
                     }
                     
                     // Rank change info
-                    var rankText = (oldRank ? oldRank : '-') + ' → ' + newRank;
+                    var rankText = (oldRank && oldRank !== newRank) ? (oldRank + ' → ' + newRank) : newRank;
                     $('<div>').html('<strong>' + {{ _('Rank')|htmltojs }} + ':</strong> ' + rankText).appendTo(content);
 
                     content.appendTo(notification);
@@ -515,14 +524,7 @@
                                 var newVal = new_ranks[username];
                                 var oldVal = old_ranks[username];
                                 if (oldVal) {
-                                    var changedProblem = null;
-                                    var changedPoints = '';
-                                    var changedResult = '';
-                                    var changedMaxPoints = '';
-                                    var changedIsSolved = false;
-                                    var changedIsFailed = false;
-                                    var changedIsPending = false;
-                                    var changedTries = 0;
+                                    var changedProblems = [];
                                     for (var label in newVal.problemData) {
                                          var oldCell = oldVal.problemData[label];
                                          var newCell = newVal.problemData[label];
@@ -538,46 +540,58 @@
                                              oldCell.result !== newCell.result ||
                                              oldCell.isPending !== newCell.isPending ||
                                              oldCell.totalTries !== newCell.totalTries) {
-                                             changedProblem = label;
-                                             changedPoints = newCell.text;
-                                             changedResult = newCell.result;
-                                             changedMaxPoints = newCell.maxPoints;
-                                             changedIsSolved = newCell.isSolved;
-                                             changedIsFailed = newCell.isFailed;
-                                             changedIsPending = newCell.isPending;
-                                             changedTries = newCell.totalTries;
-                                             break;
+                                             changedProblems.push({
+                                                 label: label,
+                                                 points: newCell.text,
+                                                 result: newCell.result,
+                                                 maxPoints: newCell.maxPoints,
+                                                 isSolved: newCell.isSolved,
+                                                 isFailed: newCell.isFailed,
+                                                 isPending: newCell.isPending,
+                                                 tries: newCell.totalTries
+                                             });
                                          }
                                      }
-                                    if (changedProblem) {
-                                        console.log('[DEBUG] Triggering notification for:', newVal.displayName, changedProblem, changedPoints, changedResult, changedMaxPoints);
-                                        showRankingNotification(newVal.displayName, newVal.userUrl, changedProblem, changedPoints, oldVal.rank, newVal.rank, changedResult, changedMaxPoints, changedIsSolved, changedIsFailed, changedIsPending, changedTries);
-                                    }
+                                    changedProblems.forEach(function(prob) {
+                                        console.log('[DEBUG] Triggering notification for:', newVal.displayName, prob.label, prob.points, prob.result, prob.maxPoints);
+                                        showRankingNotification(
+                                            newVal.displayName, newVal.userUrl, prob.label, prob.points,
+                                            oldVal.rank, newVal.rank, prob.result, prob.maxPoints,
+                                            prob.isSolved, prob.isFailed, prob.isPending, prob.tries
+                                        );
+                                    });
                                 } else {
                                     console.log('[DEBUG] User entered:', username, 'points:', newVal.points);
-                                    var changedProblem = null;
-                                    var changedPoints = '';
-                                    var changedResult = '';
-                                    var changedMaxPoints = '';
-                                    var changedIsSolved = false;
-                                    var changedIsFailed = false;
-                                    var changedIsPending = false;
-                                    var changedTries = 0;
+                                    var userEnteredProblems = [];
                                     for (var label in newVal.problemData) {
                                         var newCell = newVal.problemData[label];
                                         if (newCell.text !== '' || newCell.totalTries > 0 || newCell.isPending) {
-                                            changedProblem = label;
-                                            changedPoints = newCell.text;
-                                            changedResult = newCell.result;
-                                            changedMaxPoints = newCell.maxPoints;
-                                            changedIsSolved = newCell.isSolved;
-                                            changedIsFailed = newCell.isFailed;
-                                            changedIsPending = newCell.isPending;
-                                            changedTries = newCell.totalTries;
-                                            break;
+                                            userEnteredProblems.push({
+                                                label: label,
+                                                points: newCell.text,
+                                                result: newCell.result,
+                                                maxPoints: newCell.maxPoints,
+                                                isSolved: newCell.isSolved,
+                                                isFailed: newCell.isFailed,
+                                                isPending: newCell.isPending,
+                                                tries: newCell.totalTries
+                                            });
                                         }
                                     }
-                                    showRankingNotification(newVal.displayName, newVal.userUrl, changedProblem, changedPoints, null, newVal.rank, changedResult, changedMaxPoints, changedIsSolved, changedIsFailed, changedIsPending, changedTries);
+                                    if (userEnteredProblems.length > 0) {
+                                        userEnteredProblems.forEach(function(prob) {
+                                            showRankingNotification(
+                                                newVal.displayName, newVal.userUrl, prob.label, prob.points,
+                                                null, newVal.rank, prob.result, prob.maxPoints,
+                                                prob.isSolved, prob.isFailed, prob.isPending, prob.tries
+                                            );
+                                        });
+                                    } else {
+                                        showRankingNotification(
+                                            newVal.displayName, newVal.userUrl, null, '',
+                                            null, newVal.rank, '', '', false, false, false, 0
+                                        );
+                                    }
                                 }
                             }
                         }
@@ -612,7 +626,7 @@
                 if (localStorage.getItem('show-ranking-notifications') !== 'false') {
                     var savedList = [];
                     try {
-                        savedList = JSON.parse(localStorage.getItem('active-ranking-notifications') || '[]');
+                        savedList = JSON.parse(localStorage.getItem(notifStorageKey) || '[]');
                     } catch(e) {}
                     var now = Date.now();
                     var activeList = [];
@@ -628,7 +642,7 @@
                             activeList.push(item);
                         }
                     });
-                    localStorage.setItem('active-ranking-notifications', JSON.stringify(activeList));
+                    localStorage.setItem(notifStorageKey, JSON.stringify(activeList));
                 }
 
                 if (window.event_dispatcher) {
@@ -657,7 +671,7 @@
                         var checked = $(this).prop('checked');
                         localStorage.setItem('show-ranking-notifications', checked ? 'true' : 'false');
                         if (!checked) {
-                            localStorage.removeItem('active-ranking-notifications');
+                            localStorage.removeItem(notifStorageKey);
                             $('#ranking-notifications-container').empty();
                         }
                     });
