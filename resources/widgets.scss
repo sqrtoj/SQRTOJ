@@ -262,14 +262,27 @@ textarea:focus {
     right: 0;
     display: block;
     font-size: 12px;
-    font-weight: bold;
-    color: var(--color-text-muted);
+    font-weight: var(--weight-medium, 500);
+    color: var(--color-text-secondary) !important;
     cursor: pointer;
-    background-color: $color_pageBg;
-    border: 1px solid var(--color-border);
-    border-radius: 0 $widget_border_radius;
+    background-color: var(--color-surface, #ffffff) !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: 0 var(--radius-md) 0 var(--radius-sm);
     position: absolute;
-    padding: 5px 8px;
+    padding: 5px 10px;
+    box-shadow: none !important;
+    transform: none !important;
+    line-height: 1.4;
+    transition:
+        color var(--motion-fast) var(--ease-standard),
+        background-color var(--motion-fast) var(--ease-standard),
+        border-color var(--motion-fast) var(--ease-standard);
+
+    &:hover {
+        color: var(--color-text) !important;
+        background-color: var(--color-surface-hover) !important;
+        border-color: var(--color-border-strong) !important;
+    }
 }
 
 .copy-clipboard {
@@ -281,10 +294,10 @@ textarea:focus {
 .ul_tab_a_active {
     color: var(--color-text);
     // Cover up the bottom border of active tabs with this color
-    background: $color_pageBg;
+    background: var(--color-surface);
     cursor: default;
     border: 1px solid var(--color-border);
-    border-bottom-color: $color_pageBg;
+    border-bottom-color: var(--color-surface);
     border-image: none;
 }
 

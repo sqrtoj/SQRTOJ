@@ -116,14 +116,17 @@
             }
 
             var handleContentPasteClick = function (event) {
-                var { items } = event.clipboardData;
-                items = Object.values(items).filter(item => item.type.match(/^image\//));
-                if (items.length != 1) {
-                    console.log(`Invalid number of items in clipboard (${items.length}), skipping!`);
+                var clipboardData = event.clipboardData;
+                if (!clipboardData || !clipboardData.items) {
                     return;
                 }
+                var items = Object.values(clipboardData.items).filter(item => item.type.match(/^image\//));
+                if (items.length != 1) {
+                    return;
+                }
+                event.preventDefault();
                 markdownToUploadImage(editor, items[0].getAsFile());
-            }
+            };
 
             obj.addEventListener('paste', handleContentPasteClick);
 
@@ -140,7 +143,7 @@
                     }
 
                     if (matches) {
-                        username = lastToken.replace(/([\[user:/\]/])/g, '');
+                        var username = lastToken.replace(/([\[user:/\]/])/g, '');
                         $.ajax({
                             url: textareaId.data('search-users-url'),
                             data: {
@@ -626,10 +629,7 @@
                         $('.upload-progress[data-field-name=' + field_name + ']').hide();
                         if (response.status == 200) {
                             console.log(response);
-                            markdownToImageLink(
-                                editor = editor,
-                                imageData = { name: response.name, link: response.link }
-                            );
+                            markdownToImageLink(editor, { name: response.name, link: response.link });
                         } else {
                             alert(response.error);
                         }
@@ -685,7 +685,7 @@
             });
             editor.commands.addCommand({
                 name: 'markdownToH2',
-                bindKey: { win: 'Ctrl-Alt-2', mac: 'Command-Option-3' },
+                bindKey: { win: 'Ctrl-Alt-2', mac: 'Command-Option-2' },
                 exec: function (editor) {
                     markdownToH2(editor);
                 },
@@ -843,14 +843,20 @@
             // Custom decission for toolbar buttons.
             var btnMention = $('.markdown-direct-mention[data-field-name=' + field_name + ']'); // To Direct Mention
             var btnUpload = $('.markdown-image-upload[data-field-name=' + field_name + ']'); // To Upload Image
+            var handleUploadChange = function (evt) {
+                evt.preventDefault();
+                var fileInput = $(this).find('input[type=file]');
+                var file = fileInput.length && fileInput[0].files && fileInput[0].files[0] ? fileInput[0].files[0] : null;
+                markdownToUploadImage(editor, file);
+                if (fileInput.length) {
+                    fileInput.val('');
+                }
+            };
             if (editorConfig.mention === 'true' && editorConfig.imgur === 'true') {
                 btnMention.click(function () {
                     markdownToMention(editor);
                 });
-                btnUpload.on('change', function (evt) {
-                    evt.preventDefault();
-                    markdownToUploadImage(editor);
-                });
+                btnUpload.on('change', handleUploadChange);
             } else if (editorConfig.mention === 'true' && editorConfig.imgur === 'false') {
                 btnMention.click(function () {
                     markdownToMention(editor);
@@ -858,16 +864,11 @@
                 btnUpload.remove();
             } else if (editorConfig.mention === 'false' && editorConfig.imgur === 'true') {
                 btnMention.remove();
-                btnUpload.on('change', function (evt) {
-                    evt.preventDefault();
-                    markdownToUploadImage(editor);
-                });
+                btnUpload.on('change', handleUploadChange);
             }
             else {
                 btnMention.remove();
                 btnUpload.remove();
-                // Disable help of `mention`
-                $('.markdown-reference tbody tr')[1].remove();
             }
 
             // Handle tabs.

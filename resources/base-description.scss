@@ -147,7 +147,7 @@
     pre {
         code, div.code {
             border: 0;
-            line-height: 1em;
+            line-height: 1.5;
             margin: 0;
             padding: 0;
             background: transparent;
@@ -160,9 +160,13 @@
         margin: 1.5em 0 1.5em 0;
         padding: 1em 1.2em;
         border: 1px solid var(--color-border, #{$color_primary25});
-        background-color: var(--color-surface-alt, #{$color_primary5});
+        background-color: #ffffff;
+        @if not $is_light_theme {
+            background-color: var(--color-surface-raised, #{$color_primary5});
+        }
         color: var(--color-text, #{$color_primary100});
         border-radius: var(--radius-md, #{$widget_border_radius});
+        box-shadow: var(--shadow-1);
     }
 
     b, strong {
@@ -228,11 +232,54 @@
         width: 100%;
         max-width: 100%;
         table-layout: auto;
-    }
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: var(--space-4, 1em) 0;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-1);
+        background: var(--color-surface);
 
-    th,
-    td {
-        overflow-wrap: anywhere;
+        th,
+        td {
+            padding: var(--space-2) var(--space-3);
+            border-bottom: 1px solid var(--color-border);
+            border-right: 1px solid var(--color-border);
+            overflow-wrap: anywhere;
+            vertical-align: top;
+
+            &:last-child {
+                border-right: 0;
+            }
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        thead th {
+            background: var(--color-navbar);
+            color: var(--color-text-inverse);
+            font-weight: var(--weight-semibold, 600);
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+
+            &:last-child {
+                border-right: 0;
+            }
+        }
+
+        tbody tr:nth-child(2n) td {
+            background: var(--color-surface-alt);
+        }
+
+        tbody tr {
+            transition: background-color var(--motion-fast, 120ms) var(--ease-standard, ease);
+
+            &:hover td {
+                background: var(--color-surface-hover);
+            }
+        }
     }
 
     // The Markdown renderer wraps every table in this element. Size both the
@@ -252,9 +299,5 @@
             min-width: 100%;
             table-layout: fixed;
         }
-    }
-
-    td {
-        vertical-align: top;
     }
 }
