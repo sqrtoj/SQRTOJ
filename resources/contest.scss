@@ -1,6 +1,6 @@
 @import "vars";
 
-$is_light_theme: true;
+$is_light_theme: true !default;
 
 // Collapsible section headers on the contest list (Active / Ongoing). Click or
 // keyboard-toggle to expand/collapse; state persists in localStorage.
@@ -331,12 +331,7 @@ $is_light_theme: true;
     }
 
     a.contest-sort-link {
-        @if $is_light_theme {
-            color: #fff;
-        }
-        @else {
-            color: #ccc;
-        }
+        color: var(--color-text-inverse);
     }
 
     // On phones the user-count column is the least important; drop it so the

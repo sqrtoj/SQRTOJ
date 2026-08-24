@@ -1,7 +1,7 @@
 @use 'sass:color';
 @import "vars";
 
-$is_light_theme: true;
+$is_light_theme: true !default;
 
 .h-scrollable-table {
     overflow-x: auto;
@@ -45,7 +45,7 @@ $is_light_theme: true;
         transition: background-color var(--motion-fast) var(--ease-standard);
 
         &:hover {
-            background: var(--color-surface-alt);
+            background: var(--color-surface-hover);
         }
     }
 

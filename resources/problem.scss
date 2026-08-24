@@ -1,7 +1,7 @@
 @use "vars";
 @forward "vars-default";
 
-$is_light_theme: true;
+$is_light_theme: true !default;
 
 #tagproblem-table, #tag-table {
     td, th {
@@ -49,7 +49,6 @@ $is_light_theme: true;
 
 #problem-table {
     width: 100%;
-    min-width: 68rem;
 
     td, th {
         // Text columns are left-aligned

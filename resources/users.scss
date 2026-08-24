@@ -94,7 +94,7 @@ span.organization {
         transition: background-color var(--motion-fast) var(--ease-standard);
 
         &:hover {
-            background: var(--color-surface-alt);
+            background: var(--color-surface-hover);
         }
 
         &.highlight {
