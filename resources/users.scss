@@ -40,21 +40,73 @@ span.organization {
 }
 
 .users-table {
+    width: 100%;
 
     th.rank,
-    th.points,
-    th.problems,
-    th.username {
+    td.rank-cell {
+        width: 4rem;
+        min-width: 3.5rem;
+        text-align: center;
         white-space: nowrap;
     }
 
     th.rank {
-        padding-left: 5px;
-        padding-right: 5px;
+        padding-left: var(--space-2);
+        padding-right: var(--space-2);
+    }
+
+    th.rating,
+    td.rating-cell,
+    th.rating-column,
+    td.rating-column {
+        width: 6rem;
+        min-width: 5.5rem;
+        text-align: center;
+        white-space: nowrap;
+
+        .rate-group {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    th.rating,
+    th.rating-column {
+        a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
     }
 
     th.username {
-        width: 100%;
+        width: auto;
+        text-align: left;
+        padding-left: var(--space-3);
+        white-space: nowrap;
+    }
+
+    td.user-name {
+        text-align: left;
+        padding-left: var(--space-3);
+    }
+
+    th.points,
+    td.user-points {
+        width: 7rem;
+        min-width: 6rem;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    th.problems,
+    td.user-problems {
+        width: 7.5rem;
+        min-width: 6rem;
+        text-align: center;
+        white-space: nowrap;
     }
 
     // Medal tints for the top three ranks (gold / silver / bronze).
@@ -494,10 +546,15 @@ img.user-gravatar {
                 margin: 0;
                 table-layout: auto;
                 border-spacing: 2px;
+                border: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
 
                 .info-table-text {
                     width: auto;
                     white-space: nowrap;
+                    border: 0 !important;
+                    background: transparent !important;
                 }
 
                 td {
@@ -505,6 +562,8 @@ img.user-gravatar {
                     height: 0.9rem;
                     padding: 0;
                     border-radius: 20%;
+                    border: 0 !important;
+                    box-shadow: none !important;
 
                     &.activity-0 {
                         background-color: $color_user_submission_activity0;
@@ -549,9 +608,13 @@ img.user-gravatar {
             display: block;
             border-collapse: collapse;
             border-spacing: 0;
+            border: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
 
             tbody {
                 display: block;
+                border: 0 !important;
             }
 
             tr {
@@ -560,16 +623,28 @@ img.user-gravatar {
                 column-gap: 3px;
                 align-items: center;
                 margin-bottom: 3px;
+                border: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+
+                &:hover {
+                    background: transparent !important;
+                }
             }
 
+            th,
             th.submission-date-col {
                 width: auto;
                 padding: 0 var(--space-1);
                 text-align: right;
                 white-space: nowrap;
+                border: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                color: var(--color-text-muted) !important;
+                font-weight: var(--weight-normal, 400);
 
                 @media (max-width: 1000px) {
-                    display: table-cell;
                     font-size: 0.65em;
                 }
             }
@@ -580,11 +655,14 @@ img.user-gravatar {
                 padding: 0;
                 border-radius: 20%;
                 aspect-ratio: 1;
+                border: 0 !important;
+                box-shadow: none !important;
 
                 div {
                     width: 100%;
                     height: 100%;
                     margin: 0;
+                    border: 0 !important;
                 }
 
                 &.activity-label {
@@ -593,7 +671,11 @@ img.user-gravatar {
                 }
 
                 &.activity-blank {
-                    background-color: transparent;
+                    background-color: transparent !important;
+                    border: 0 !important;
+                    box-shadow: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
                 }
 
                 &.activity-0 {
