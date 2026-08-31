@@ -199,6 +199,8 @@ class Profile(models.Model):
     allow_tagging = models.BooleanField(verbose_name=_('Allow tagging'),
                                         help_text=_('User will be allowed to tag problems.'),
                                         default=True)
+    quick_submit_enabled = models.BooleanField(verbose_name=_('quick submit enabled'), default=True,
+                                               help_text=_('Check to enable quick submit widget during contests.'))
     rating = models.IntegerField(null=True, default=None)
     user_script = models.TextField(verbose_name=_('user script'), default='', blank=True, max_length=65536,
                                    help_text=_('User-defined JavaScript for site customization.'))
