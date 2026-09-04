@@ -473,6 +473,7 @@
         font-weight: var(--weight-bold);
         line-height: 1.25;
         overflow-wrap: anywhere;
+        flex: 1 1 auto;
     }
 
     &__countdown {
@@ -481,6 +482,7 @@
         gap: var(--space-2);
         font-variant-numeric: tabular-nums;
         font-weight: var(--weight-semibold);
+        margin-top: auto;
     }
 
     &__cta {
@@ -577,6 +579,8 @@
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
 
     .tabs {
         margin: 0;
@@ -931,6 +935,19 @@
             }
         }
     }
+
+    .sidebox-content {
+        flex: 1 1 auto;
+    }
+
+    .bottom-pagination-bar {
+        display: flex;
+        align-items: center;
+        padding: var(--space-3) var(--space-5);
+        margin: 0;
+        border-top: 1px solid var(--color-border);
+        background: var(--color-surface);
+    }
 }
 
 .blog-post-title {
@@ -972,7 +989,7 @@
 }
 
 .blog-sidebar {
-    flex: 0 0 250px;
+    flex: 0 0 clamp(250px, 22vw, 275px);
     min-width: 0;
     overflow: hidden;
     max-width: 100%;
@@ -1083,8 +1100,8 @@
         .podium-row {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
-            padding: var(--space-2) var(--space-3);
+            gap: 0.35rem;
+            padding: var(--space-2) var(--space-2);
             border-bottom: 1px solid var(--color-border);
             transition: background-color var(--motion-fast) var(--ease-standard);
 
@@ -1098,7 +1115,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 1.6rem;
+            width: 1.4rem;
             font-weight: var(--weight-bold);
             font-variant-numeric: tabular-nums;
             color: var(--color-text-muted);
@@ -1106,8 +1123,8 @@
 
         .podium-avatar {
             flex: 0 0 auto;
-            width: 1.9rem;
-            height: 1.9rem;
+            width: 1.85rem;
+            height: 1.85rem;
             border-radius: 50%;
             border: 1px solid var(--color-border);
             background: #fff;
@@ -1120,6 +1137,16 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+
+            > span,
+            a {
+                display: inline-block;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                vertical-align: bottom;
+            }
         }
 
         .podium-value {
@@ -1288,7 +1315,8 @@
 
     .blog-content,
     .blog-sidebar {
-        display: block !important;
+        display: flex !important;
+        flex-direction: column;
     }
 
     .blog-content {
@@ -1301,6 +1329,7 @@
 
     #blog-container {
         display: flex;
+        align-items: flex-start;
         max-width: 100%;
         overflow: hidden;
     }
@@ -1412,13 +1441,66 @@
     }
 }
 
-.open-tickets {
+.open-tickets,
+.own-open-tickets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+        padding: var(--space-2) 0;
+        border-bottom: 1px solid var(--color-border);
+
+        &:first-child {
+            padding-top: 0;
+        }
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+    }
+
+    .title {
+        font-weight: var(--weight-semibold, 600);
+        font-size: var(--text-sm);
+        line-height: 1.35;
+        margin-bottom: 2px;
+        overflow-wrap: break-word;
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+
+            &:hover {
+                color: var(--color-accent);
+            }
+        }
+    }
+
     .object {
-        margin-left: 1em;
         font-style: italic;
+        font-size: var(--text-xs);
+        color: var(--color-text-secondary);
+        margin-left: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        a {
+            color: inherit;
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     .author {
-        margin-left: 1em;
+        font-size: var(--text-xs);
+        color: var(--color-text-muted);
+        margin-left: 0;
+        margin-top: 2px;
     }
 }
