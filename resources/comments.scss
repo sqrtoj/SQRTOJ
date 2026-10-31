@@ -41,6 +41,24 @@ a {
     font-style: italic;
 }
 
+.comments-heading-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+
+    h2 {
+        margin: 0;
+    }
+
+    .clarify {
+        float: none;
+        margin: 0;
+    }
+}
+
 .comment-header-space {
     height: 20px;
 }

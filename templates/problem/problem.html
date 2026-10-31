@@ -365,22 +365,23 @@
     {% include "problem/problem-detail.html" %}
 {% endblock %}
 
-{% block post_description_end %}
-    {% if request.user.is_authenticated and not request.profile.mute %}
-        <a href="{{ url('new_problem_ticket', problem.code) }}" class="button clarify">
-            {%- if comment_lock and request.profile.current_contest.live -%}
-                {{ _('Request clarification') }}
-            {%- else -%}
-                {{ _('Report an issue') }}
-            {%- endif -%}
-        </a>
-    {% endif %}
-{% endblock %}
+{% block post_description_end %}{% endblock %}
 
 {% block comments %}
     {% if comment_lock %}
         <div class="clarifications-area">
-            <h2><i class="fa fa-question-circle"></i> {{ _('Clarifications') }}</h2>
+            <div class="comments-heading-wrap">
+                <h2><i class="fa fa-question-circle"></i> {{ _('Clarifications') }}</h2>
+                {% if request.user.is_authenticated and not request.profile.mute %}
+                    <a href="{{ url('new_problem_ticket', problem.code) }}" class="button clarify">
+                        {%- if request.profile.current_contest.live -%}
+                            {{ _('Request clarification') }}
+                        {%- else -%}
+                            {{ _('Report an issue') }}
+                        {%- endif -%}
+                    </a>
+                {% endif %}
+            </div>
             {% if has_clarifications %}
                 {% for clarification in clarifications %}
                     <div class="problem-clarification">
@@ -395,6 +396,8 @@
             {% endif %}
         </div>
     {% else %}
-        {% include "comments/list.html" %}
+        {% with show_problem_ticket_button=True %}
+            {% include "comments/list.html" %}
+        {% endwith %}
     {% endif %}
 {% endblock %}
