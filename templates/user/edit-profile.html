@@ -295,7 +295,7 @@
                             if ($('#remove-api-token-button').length == 0) {
                                 $('#generate-api-token-button').after($('<a id="remove-api-token-button" \
                                     href="{{ url('remove_api_token') }}" \
-                                    class="button inline-button ml-5">{{ _('Remove') }}</a>'));
+                                    class="button inline-button ml-5 btn-danger">{{ _('Remove') }}</a>'));
                             }
                         },
                     });
@@ -570,10 +570,10 @@
                             <div class="block-header grayed">{{ _('Two-factor authentication is enabled:') }}</div>
                             <div class="block-buttons">
                                 {% if require_staff_2fa and request.user.is_staff and not profile.is_webauthn_enabled %}
-                                    <a id="disable-2fa-button" class="button inline-button">{{ _('Disable') }}</a>
+                                    <a id="disable-2fa-button" class="button inline-button btn-secondary">{{ _('Disable') }}</a>
                                 {% else %}
                                     <a href="{{ url('disable_2fa') }}"
-                                       class="button inline-button">{{ _('Disable') }}</a>
+                                       class="button inline-button btn-secondary">{{ _('Disable') }}</a>
                                 {% endif %}
                                 <a href="{{ url('refresh_2fa') }}" class="button inline-button">{{ _('Refresh') }}</a>
                             </div>
@@ -616,7 +616,7 @@
                                     <tr>
                                         <td>{{ credential.name }}</td>
                                         <td>
-                                            <button class="webauthn-delete inline-button"
+                                            <button class="webauthn-delete inline-button btn-danger"
                                                     data-delete-url="{{ url('webauthn_delete', credential.id) }}">
                                                 {{ _('Delete') }}
                                             </button>

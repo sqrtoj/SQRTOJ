@@ -14,23 +14,9 @@
 
         ul.sortedm2m {
             width: 284px;
-            min-height: 100px;
-            max-height: 200px;
-        }
-
-        .sortedm2m-container, .sortedm2m-container p.selector-filter {
-            width: 300px;
-        }
-
-        .sortedm2m-container p.selector-filter input {
-            width: 262px;
-        }
-
-        ul.sortedm2m {
-            width: 284px;
             min-height: 70px;
             max-height: 200px;
-            height: 70px
+            height: 70px;
         }
 
         .inline-header {
@@ -84,8 +70,9 @@
         #center-float {
             display: inline-block;
             text-align: initial;
-            max-width: 100%;
-            width: 450px;
+            max-width: 620px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         ul.errorlist {
@@ -241,7 +228,9 @@
                 {% endif %}
 
                 <hr>
-                <button style="float:right;" type="submit">{{ _('Register!') }}</button>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1em;">
+                    <button type="submit">{{ _('Register!') }}</button>
+                </div>
             </form>
             {% endif %}
             {% include "registration/oauth.html" %}

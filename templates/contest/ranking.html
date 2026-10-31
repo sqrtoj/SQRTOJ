@@ -1034,37 +1034,47 @@
 {% endblock %}
 
 {% block before_users_table %}
-    <div style="margin-bottom: 1.25em">
-        {% if tab == 'ranking' %}
-            <div id="org-dropdown-check-list">
-                <button id="filter-by-organization-button" class="inline-button">
-                    <i class="tab-icon fa fa-filter"></i>
-                    <b>{{ _('Filter') }}</b>
-                </button>
+    <div class="contest-ranking-controls" style="margin-bottom: 1.25em; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3);">
+        <div class="contest-ranking-filter-group" style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3);">
+            {% if tab == 'ranking' %}
+                <div id="org-dropdown-check-list">
+                    <button id="filter-by-organization-button" class="inline-button">
+                        <i class="tab-icon fa fa-filter"></i>
+                        <b>{{ _('Filter') }}</b>
+                    </button>
 
-                <div id="org-check-list-wrapper">
-                    <div>
-                        <button id="apply-organization-filter" class="inline-button filter-checklist-button">{{ _('Apply') }}</button>
-                        <button id="clear-organization-filter" class="inline-button filter-checklist-button">{{ _('Clear') }}</button>
+                    <div id="org-check-list-wrapper">
+                        <div>
+                            <button id="apply-organization-filter" class="inline-button filter-checklist-button">{{ _('Apply') }}</button>
+                            <button id="clear-organization-filter" class="inline-button filter-checklist-button btn-secondary">{{ _('Clear') }}</button>
+                        </div>
+                        <select id="org-check-list" name="orgs[]" multiple="multiple"></select>
                     </div>
-                    <select id="org-check-list" name="orgs[]" multiple="multiple"></select>
                 </div>
+            {% endif %}
+            {% if tab != 'official_ranking' %}
+                <label for="show-personal-info-checkbox" style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+                    <input id="show-personal-info-checkbox" type="checkbox">
+                    <span>{{ _('Show full name/organization') }}</span>
+                </label>
+            {% endif %}
+            {% if tab == 'ranking' %}
+                <label for="show-virtual-participations-checkbox" style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+                    <input id="show-virtual-participations-checkbox" type="checkbox">
+                    <span>{{ _('Show virtual participations') }}</span>
+                </label>
+                {% if not contest.ended %}
+                    <label for="show-ranking-notifications-checkbox" style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+                        <input id="show-ranking-notifications-checkbox" type="checkbox">
+                        <span>{{ _('Show notifications') }}</span>
+                    </label>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if tab == 'ranking' and not is_ICPC_format %}
+            <div class="contest-ranking-actions">
+                <a href="#" onclick="download_table_as_csv(); return false;">{{ _('Download as CSV') }}</a>
             </div>
-        {% endif %}
-        {% if tab != 'official_ranking' %}
-            <input id="show-personal-info-checkbox" type="checkbox" style="vertical-align: bottom">
-            <label for="show-personal-info-checkbox" style="vertical-align: bottom">{{ _('Show full name/organization') }}</label>
-        {% endif %}
-        {% if tab == 'ranking' %}
-            <input id="show-virtual-participations-checkbox" type="checkbox" style="vertical-align: bottom">
-            <label for="show-virtual-participations-checkbox" style="vertical-align: bottom">{{ _('Show virtual participations') }}</label>
-            {% if not contest.ended %}
-                <input id="show-ranking-notifications-checkbox" type="checkbox" style="vertical-align: bottom">
-                <label for="show-ranking-notifications-checkbox" style="vertical-align: bottom">{{ _('Show notifications') }}</label>
-            {% endif %}
-            {% if not is_ICPC_format %}
-            <a href="#" onclick="download_table_as_csv()" style="float: right;">{{ _('Download as CSV') }}</a>
-            {% endif %}
         {% endif %}
     </div>
 {% endblock %}

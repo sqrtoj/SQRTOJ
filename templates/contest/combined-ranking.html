@@ -156,26 +156,32 @@
 {% endblock %}
 
 {% block before_users_table %}
-    <div style="padding: 0.75em 0 1.25em; clear: both;">
-        <div id="org-dropdown-check-list">
-            <button id="filter-by-organization-button" class="inline-button">
-                <i class="tab-icon fa fa-filter"></i>
-                <b>{{ _('Filter') }}</b>
-            </button>
+    <div class="contest-ranking-controls" style="padding: 0.75em 0 1.25em; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3);">
+        <div class="contest-ranking-filter-group" style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3);">
+            <div id="org-dropdown-check-list">
+                <button id="filter-by-organization-button" class="inline-button">
+                    <i class="tab-icon fa fa-filter"></i>
+                    <b>{{ _('Filter') }}</b>
+                </button>
 
-            <div id="org-check-list-wrapper">
-                <div>
-                    <button id="apply-organization-filter" class="inline-button filter-checklist-button">{{ _('Apply') }}</button>
-                    <button id="clear-organization-filter" class="inline-button filter-checklist-button">{{ _('Clear') }}</button>
+                <div id="org-check-list-wrapper">
+                    <div>
+                        <button id="apply-organization-filter" class="inline-button filter-checklist-button">{{ _('Apply') }}</button>
+                        <button id="clear-organization-filter" class="inline-button filter-checklist-button btn-secondary">{{ _('Clear') }}</button>
+                    </div>
+                    <select id="org-check-list" name="orgs[]" multiple="multiple"></select>
                 </div>
-                <select id="org-check-list" name="orgs[]" multiple="multiple"></select>
             </div>
+            <label for="show-personal-info-checkbox" style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+                <input id="show-personal-info-checkbox" type="checkbox">
+                <span>{{ _('Show full name/organization') }}</span>
+            </label>
         </div>
-        <input id="show-personal-info-checkbox" type="checkbox" style="vertical-align: bottom">
-        <label for="show-personal-info-checkbox" style="vertical-align: bottom">{{ _('Show full name/organization') }}</label>
-        <a href="#" onclick="download_combined_ranking_as_csv(); return false;" style="float: right;">
-            {{ _('Download as CSV') }}
-        </a>
+        <div class="contest-ranking-actions">
+            <a href="#" onclick="download_combined_ranking_as_csv(); return false;">
+                {{ _('Download as CSV') }}
+            </a>
+        </div>
     </div>
 {% endblock %}
 

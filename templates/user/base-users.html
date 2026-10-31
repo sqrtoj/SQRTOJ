@@ -51,9 +51,11 @@
 {% endblock %}
 
 {% block body %}
-    {% if page_obj and page_obj.has_other_pages() %}
+    {% if (page_obj and page_obj.has_other_pages()) or not organization %}
         <div class="top-pagination-bar">
-            {% include "list-pages.html" %}
+            {% if page_obj and page_obj.has_other_pages() %}
+                {% include "list-pages.html" %}
+            {% endif %}
             {% if not organization %}
                 <form id="search-form" name="form" action="{{ url('user_ranking_redirect') }}" method="get">
                     <input id="search-handle" type="text" name="search"

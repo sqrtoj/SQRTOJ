@@ -35,6 +35,7 @@ $is_summer: false !default;
             --color-accent: #1ba94c;
             --color-accent-hover: #158a3e;
             --color-accent-contrast: #ffffff;
+            --color-accent-soft: rgba(27, 169, 76, 0.12);
             --color-accent-2: #5fc27e;
             --color-navbar: #045c20;
             --color-navbar-gradient-start: #0a7c32;
@@ -55,6 +56,8 @@ $is_summer: false !default;
             --color-warning-fg: #8a6100;
             --color-danger-bg: #f8dcdc;
             --color-danger-fg: #a52222;
+            --color-danger: #c1121f;
+            --color-on-danger: #ffffff;
         } @else {
             // Summer dark = classic dark palette; tokens mirror the legacy values.
             --color-canvas: #222222;
@@ -72,6 +75,7 @@ $is_summer: false !default;
             --color-accent: #1ba94c;
             --color-accent-hover: #5fc27e;
             --color-accent-contrast: #ffffff;
+            --color-accent-soft: rgba(27, 169, 76, 0.22);
             --color-accent-2: #5fc27e;
             --color-navbar: #0f1214;
             --color-navbar-gradient-start: #174c2b;
@@ -92,6 +96,8 @@ $is_summer: false !default;
             --color-warning-fg: #ffdd66;
             --color-danger-bg: #3a1414;
             --color-danger-fg: #ff9999;
+            --color-danger: #d32f2f;
+            --color-on-danger: #ffffff;
         }
     } @else {
         // Warm Harvest (default palette)
@@ -111,6 +117,7 @@ $is_summer: false !default;
             --color-accent: #c1440e;
             --color-accent-hover: #9e3609;
             --color-accent-contrast: #ffffff;
+            --color-accent-soft: rgba(193, 68, 14, 0.12);
             --color-accent-2: #e0a82e;
             --color-navbar: #a84210; // Adjusted for a prettier orange/autumn look
             --color-navbar-gradient-start: #973307;
@@ -134,6 +141,8 @@ $is_summer: false !default;
             --color-warning-fg: #8a6100;
             --color-danger-bg: #f8dcdc;
             --color-danger-fg: #a52222;
+            --color-danger: #c1121f;
+            --color-on-danger: #ffffff;
 
             // --- Autumn artwork (warm light) ---
             // A-1 homepage hero banner + A-3 seamless page background. Paths are
@@ -161,6 +170,7 @@ $is_summer: false !default;
             --color-accent: #ef8544;
             --color-accent-hover: #ffa066;
             --color-accent-contrast: #1a120b;
+            --color-accent-soft: rgba(239, 133, 68, 0.22);
             --color-accent-2: #ecc061;
             --color-navbar: #100b07;
             --color-navbar-gradient-start: #2f180c;
@@ -182,6 +192,8 @@ $is_summer: false !default;
             --color-warning-fg: #f2c85a;
             --color-danger-bg: #3a1616;
             --color-danger-fg: #ff9b9b;
+            --color-danger: #d32f2f;
+            --color-on-danger: #ffffff;
 
             // --- Autumn artwork (warm dark) ---
             --hero-image: url("#{$path_to_root}/autumn/hero-banner.webp");

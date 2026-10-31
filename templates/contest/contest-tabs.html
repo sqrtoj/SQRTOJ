@@ -48,7 +48,7 @@
                 {# Allow users to leave the virtual contest #}
                 {% if is_in_contest %}
                     <form action="{{ url('contest_leave', contest.key) }}" method="post"
-                          class="contest-join-pseudotab unselectable button">
+                          class="contest-join-pseudotab unselectable button btn-secondary">
                         {% csrf_token %}
                         <input type="submit" class="leaving-forever" value="{{ _('Leave contest') }}">
                     </form>
@@ -64,7 +64,7 @@
                 {# Allow users to leave the contest #}
                 {% if is_in_contest %}
                     <form action="{{ url('contest_leave', contest.key) }}" method="post"
-                          class="contest-join-pseudotab unselectable button">
+                          class="contest-join-pseudotab unselectable button btn-secondary">
                         {% csrf_token %}
                         <input type="submit" value="
                             {%- if request.participation.spectate %}
@@ -75,7 +75,7 @@
                     </form>
                 {% elif is_editor or is_tester or live_participation.ended %}
                     <form action="{{ url('contest_join', contest.key) }}" method="post"
-                          class="contest-join-pseudotab unselectable button">
+                          class="contest-join-pseudotab unselectable button btn-secondary">
                         {% csrf_token %}
                         <input type="submit" value="{{ _('Spectate contest') }}" class="contest-join">
                     </form>
