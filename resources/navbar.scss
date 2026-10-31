@@ -56,6 +56,10 @@
         align-items: center;
         height: 100%;
         min-width: 0;
+
+        &.mobile-nav-language {
+            display: none !important;
+        }
     }
 }
 
@@ -277,7 +281,7 @@
 }
 
 .mobile-nav-language {
-    display: none;
+    display: none !important;
 }
 
 #user-menu-toggle {
@@ -447,8 +451,8 @@
             display: flex;
         }
 
-        .mobile-nav-language {
-            display: block;
+        > li.mobile-nav-language {
+            display: block !important;
             margin-top: auto;
             padding-top: var(--space-3);
             border-top: 1px solid var(--color-border);
@@ -471,6 +475,13 @@
                 color: var(--color-text);
                 font-size: var(--text-xs);
                 text-decoration: none;
+
+                img {
+                    width: 18px;
+                    height: 18px;
+                    object-fit: contain;
+                    flex-shrink: 0;
+                }
 
                 &.active {
                     border-color: var(--color-accent);

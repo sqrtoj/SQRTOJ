@@ -71,6 +71,7 @@
         #content { flex: 1 0 auto; margin-top: 20px; }
         #navigation { position: sticky; top: 0; z-index: 1000; width: 100%; height: var(--nav-height); }
         footer { content-visibility: auto; contain-intrinsic-size: auto 420px; }
+        @media (min-width: 961px) { #nav-list > li.mobile-nav-language { display: none !important; } }
     </style>
     {% if request.user.is_impersonate %}
         <style>
@@ -279,10 +280,10 @@
                 <li class="mobile-nav-language">
                     <div class="mobile-lang-row">
                         <a href="#" onclick="return submmit_language('vi', event)" class="mobile-lang-btn{% if request.LANGUAGE_CODE == 'vi' %} active{% endif %}">
-                            <img src="{{ static('icons/vi_flag.svg') }}" alt="" height="18"> Tiếng Việt
+                            <img src="{{ static('icons/vi_flag.svg') }}" alt="" width="18" height="18"> Tiếng Việt
                         </a>
                         <a href="#" onclick="return submmit_language('en', event)" class="mobile-lang-btn{% if request.LANGUAGE_CODE == 'en' %} active{% endif %}">
-                            <img src="{{ static('icons/gb_flag.svg') }}" alt="" height="18"> English
+                            <img src="{{ static('icons/gb_flag.svg') }}" alt="" width="18" height="18"> English
                         </a>
                     </div>
                 </li>
