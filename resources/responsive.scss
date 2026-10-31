@@ -230,7 +230,8 @@ button {
     }
 
     .site-footer__links {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        gap: var(--space-5);
     }
 
     .site-footer__bar {
@@ -263,7 +264,8 @@ button {
 // On phones the search/filter sidebar precedes the results in source order, so
 // stack the shared two-column layout as a column and pull results above the
 // sidebox. Only applies below the 700px breakpoint where the desktop flex row
-// is not active.
+// is not active. On pages without a filter sidebar (e.g. problem detail), keep
+// #content-right (submission button and problem stats) above the description.
 @media (max-width: 699px) {
     #common-content {
         display: flex;
@@ -276,6 +278,10 @@ button {
 
     #common-content > #content-right {
         order: 2;
+
+        &:not(.problems):not(.submission) {
+            order: 0;
+        }
     }
 }
 

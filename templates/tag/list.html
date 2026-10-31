@@ -7,7 +7,8 @@
 {% block media %}
     <style>
         .row-selected {
-            background: #dff0d8;
+            background: var(--color-surface-hover, #dff0d8);
+            color: var(--color-accent) !important;
         }
 
         #judges {
@@ -65,7 +66,7 @@
     <div id="common-content">
         {% block before_table %}{% endblock %}
         <div id="content-right" class="problems">
-            <div>
+            <div class="info-float">
                 {% include "tag/search-form.html" %}
                 <div class="accordion">
                     {% for group in groups %}

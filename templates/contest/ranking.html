@@ -705,7 +705,7 @@
 
             $("a#cache_alert").click(function () {
                 var $closer = $(this);
-                $closer.parent().hide();
+                $closer.closest('.alert-warning').hide();
                 localStorage.setItem(`hide-cache-alert-${contest_key}`, 'true');
             });
 
@@ -715,7 +715,7 @@
 
             $("a#frozen_alert").click(function () {
                 var $closer = $(this);
-                $closer.parent().hide();
+                $closer.closest('.alert-warning').hide();
                 localStorage.setItem(`hide-frozen-alert-${contest_key}`, 'true');
             });
 
@@ -725,7 +725,7 @@
 
             $("a#result_hidden_alert").click(function () {
                 var $closer = $(this);
-                $closer.parent().hide();
+                $closer.closest('.alert-warning').hide();
                 localStorage.setItem(`hide-result-hidden-alert-${contest_key}`, 'true');
             });
 

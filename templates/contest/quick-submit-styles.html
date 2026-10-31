@@ -101,7 +101,15 @@
             background: linear-gradient(135deg, #3b2117, #2a1a15);
             color: #fff;
         }
-        #contest-submit-dialog-title { margin: 0; color: #fff; font-size: 0.95rem; }
+        #contest-submit-dialog-title {
+            margin: 0;
+            color: #fff;
+            font-size: 0.95rem;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         .contest-submit-header-actions {
             display: inline-flex;
             align-items: center;
@@ -147,7 +155,7 @@
             overflow-x: hidden;
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
-            padding: 0.7rem 0.7rem 5.2rem;
+            padding: 0.85rem;
             background: #241a16;
             color: #f7eee9;
         }
@@ -282,40 +290,37 @@
         }
         .contest-submit-error { color: #a52a2a; }
         #contest-submit-dialog-footer {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 20;
+            flex: 0 0 auto;
+            position: relative;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            min-height: 3.7rem;
+            justify-content: space-between;
+            gap: 1rem;
+            min-height: 3.5rem;
             box-sizing: border-box;
-            padding: 0.45rem 0.65rem;
+            padding: 0.6rem 1rem;
             background: #1c1411;
-            box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.18);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 -0.25rem 0.75rem rgba(0, 0, 0, 0.18);
         }
         #contest-submit-footer-button {
-            position: absolute;
-            left: 50%;
-            top: 50%;
+            position: static;
+            transform: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.6rem;
             min-width: 9rem;
-            min-height: 2.75rem;
-            padding: 0.65rem 1.05rem;
+            min-height: 2.5rem;
+            padding: 0.55rem 1.15rem;
             border: 0;
-            border-radius: var(--radius-md, 0.65rem);
+            border-radius: var(--radius-md, 0.5rem);
             background: var(--color-accent);
             color: var(--color-accent-contrast) !important;
             font-weight: 700;
             box-shadow: var(--shadow-1);
-            transform: translate(-50%, -50%);
             cursor: pointer;
-            transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+            transition: background-color 160ms ease, box-shadow 160ms ease;
         }
         #contest-submit-footer-button:disabled {
             cursor: not-allowed;
@@ -328,10 +333,13 @@
             outline: none;
             box-shadow: var(--shadow-2);
         }
-        #contest-submit-full-link { color: #ffc477; font-size: 0.82rem; }
+        #contest-submit-full-link {
+            color: #ffc477;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
         body.contest-submit-modal-open { overflow: hidden; }
         #contest-submit-dialog .fa { margin-right: 0.5rem; }
-        #contest-submit-footer-button { gap: 0.65rem; }
         @media (prefers-color-scheme: light) {
             #contest-submit-dialog {
                 color-scheme: light;
@@ -360,19 +368,27 @@
             }
             #contest-submit-dialog-footer {
                 background: var(--color-surface-alt, #f4ebdd);
+                border-top-color: var(--color-border, #e4d5c1);
             }
             #contest-submit-full-link { color: var(--color-link, #c1440e); }
         }
         @media (max-width: 700px) {
             .contest-section-head { align-items: flex-start; gap: 0.7rem; }
             .contest-section-actions { width: 100%; justify-content: flex-start; margin-left: 0; }
+            .contest-submit-heading,
             .contest-submit-cell { width: 5.5rem; min-width: 5.5rem; }
             #contest-submit-overlay { padding: 0; }
             #contest-submit-dialog { width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; }
-            #contest-submit-body { padding: 0.55rem 0.55rem 5.7rem; }
+            #contest-submit-body { padding: 0.65rem; }
             #contest-submit-body textarea.contest-source-editor,
             #contest-submit-body #id_source { height: 11rem; min-height: 9rem; font-size: 0.8rem; }
-            #contest-submit-dialog-footer { min-height: 5.3rem; padding-bottom: 2.35rem; }
-            #contest-submit-full-link { position: absolute; right: auto; bottom: 0.4rem; }
-            #contest-submit-footer-button { top: 1.25rem; }
+            #contest-submit-dialog-footer {
+                flex-direction: column-reverse;
+                align-items: stretch;
+                gap: 0.5rem;
+                min-height: auto;
+                padding: 0.65rem 0.85rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+            }
+            #contest-submit-footer-button { width: 100%; min-height: 2.75rem; }
+            #contest-submit-full-link { text-align: center; font-size: 0.85rem; }
         }

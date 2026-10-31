@@ -260,6 +260,9 @@
                             xAxes: [{
                                 type: 'time',
                                 distribution: 'linear',
+                                time: {
+                                    minUnit: 'day',
+                                },
                             }],
                             yAxes: [{
                                 ticks: {
@@ -289,14 +292,18 @@
                                 $tooltip.find('.rating').text(item.rating).attr('class', 'rating ' + item.class);
                                 $tooltip.find('.rank').text(item.ranking);
 
+                                var is_below = element.y < $tooltip.height() + 15;
                                 $tooltip.removeClass('above below');
-                                $tooltip.addClass(element.y < $tooltip.height() ? 'below' : 'above');
+                                $tooltip.addClass(is_below ? 'below' : 'above');
 
                                 var position = $canvas.offset();
                                 var container = $('#page-container').offset();
+                                var tooltip_top = is_below
+                                    ? (position.top - container.top + element.y + 12)
+                                    : (position.top - container.top + element.y - $tooltip.height() - 13);
                                 $tooltip.css({
-                                    left: position.left - container.left + element.x + $tooltip.width() / 2,
-                                    top: position.top - container.top + element.y - $tooltip.height() - 13,
+                                    left: position.left - container.left + element.x,
+                                    top: tooltip_top,
                                     fontFamily: tooltipModel._bodyFontFamily,
                                     fontSize: tooltipModel._bodyFontSize,
                                     fontStyle: tooltipModel._bodyFontStyle,

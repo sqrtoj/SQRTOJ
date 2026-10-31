@@ -117,6 +117,8 @@ $(function () {
 
     var close_nav_menus = function () {
         $nav_list.removeClass('show-list');
+        $nav_list.find('ul').removeClass('show-list');
+        $nav_list.find('.nav-expand').removeClass('expanded');
         $navicon.removeClass('hover').attr('aria-expanded', 'false');
         $user_menu.removeClass('show-list');
         $user_menu_toggle.attr('aria-expanded', 'false');
@@ -139,6 +141,7 @@ $(function () {
     $nav_list.find('li a .nav-expand').click(function (event) {
         event.preventDefault();
         event.stopPropagation();
+        $(this).toggleClass('expanded');
         $(this).parent().siblings('ul').toggleClass('show-list');
     });
 

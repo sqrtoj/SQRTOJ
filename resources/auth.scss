@@ -282,3 +282,70 @@
         color: var(--color-text-secondary);
     }
 }
+
+.auth-form {
+    .auth-astable {
+        display: block;
+        width: 100%;
+        border-collapse: collapse;
+
+        tbody, tr, th, td {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0;
+            text-align: left;
+        }
+
+        th {
+            margin-bottom: var(--space-2);
+            font-size: var(--text-sm);
+            font-weight: var(--weight-semibold);
+            color: var(--color-text);
+        }
+
+        td {
+            margin-bottom: var(--space-4);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: var(--space-3);
+            font-size: var(--text-base);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-surface);
+            color: var(--color-text);
+            transition: border-color var(--motion-fast) var(--ease-standard);
+
+            &:focus {
+                border-color: var(--color-accent);
+                outline: 2px solid var(--color-focus-ring-soft);
+            }
+        }
+
+        ul.errorlist {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-1) 0 var(--space-2);
+            color: var(--color-danger-fg);
+            font-size: var(--text-sm);
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card .alert,
+    .auth-form,
+    .auth-links,
+    .auth-oauth {
+        margin-left: var(--space-4);
+        margin-right: var(--space-4);
+    }
+    .auth-brand {
+        padding: var(--space-5) var(--space-4) var(--space-4);
+    }
+}
