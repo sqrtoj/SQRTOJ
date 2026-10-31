@@ -280,7 +280,7 @@
 
 {% macro contest_join(contest, request, finished_contests) %}
     {% if request.in_contest and contest.key == request.participation.contest.key %}
-        <td class="contest-action"><span>Already joined</span></td>
+        <td class="contest-action"><span>{{ _('Already joined') }}</span></td>
     {% else %}
         <td class="contest-action">
             {% if contest.key in finished_contests or request.profile in contest.authors.all() or request.profile in contest.curators.all() or request.profile in contest.testers.all() %}
@@ -304,12 +304,12 @@
     <td class="contest-action">
         {% if request.profile not in contest.authors.all() and request.profile not in contest.curators.all() and request.profile not in contest.testers.all() %}
             {% if request.profile and contest.id in request.profile.registered_contest_ids %}
-                <span class="contest-registered-label"><b>Already registered</b></span>
+                <span class="contest-registered-label"><b>{{ _('Already registered') }}</b></span>
             {% elif not contest.can_register %}
                 {% if contest.time_before_register %}
                     <span class="time">{{ _('Registration opens in %(countdown)s', countdown=as_countdown(contest.time_before_register)) }}</span>
                 {% else %}
-                    <span>Registration closed</span>
+                    <span>{{ _('Registration closed') }}</span>
                 {% endif %}
             {% else %}
                 <form action="{{ url('contest_register', contest.key) }}" method="post">
@@ -321,7 +321,7 @@
         {% endif %}
         {% if not contest.time_before_register %}
             <div style="padding-top: 0.5em">
-                <span style="opacity: 50%">Registered users: </span>
+                <span style="opacity: 50%">{{ _('Registered users:') }} </span>
                 <span>{{ contest.user_count }}</span>
             </div>
         {% endif %}
@@ -475,7 +475,7 @@
                         {% if contest.require_registration %}
                             {{ contest_register(contest, request) }}
                         {% else %}
-                            <td></td>
+                            <td class="contest-action"></td>
                         {% endif %}
                     </tr>
                 {% endfor %}

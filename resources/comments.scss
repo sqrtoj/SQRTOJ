@@ -256,6 +256,12 @@ a {
 
     // Deeply nested reply threads flatten their indentation on narrow screens so
     // the innermost comments still have room to breathe.
+    @media (max-width: 768px) {
+        .comments {
+            padding-left: 1em;
+        }
+    }
+
     @media (max-width: 480px) {
         .comments {
             padding-left: 0.5em;

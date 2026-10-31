@@ -146,11 +146,11 @@
     display: none;
     min-width: 210px;
     max-width: calc(100vw - var(--space-4));
-    padding: var(--space-2) !important;
+    padding: var(--space-1) !important;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     background: var(--color-surface-raised);
-    box-shadow: var(--shadow-3);
+    box-shadow: var(--shadow-2);
     color: var(--color-text);
     z-index: 1100;
 
@@ -179,11 +179,11 @@
         display: flex;
         align-items: center;
         width: 100%;
-        min-height: 40px;
+        min-height: 36px;
         padding: var(--space-2) var(--space-3);
         box-sizing: border-box;
         border: 0;
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-sm);
         background: transparent;
         color: var(--color-text) !important;
         font: inherit;
@@ -193,12 +193,17 @@
         text-align: left;
         white-space: nowrap;
         cursor: pointer;
+        transition: background-color var(--motion-fast) var(--ease-standard);
 
         &:hover,
-        &:focus-visible,
+        &:focus-visible {
+            background: var(--color-surface-hover);
+            color: var(--color-text) !important;
+        }
+
         &.active {
-            background: var(--color-surface-alt);
-            color: var(--color-link) !important;
+            background: var(--color-surface-hover);
+            color: var(--color-accent) !important;
         }
     }
 
@@ -263,6 +268,18 @@
     }
 }
 
+.nav-username {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.mobile-nav-language {
+    display: none;
+}
+
 #user-menu-toggle {
     display: inline-flex;
     align-items: center;
@@ -273,6 +290,7 @@
     background: rgba(255, 255, 255, 0.08);
     color: var(--color-text-inverse) !important;
     cursor: pointer;
+    user-select: none;
     transition: background-color var(--motion-fast) var(--ease-standard),
         border-color var(--motion-fast) var(--ease-standard);
 
@@ -302,7 +320,9 @@
     left: auto;
 
     form {
-        margin: 0;
+        margin: var(--space-1) 0 0;
+        padding-top: var(--space-1);
+        border-top: 1px solid var(--color-border);
     }
 }
 
@@ -411,7 +431,7 @@
         display: none;
         width: min(86vw, 320px);
         height: auto;
-        padding: var(--space-3);
+        padding: var(--space-3) var(--space-3) max(var(--space-4), env(safe-area-inset-bottom));
         box-sizing: border-box;
         overflow-x: hidden;
         overflow-y: auto;
@@ -425,6 +445,40 @@
 
         &.show-list {
             display: flex;
+        }
+
+        .mobile-nav-language {
+            display: block;
+            margin-top: auto;
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--color-border);
+
+            .mobile-lang-row {
+                display: flex;
+                gap: var(--space-2);
+            }
+
+            .mobile-lang-btn {
+                flex: 1;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: var(--space-1);
+                padding: var(--space-2);
+                border: 1px solid var(--color-border);
+                border-radius: var(--radius-sm);
+                background: var(--color-surface);
+                color: var(--color-text);
+                font-size: var(--text-xs);
+                text-decoration: none;
+
+                &.active {
+                    border-color: var(--color-accent);
+                    background: var(--color-surface-hover);
+                    font-weight: 600;
+                    color: var(--color-accent);
+                }
+            }
         }
 
         > li {
@@ -452,7 +506,7 @@
                 &:focus-visible,
                 &.active {
                     background: var(--color-surface-alt);
-                    color: var(--color-link) !important;
+                    color: var(--color-accent) !important;
                 }
 
                 &.active {
@@ -467,7 +521,22 @@
 
         .nav-expand {
             margin-left: auto;
+            min-width: 36px;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-1);
             color: var(--color-text-muted);
+            transform: none;
+
+            &.expanded {
+                transform: rotate(90deg);
+            }
+        }
+
+        li:has(> ul.show-list) > a .nav-expand {
+            transform: rotate(90deg);
         }
 
         li ul {

@@ -3,10 +3,10 @@
         position: fixed;
         left: 1rem;
         bottom: 1rem;
-        z-index: 2147483647;
+        z-index: 1050;
         display: none;
         width: min(23rem, calc(100vw - 2rem));
-        padding: 0.9rem 1rem;
+        padding: 0.85rem 2.25rem 0.85rem 1rem;
         border: 1px solid var(--color-border);
         border-left: 5px solid var(--color-border-strong, #777);
         border-radius: var(--radius-md, 0.55rem);
@@ -15,6 +15,21 @@
         box-shadow: var(--shadow-3, 0 8px 28px rgba(0, 0, 0, 0.24));
         font: 500 0.95rem/1.35 var(--font-ui, Arial, sans-serif);
         cursor: pointer;
+    }
+    #sqrtoj-global-verdict-toast .toast-close {
+        position: absolute;
+        top: 0.35rem;
+        right: 0.5rem;
+        background: transparent;
+        border: 0;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        font-size: 1.25rem;
+        line-height: 1;
+        padding: 0.2rem 0.4rem;
+    }
+    #sqrtoj-global-verdict-toast .toast-close:hover {
+        color: var(--color-text);
     }
     #sqrtoj-global-verdict-toast strong { display: block; font-size: 1rem; }
     #sqrtoj-global-verdict-toast small { display: block; margin-top: 0.2rem; color: var(--color-text-muted, #5f6368); font-weight: 400; }
@@ -83,7 +98,11 @@
         toast.id = 'sqrtoj-global-verdict-toast';
         toast.className = item[1];
         toast.setAttribute('role', 'alert');
-        toast.innerHTML = '<strong></strong><small></small>';
+        toast.innerHTML = '<button type="button" class="toast-close" aria-label="Close">&times;</button><strong></strong><small></small>';
+        toast.querySelector('.toast-close').onclick = function (event) {
+            event.stopPropagation();
+            if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+        };
         toast.querySelector('strong').textContent = item[0];
         toast.querySelector('small').textContent = 'Submission #' + id + ' đã có kết quả';
         toast.onclick = function () {

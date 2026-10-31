@@ -135,7 +135,7 @@
                         'G': ['Grading', 'toast-info'],
                         'P': ['Processing', 'toast-info']
                     };
-                    if (!labels[result]) return;
+                    if (!labels[result] || window.__SQRTOJ_GLOBAL_TOAST) return;
                     submissionToastShown = true; window.__submissionToastShown = true;
                     var item = labels[result];
                     var toast = $('<div id="submission-verdict-toast" class="' + item[1] + '">');
@@ -274,7 +274,7 @@
                         'IE': ['Internal Error', 'toast-error'],
                         'AB': ['Aborted', 'toast-error']
                     };
-                    if (!labels[result]) return;
+                    if (!labels[result] || window.__SQRTOJ_GLOBAL_TOAST) return;
                     window.__submissionToastShown = true;
                     var item = labels[result];
                     var toast = $('<div id="submission-verdict-toast" class="' + item[1] + '">');

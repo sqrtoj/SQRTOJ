@@ -289,6 +289,10 @@ textarea:focus {
 .copy-clipboard {
     position: relative;
     margin-top: 1.5em;
+
+    + pre {
+        margin-top: 0 !important;
+    }
 }
 
 // Bootstrap-y tabs
@@ -345,8 +349,15 @@ textarea:focus {
         padding: 0;
         list-style: outside none none;
         display: flex;
+        min-width: 0;
+        max-width: 100%;
         overflow-x: auto;
         overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
         > li {
             position: relative;
@@ -455,6 +466,8 @@ ul.pagination {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
 }
 
 .bottom-pagination-bar {
@@ -558,7 +571,7 @@ a.close {
 
 .close {
     &:focus, &:hover {
-        color: #000;
+        color: var(--color-text, #000);
         text-decoration: none;
         cursor: pointer;
         filter: alpha(opacity=50);

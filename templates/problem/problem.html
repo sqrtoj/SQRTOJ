@@ -308,10 +308,10 @@
     {% endif %}
     {% if show_languages %}
         <div id="allowed-langs">
-            <div class="toggle open unselectable">
+            <div class="toggle closed unselectable">
                 <i class="fa fa-chevron-right fa-fw"></i>{{ _('Allowed languages') }}
             </div>
-            <div class="toggled">
+            <div style="display:none" class="toggled">
                 {% with usable=problem.usable_common_names, langs=problem.languages_list() %}
                     {% for lang in langs %}
                         {%- if lang in usable -%}

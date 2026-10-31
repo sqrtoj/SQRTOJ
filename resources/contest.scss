@@ -523,9 +523,15 @@ form.contest-register-tab {
         color: var(--color-text-inverse);
     }
 
+    thead th {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+    }
+
     .rank {
         min-width: 2.4em;
-        text-align: right;
+        text-align: center;
         font-variant-numeric: tabular-nums;
     }
 
@@ -584,6 +590,7 @@ form.contest-register-tab {
 
 #org-dropdown-check-list {
     display: inline-block;
+    position: relative;
 }
 
 #org-check-list-wrapper {
@@ -596,7 +603,7 @@ form.contest-register-tab {
 
     right: auto;
     position: absolute;
-    z-index: 1;
+    z-index: 50;
 
     button {
         margin-bottom: 5px;

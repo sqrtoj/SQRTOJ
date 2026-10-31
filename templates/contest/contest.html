@@ -115,6 +115,25 @@
             word-break: break-word;
         }
 
+        /* SQRTOJ contest UI refinement */
+        #banner .contest-countdown {
+            padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2.25rem);
+        }
+        #banner #time {
+            display: inline-block;
+            max-width: 100%;
+            margin: 1rem auto 0;
+            padding: 0.55rem 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            border-radius: var(--radius-md, 0.5rem);
+            background: rgba(0, 0, 0, 0.16);
+            line-height: 1.45;
+            font-size: clamp(0.78rem, 1.5vw, 0.95rem);
+        }
+        #banner #time b {
+            color: inherit;
+        }
+
         @media (max-width: 700px) {
             #content > .tabs + .organization-tags {
                 padding-bottom: 0.55rem;
@@ -137,69 +156,48 @@
                 text-align: center;
             }
         }
-        /* SQRTOJ contest UI refinement */
-        #banner .contest-countdown {
-            padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2.25rem);
-        }
-        #banner #time {
-            display: inline-block;
-            max-width: 100%;
-            margin: 1rem auto 0;
-            padding: 0.55rem 0.9rem;
-            border: 1px solid rgba(255, 255, 255, 0.38);
-            border-radius: 999px;
-            background: rgba(0, 0, 0, 0.16);
-            line-height: 1.45;
-            font-size: clamp(0.78rem, 1.5vw, 0.95rem);
-        }
-        #banner #time b {
-            color: inherit;
-        }
         #contest-problems-table {
             width: 100%;
-            max-width: 100%;
-            table-layout: fixed;
+            table-layout: auto;
         }
         #contest-problems-table th,
         #contest-problems-table td {
-            min-width: 0;
             vertical-align: middle;
             line-height: 1.35;
         }
         #contest-problems-table th:first-child,
         #contest-problems-table td:first-child,
         #contest-problems-table .contest-problem-number {
-            width: 3.2rem;
-            min-width: 3.2rem;
-            padding-left: 0.45rem;
-            padding-right: 0.45rem;
-            text-align: center;
+            width: 1%;
             white-space: nowrap;
-            word-break: keep-all;
-            overflow-wrap: normal;
+            text-align: center;
+            padding-left: 0.6rem;
+            padding-right: 0.6rem;
         }
         #contest-problems-table .contest-problem-status {
-            width: 2.2rem;
-            min-width: 2.2rem;
-            max-width: 2.2rem;
+            width: 1%;
+            white-space: nowrap;
             text-align: center;
-            padding-left: 0.2rem;
-            padding-right: 0.2rem;
+            padding-left: 0.4rem;
+            padding-right: 0.4rem;
         }
         #contest-problems-table .contest-problem-title {
             width: auto;
-            min-width: 0;
             text-align: left;
-            padding-left: 1.5rem;
+            padding-left: 1.25rem;
             white-space: normal;
-            overflow-wrap: anywhere;
-            word-break: normal;
         }
         #contest-problems-table .contest-problem-limit {
-            width: 5.5rem;
-            min-width: 5.5rem;
+            width: 1%;
             white-space: nowrap;
             text-align: center;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        @media (max-width: 480px) {
+            #contest-problems-table .contest-problem-limit {
+                display: none !important;
+            }
         }
         #contest-problems-table th,
         #contest-problems-table td {
@@ -213,64 +211,14 @@
                 text-align: center;
             }
             #contest-problems-table {
-                font-size: 0.82rem;
+                font-size: 0.85rem;
             }
             #contest-problems-table th,
             #contest-problems-table td {
-                padding: 0.42rem 0.25rem;
-            }
-            #contest-problems-table th:first-child,
-            #contest-problems-table td:first-child,
-            #contest-problems-table .contest-problem-number {
-                width: 2.9rem;
-                min-width: 2.9rem;
+                padding: 0.42rem 0.35rem;
             }
             #contest-problems-table .contest-problem-title {
-                width: auto;
-                min-width: 0;
                 padding-left: 0.75rem;
-            }
-            #contest-problems-table .contest-problem-limit {
-                width: 4.2rem;
-                min-width: 4.2rem;
-            }
-        }
-        @media (max-width: 480px) {
-            #contest-problems-table .contest-problem-limit {
-                width: 3.7rem;
-                min-width: 3.7rem;
-                font-size: 0.76rem;
-            }
-        }
-        /* ultra-narrow contest layout */
-        @media (max-width: 480px) {
-            #contest-problems-table {
-                width: 100% !important;
-                min-width: 0 !important;
-                table-layout: fixed !important;
-            }
-            #contest-problems-table .contest-problem-limit {
-                display: none !important;
-            }
-            #contest-problems-table .contest-problem-title {
-                width: auto !important;
-                min-width: 0 !important;
-                max-width: none !important;
-                white-space: normal !important;
-                overflow-wrap: anywhere !important;
-                word-break: normal !important;
-                padding-left: 0.5rem !important;
-            }
-        }
-        @media (max-width: 240px) {
-            #contest-problems-table th:first-child,
-            #contest-problems-table td:first-child {
-                width: 2.2rem !important;
-                min-width: 2.2rem !important;
-            }
-            #contest-problems-table .contest-problem-title {
-                width: auto !important;
-                min-width: 0 !important;
             }
         }
 
@@ -453,8 +401,8 @@
                         <th class="contest-problem-status"><i class="fa fa-check"></i></th>
                     {% endif %}
                     <th class="contest-problem-title">{{ _('Problem') }}</th>
-                    <th class="contest-problem-limit"><abbr title="{{ _('Time limit') }}">{{ _('TL') }}</abbr></th>
-                    <th class="contest-problem-limit"><abbr title="{{ _('Memory limit') }}">{{ _('ML') }}</abbr></th>
+                    <th class="contest-problem-limit" title="{{ _('Time limit') }}"><abbr title="{{ _('Time limit') }}">{{ _('TL') }}</abbr></th>
+                    <th class="contest-problem-limit" title="{{ _('Memory limit') }}"><abbr title="{{ _('Memory limit') }}">{{ _('ML') }}</abbr></th>
                     {% if not is_ICPC_format %}
                         <th>{{ _('Points') }}</th>
                     {% endif %}
@@ -577,6 +525,7 @@
                 {% endif %}
                 </tbody>
             </table>
+            </div>
         </div>
         {% endif %}
         {% if has_clarifications %}
@@ -610,6 +559,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
         </div>
         {% endif %}
     {% endif %}
@@ -687,6 +637,9 @@
                 pipWindow = null;
                 dialogPlaceholder = null;
                 overlay.classList.remove('contest-submit-pip-hidden');
+                if (overlay.classList.contains('is-open')) {
+                    document.body.classList.add('contest-submit-modal-open');
+                }
                 if (pipButton) pipButton.setAttribute('aria-label', '{{ _('Open floating window') }}');
             }
 
@@ -715,6 +668,7 @@
                     dialog.parentNode.insertBefore(dialogPlaceholder, dialog);
                     shell.appendChild(dialog);
                     overlay.classList.add('contest-submit-pip-hidden');
+                    document.body.classList.remove('contest-submit-modal-open');
                     pipButton.setAttribute('aria-label', '{{ _('Close floating window') }}');
                     pipWindow.addEventListener('pagehide', restoreFromPip, {once: true});
                 } catch (error) {
@@ -763,6 +717,19 @@
                     source.classList.add('contest-source-editor');
                     source.rows = 18;
                     source.placeholder = '{{ _('Paste your source code here...') }}';
+                }
+                var fileSelect = form.querySelector('#file_select');
+                if (fileSelect) {
+                    fileSelect.onchange = function () {
+                        var file = fileSelect.files && fileSelect.files[0];
+                        if (file && source) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                source.value = e.target.result;
+                            };
+                            reader.readAsText(file);
+                        }
+                    };
                 }
                 var sourceLabel = form.querySelector('label[for="file_select"]');
                 if (sourceLabel) sourceLabel.innerHTML = '<i>{{ _('Source code') }}</i>';
