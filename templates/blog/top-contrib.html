@@ -21,14 +21,8 @@
                 </li>
             {% endfor %}
         </ol>
-        <div class="leaderboard-footer-wrap">
-            <table class="table bottom leaderboard-footer">
-                <tbody>
-                    <tr>
-                        <td class="right"><a href="{{ url('contributors_list') }}">{{ _('View all') }} >>></a></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="leaderboard-footer">
+            <a class="leaderboard-footer-right" href="{{ url('contributors_list') }}">{{ _('View all') }} &raquo;</a>
         </div>
     </div>
 </div>

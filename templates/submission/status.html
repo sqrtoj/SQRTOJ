@@ -16,28 +16,29 @@
         }
         .contest-toast {
             pointer-events: auto;
-            background: #ffffff;
-            color: #333333;
+            background: var(--color-surface-raised, #ffffff);
+            color: var(--color-text, #333333);
             padding: 14px 18px;
             margin-bottom: 12px;
-            border-left: 6px solid #888;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border: 1px solid var(--color-border);
+            border-left: 6px solid var(--color-border-strong, #888);
+            box-shadow: var(--shadow-2);
             min-width: 250px;
-            font-family: sans-serif;
+            font-family: inherit;
             animation: toastEnter 0.4s ease-out;
-            border-radius: 2px;
+            border-radius: var(--radius-md);
         }
         @keyframes toastEnter {
             from { transform: translateX(120%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        .toast-title { font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-        .toast-title small { font-weight: normal; color: #777; font-size: 0.85em; }
+        .toast-title { font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 4px; }
+        .toast-title small { font-weight: normal; color: var(--color-text-muted); font-size: 0.85em; }
         .toast-body { line-height: 1.5; font-size: 0.95em; }
-        .contest-toast.success { border-left-color: #28a745; }
-        .contest-toast.error { border-left-color: #dc3545; }
-        .rank-up { color: #28a745; font-weight: bold; }
-        .rank-down { color: #dc3545; font-weight: bold; }
+        .contest-toast.success { border-left-color: var(--color-success-fg, #28a745); }
+        .contest-toast.error { border-left-color: var(--color-danger-fg, #dc3545); }
+        .rank-up { color: var(--color-success-fg, #28a745); font-weight: bold; }
+        .rank-down { color: var(--color-danger-fg, #dc3545); font-weight: bold; }
         #submission-verdict-toast {
             position: fixed;
             left: 1rem;
@@ -46,11 +47,12 @@
             display: none;
             width: min(22rem, calc(100vw - 2rem));
             padding: 0.85rem 1rem;
-            border-left: 4px solid #777;
-            border-radius: 0.55rem;
-            background: rgba(35, 25, 20, 0.96);
-            color: #fff;
-            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--color-border);
+            border-left: 4px solid var(--color-border-strong, #777);
+            border-radius: var(--radius-md);
+            background: var(--color-surface-raised, rgba(35, 25, 20, 0.96));
+            color: var(--color-text, #fff);
+            box-shadow: var(--shadow-3);
             font-size: 0.95rem;
             line-height: 1.35;
             pointer-events: none;
@@ -64,10 +66,10 @@
         #submission-verdict-toast small {
             opacity: 0.8;
         }
-        #submission-verdict-toast.toast-ac { border-left-color: #35d07f; }
+        #submission-verdict-toast.toast-ac { border-left-color: var(--verdict-ac-bg, #35d07f); }
         #submission-verdict-toast.toast-wa,
-        #submission-verdict-toast.toast-error { border-left-color: #ff6374; }
-        #submission-verdict-toast.toast-info { border-left-color: #62b0ff; }
+        #submission-verdict-toast.toast-error { border-left-color: var(--verdict-wa-bg, #ff6374); }
+        #submission-verdict-toast.toast-info { border-left-color: var(--color-accent, #62b0ff); }
         @keyframes submissionToastIn {
             from { transform: translateY(0.75rem); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -395,8 +397,7 @@
                 <form action="{{ url('submission_abort', submission.id) }}" method="post"
                       title="{{ _('Press Ctrl-Enter or Command-Enter to abort.') }}">
                     {% csrf_token %}
-                    <input style="float:left" type="submit" value="{{ _('Abort') }}" class="button">
-                    <br><br>
+                    <input type="submit" value="{{ _('Abort') }}" class="button btn-danger">
                 </form>
             </div>
         {% endif %}

@@ -78,13 +78,14 @@ $is_light_theme: true !default;
 
         &:hover, &:active {
             background: var(--color-surface-alt);
+            border-color: var(--color-border-strong);
         }
     }
 
     // Danger variant.
     &.btn-danger, &.delete {
-        background: var(--color-danger-fg);
-        color: var(--color-accent-contrast) !important;
+        background: var(--color-danger, #c1121f);
+        color: var(--color-on-danger, #ffffff) !important;
 
         &:hover, &:active {
             filter: brightness(0.92);

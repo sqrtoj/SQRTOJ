@@ -21,10 +21,10 @@
 {% block body %}
     {% for problem in contest_problems %}
         <div style="display: flex; flex-direction: column; align-items: center;">
-            <div class="content-description" style="width: 70%;">
+            <div class="content-description" style="width: 100%; max-width: 900px; box-sizing: border-box;">
                 <div class="problem_container">
-                    <div style="display: flex">
-                        <h2 style="margin-top: 0.5em; margin-right: 0.5em;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2);">
+                        <h2 style="margin: 0.5em 0;">
                             {% if problem.id in completed_problem_ids %}
                                 <a href="{{ url('user_submissions', problem.code, request.user.username) }}">
                                     <i class="solved-problem-color fa fa-check-circle"></i>
@@ -36,7 +36,7 @@
                             {% endif %}
                             <a href="{{ url('problem_detail', problem.code) }}">{{ problem.i18n_name or problem.name }}</a>
                         </h2>
-                        <a href="{{ url('problem_submit', problem.code) }}" class="button" style="display: inline; margin: auto 0;">
+                        <a href="{{ url('problem_submit', problem.code) }}" class="button" style="display: inline-flex; align-items: center; margin: 0.5em 0;">
                             {{ _('Submit') }}
                         </a>
                     </div>

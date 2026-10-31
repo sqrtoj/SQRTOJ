@@ -91,6 +91,25 @@ span.organization {
     td.user-name {
         text-align: left;
         padding-left: var(--space-3);
+
+        .user-name-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            min-width: 0;
+        }
+
+        .user-name-left {
+            min-width: 0;
+        }
+
+        .user-name-right {
+            min-width: 0;
+            text-align: right;
+            margin-left: auto;
+        }
     }
 
     th.points,
@@ -129,12 +148,13 @@ span.organization {
         }
     }
 
-    // The full-name column is secondary identity info; drop it on narrow
-    // screens so rank + username + scores stay readable. The table is wrapped
-    // in .h-scrollable-table for any residual overflow.
+    // Secondary columns drop on narrow screens so rank + username + points stay
+    // readable without horizontal overflow. The table is wrapped in .h-scrollable-table.
     @media (max-width: 700px) {
         th.full-name,
-        td.full-name {
+        td.full-name,
+        th.problems,
+        td.user-problems {
             display: none;
         }
     }
@@ -168,6 +188,7 @@ span.organization {
     display: inline-block;
     vertical-align: top;
     width: 225px;
+    margin-left: auto;
 
     .select2-selection__arrow {
         display: none;

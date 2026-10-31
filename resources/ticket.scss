@@ -37,6 +37,24 @@ form#ticket-form {
     }
 }
 
+@media (max-width: 599px) {
+    #ticket-list-container {
+        display: flex;
+        flex-direction: column;
+
+        & > main {
+            order: 1;
+        }
+
+        & > aside {
+            order: 2;
+            margin-top: var(--space-4);
+            max-width: 100%;
+            margin-left: 0;
+        }
+    }
+}
+
 @media (min-width: 600px) {
     #ticket-list-container {
         display: flex;
@@ -139,13 +157,14 @@ div.ticket-title {
     margin: 5px 0 10px;
 }
 
-// Flat token buttons (Phase 7): the close/upvote action uses the brand accent,
-// the open/reopen action the danger color. Replaces the legacy glossy gradients
-// so ticket controls are theme-aware and match the site-wide button primitive.
+// Flat token buttons (Phase 7): close/upvote actions use the brand accent,
+// while open/reopen and undo-vote actions use secondary styling for a calm,
+// unified look that matches the site-wide button primitive.
 .close-ticket, .vote-good {
     display: block;
     width: 100%;
     background: var(--color-accent);
+    color: var(--color-accent-contrast) !important;
     font-weight: 600;
 
     &:hover {
@@ -161,11 +180,14 @@ div.ticket-title {
 .open-ticket, .vote-norm {
     display: block;
     width: 100%;
-    background: var(--color-danger-fg);
+    background: var(--color-surface-raised);
+    color: var(--color-text) !important;
+    border: 1px solid var(--color-border);
     font-weight: 600;
 
     &:hover {
-        filter: brightness(0.92);
+        background: var(--color-surface-alt);
+        border-color: var(--color-border-strong);
     }
 
     &:focus-visible {

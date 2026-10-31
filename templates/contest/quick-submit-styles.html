@@ -16,29 +16,35 @@
             min-height: 2.35rem;
             padding: 0.55rem 0.85rem;
             border: 0;
-            border-radius: 0.65rem;
-            background: linear-gradient(135deg, #ffad5a, #f47b37);
-            color: #281812 !important;
-            box-shadow: 0 0.3rem 0.75rem rgba(79, 34, 12, 0.22);
+            border-radius: var(--radius-md, 0.65rem);
+            background: var(--color-accent);
+            color: var(--color-accent-contrast) !important;
+            box-shadow: var(--shadow-1);
             font-size: 0.86rem;
             font-weight: 700;
             line-height: 1;
             white-space: nowrap;
             text-decoration: none !important;
             cursor: pointer;
-            transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+            transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
         }
         .contest-my-submissions {
-            background: rgba(55, 30, 20, 0.86);
-            color: #fff !important;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: var(--color-surface-raised);
+            color: var(--color-text) !important;
+            border: 1px solid var(--color-border);
         }
         .contest-quick-submit:hover,
+        .contest-quick-submit:focus-visible {
+            background: var(--color-accent-hover);
+            box-shadow: var(--shadow-2);
+            transform: translateY(-1px);
+            outline: none;
+        }
         .contest-my-submissions:hover,
-        .contest-quick-submit:focus-visible,
         .contest-my-submissions:focus-visible {
-            filter: saturate(1.1) brightness(1.06);
-            box-shadow: 0 0.45rem 1rem rgba(79, 34, 12, 0.3);
+            background: var(--color-surface-alt);
+            border-color: var(--color-border-strong);
+            box-shadow: var(--shadow-2);
             transform: translateY(-1px);
             outline: none;
         }
@@ -240,13 +246,14 @@
             min-height: 2.7rem;
             padding: 0.65rem 1rem;
             border: 0;
-            border-radius: 0.65rem;
-            background: linear-gradient(135deg, #ffad5a, #f47b37);
-            color: #251912;
-            font-weight: 800;
-            box-shadow: 0 0.3rem 0.75rem rgba(79, 34, 12, 0.22);
+            border-radius: var(--radius-md, 0.65rem);
+            background: var(--color-accent);
+            color: var(--color-accent-contrast) !important;
+            font-weight: 700;
+            box-shadow: var(--shadow-1);
             cursor: pointer;
             margin-inline: auto;
+            transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
         }
         #contest-submit-body .contest-submit-actions button[type="submit"] i,
         #contest-submit-body .contest-submit-actions input[type="submit"] + i {
@@ -256,7 +263,8 @@
         #contest-submit-body .contest-submit-actions button[type="submit"]:focus-visible,
         #contest-submit-body .contest-submit-actions input[type="submit"]:hover,
         #contest-submit-body .contest-submit-actions input[type="submit"]:focus-visible {
-            filter: brightness(1.06) saturate(1.08);
+            background: var(--color-accent-hover);
+            box-shadow: var(--shadow-2);
             outline: none;
             transform: translateY(-1px);
         }
@@ -300,13 +308,14 @@
             min-height: 2.75rem;
             padding: 0.65rem 1.05rem;
             border: 0;
-            border-radius: 0.65rem;
-            background: linear-gradient(135deg, #ffad5a, #f47b37);
-            color: #251912;
-            font-weight: 800;
-            box-shadow: 0 0.3rem 0.75rem rgba(79, 34, 12, 0.22);
+            border-radius: var(--radius-md, 0.65rem);
+            background: var(--color-accent);
+            color: var(--color-accent-contrast) !important;
+            font-weight: 700;
+            box-shadow: var(--shadow-1);
             transform: translate(-50%, -50%);
             cursor: pointer;
+            transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
         }
         #contest-submit-footer-button:disabled {
             cursor: not-allowed;
@@ -315,9 +324,9 @@
         }
         #contest-submit-footer-button:not(:disabled):hover,
         #contest-submit-footer-button:not(:disabled):focus-visible {
-            filter: brightness(1.06) saturate(1.08);
+            background: var(--color-accent-hover);
             outline: none;
-            box-shadow: 0 0.45rem 1rem rgba(79, 34, 12, 0.3);
+            box-shadow: var(--shadow-2);
         }
         #contest-submit-full-link { color: #ffc477; font-size: 0.82rem; }
         body.contest-submit-modal-open { overflow: hidden; }

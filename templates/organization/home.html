@@ -91,7 +91,7 @@
                         {% if is_member %}
                             <form method="post" action="{{ url('leave_organization', organization.slug) }}">
                                 {% csrf_token %}
-                                <input type="submit" class="unselectable button full leave-organization" value="{{ _('Leave organization') }}">
+                                <input type="submit" class="unselectable button full leave-organization btn-secondary" value="{{ _('Leave organization') }}">
                             </form>
                         {% elif organization.is_open %}
                             <form method="post" action="{{ url('join_organization', organization.slug) }}">
