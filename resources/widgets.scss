@@ -317,6 +317,18 @@ textarea:focus {
     justify-content: space-between;
     flex-wrap: wrap;
 
+    @media (max-width: 960px) {
+        flex-direction: column;
+        align-items: stretch;
+
+        > ul {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            flex: 1 1 100%;
+        }
+    }
+
     .tab {
         .tab-icon {
             padding-right: 0.3em;
@@ -368,6 +380,7 @@ textarea:focus {
         > li {
             position: relative;
             display: block;
+            flex-shrink: 0;
 
             &.active > a, &.active > span {
                 @extend .ul_tab_a_active;

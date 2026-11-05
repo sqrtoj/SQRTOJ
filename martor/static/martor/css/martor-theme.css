@@ -1,33 +1,143 @@
-.main-martor .martor-toolbar .ui.basic.icon.button,
-.main-martor .martor-toolbar .ui.basic.icon.buttons .button,
+.main-martor .martor-toolbar .ui.buttons,
+.main-martor .martor-toolbar .ui.basic.buttons,
+.main-martor .martor-toolbar .ui.basic.icon.buttons {
+  border: none !important;
+  border-color: transparent !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.main-martor .martor-toolbar .button,
+.main-martor .martor-toolbar .ui.button,
 .main-martor .martor-toolbar .ui.icon.button,
-.main-martor .martor-toolbar .button {
-  color: var(--color-text-secondary, #111);
+.main-martor .martor-toolbar .ui.basic.button,
+.main-martor .martor-toolbar .ui.basic.icon.button,
+.main-martor .martor-toolbar .ui.basic.buttons .button,
+.main-martor .martor-toolbar .ui.basic.icon.buttons .button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  padding: 0 !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  margin: 0 1px !important;
+  box-sizing: border-box !important;
+  border: none !important;
+  border-color: transparent !important;
+  border-radius: var(--radius-sm, 4px) !important;
+  -webkit-box-shadow: none !important;
   box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+  color: var(--color-text-secondary, #111) !important;
   text-shadow: none !important;
+  transition: background-color var(--motion-fast, 0.15s) var(--ease-standard, ease),
+    color var(--motion-fast, 0.15s) var(--ease-standard, ease);
 }
 
-.main-martor .martor-toolbar .ui.basic.icon.button > .icon,
-.main-martor .martor-toolbar .ui.basic.icon.buttons .button > .icon,
-.main-martor .martor-toolbar .ui.icon.button > .icon,
-.main-martor .martor-toolbar .button > .icon {
-  color: currentColor;
-  opacity: 1;
+.main-martor .martor-toolbar .button > .icon,
+.main-martor .martor-toolbar .button > i {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  color: currentColor !important;
+  opacity: 1 !important;
 }
 
-.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.button,
-.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.buttons .button,
-.main-martor.martor-theme-dark .martor-toolbar .ui.icon.button,
-.main-martor.martor-theme-dark .martor-toolbar .button {
-  color: var(--color-text-secondary, #c9bbae);
+.main-martor .martor-toolbar .markdown-image-upload input[type="file"],
+.main-martor .martor-toolbar .markdown-image-upload input[type="file"].button {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
   box-shadow: none !important;
-  text-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  outline: none !important;
 }
 
-.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.button:hover,
-.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.buttons .button:hover,
-.main-martor.martor-theme-dark .martor-toolbar .ui.icon.button:hover,
-.main-martor.martor-theme-dark .martor-toolbar .button:hover {
+.main-martor .martor-toolbar .button:hover,
+.main-martor .martor-toolbar .button:focus,
+.main-martor .martor-toolbar .button:focus-visible,
+.main-martor .martor-toolbar .button:active,
+.main-martor .martor-toolbar .button.active,
+.main-martor .martor-toolbar .ui.button:hover,
+.main-martor .martor-toolbar .ui.button:focus,
+.main-martor .martor-toolbar .ui.button:focus-visible,
+.main-martor .martor-toolbar .ui.button:active,
+.main-martor .martor-toolbar .ui.button.active {
+  background: var(--color-surface, #e0e0e0) !important;
+  color: var(--color-accent, #e36209) !important;
+  border: none !important;
+  border-color: transparent !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+:root[data-theme="dark"] .main-martor .martor-toolbar .button,
+html[data-theme="dark"] .main-martor .martor-toolbar .button,
+body[data-theme="dark"] .main-martor .martor-toolbar .button,
+.main-martor.martor-theme-dark .martor-toolbar .button,
+:root[data-theme="dark"] .main-martor .martor-toolbar .ui.button,
+html[data-theme="dark"] .main-martor .martor-toolbar .ui.button,
+body[data-theme="dark"] .main-martor .martor-toolbar .ui.button,
+.main-martor.martor-theme-dark .martor-toolbar .ui.button {
+  color: var(--color-text-secondary, #c9bbae) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+:root[data-theme="dark"] .main-martor .martor-toolbar .button:hover,
+:root[data-theme="dark"] .main-martor .martor-toolbar .button:focus,
+:root[data-theme="dark"] .main-martor .martor-toolbar .button:focus-visible,
+:root[data-theme="dark"] .main-martor .martor-toolbar .button:active,
+:root[data-theme="dark"] .main-martor .martor-toolbar .button.active,
+html[data-theme="dark"] .main-martor .martor-toolbar .button:hover,
+html[data-theme="dark"] .main-martor .martor-toolbar .button:focus,
+html[data-theme="dark"] .main-martor .martor-toolbar .button:focus-visible,
+html[data-theme="dark"] .main-martor .martor-toolbar .button:active,
+html[data-theme="dark"] .main-martor .martor-toolbar .button.active,
+body[data-theme="dark"] .main-martor .martor-toolbar .button:hover,
+body[data-theme="dark"] .main-martor .martor-toolbar .button:focus,
+body[data-theme="dark"] .main-martor .martor-toolbar .button:focus-visible,
+body[data-theme="dark"] .main-martor .martor-toolbar .button:active,
+body[data-theme="dark"] .main-martor .martor-toolbar .button.active,
+.main-martor.martor-theme-dark .martor-toolbar .button:hover,
+.main-martor.martor-theme-dark .martor-toolbar .button:focus,
+.main-martor.martor-theme-dark .martor-toolbar .button:focus-visible,
+.main-martor.martor-theme-dark .martor-toolbar .button:active,
+.main-martor.martor-theme-dark .martor-toolbar .button.active {
   color: var(--color-accent, #f28b4a) !important;
   background: var(--color-surface, #211812) !important;
+  border: none !important;
+  border-color: transparent !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.main-martor .martor-toolbar .ui.inverted.button,
+.main-martor .martor-toolbar .ui.basic.inverted.button,
+.main-martor .martor-toolbar .ui.basic.inverted.buttons .button {
+  border: none !important;
+  border-color: transparent !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }

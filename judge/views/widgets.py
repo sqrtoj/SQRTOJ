@@ -48,7 +48,12 @@ def django_uploader(image, user_id=None):
                        urljoin(settings.MEDIA_URL, settings.MARTOR_UPLOAD_MEDIA_DIR))
     if not url_base.endswith('/'):
         url_base += '/'
-    return json.dumps({'status': 200, 'name': '', 'link': urljoin(url_base, name)})
+    image_name = getattr(image, 'name', '') or ''
+    return json.dumps({
+        'status': 200,
+        'name': image_name,
+        'link': urljoin(url_base, name),
+    })
 
 
 def pdf_statement_uploader(statement):
@@ -65,15 +70,18 @@ def pdf_statement_uploader(statement):
 def submission_uploader(submission_file, problem_code, user_id):
     ext = os.path.splitext(submission_file.name)[1]
     name = str(uuid.uuid4()) + ext
-    default_storage.save(
-        os.path.join(settings.SUBMISSION_FILE_UPLOAD_MEDIA_DIR, problem_code, str(user_id), name),
-        submission_file,
+    storage_path = os.path.join(
+        settings.SUBMISSION_FILE_UPLOAD_MEDIA_DIR,
+        str(problem_code),
+        str(user_id),
+        name,
     )
+    default_storage.save(storage_path, submission_file)
     url_base = getattr(settings, 'SUBMISSION_FILE_UPLOAD_URL_PREFIX',
                        urljoin(settings.MEDIA_URL, settings.SUBMISSION_FILE_UPLOAD_MEDIA_DIR))
     if not url_base.endswith('/'):
         url_base += '/'
-    return urljoin(url_base, os.path.join(problem_code, str(user_id), name))
+    return urljoin(url_base, f'{problem_code}/{user_id}/{name}')
 
 
 @login_required
@@ -89,14 +97,28 @@ def martor_image_uploader(request):
 
     image = request.FILES['markdown-image-upload']
     try:
+        validate_image_upload(image, user_id=request.user.pk)
         if request.user.is_staff or request.user.has_perm('judge.can_upload_image'):
             data = django_uploader(image, user_id=request.user.pk)
         else:
             data = imgur_uploader(image)
     except ValidationError as error:
-        return HttpResponseBadRequest(json.dumps({'status': 400, 'error': error.messages[0]}),
-                                      content_type='application/json')
-    return HttpResponse(data, content_type='application/json')
+        return HttpResponseBadRequest(
+            json.dumps({'status': 400, 'error': error.messages[0]}),
+            content_type='application/json',
+        )
+
+    status_code = 200
+    try:
+        payload = json.loads(data)
+        if isinstance(payload, dict) and 'status' in payload:
+            raw_status = int(payload['status'])
+            if 100 <= raw_status <= 599:
+                status_code = raw_status
+    except (ValueError, TypeError):
+        pass
+
+    return HttpResponse(data, content_type='application/json', status=status_code)
 
 
 def csrf_failure(request: HttpRequest, reason=''):

@@ -4,49 +4,77 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: flex-end;
-            gap: 0.55rem;
+            gap: 0.6rem;
             margin-left: auto;
         }
-        .contest-quick-submit,
-        .contest-my-submissions {
+        .contest-section-actions .button,
+        .contest-section-actions .contest-btn,
+        .contest-section-actions .contest-my-submissions,
+        .contest-section-actions .contest-download-data,
+        .contest-btn,
+        .contest-my-submissions,
+        .contest-download-data,
+        .contest-quick-submit {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.55rem;
-            min-height: 2.35rem;
-            padding: 0.55rem 0.85rem;
-            border: 0;
-            border-radius: var(--radius-md, 0.65rem);
+            gap: 0.5rem;
+            box-sizing: border-box;
+            height: 2.4rem;
+            min-height: 2.4rem;
+            padding: 0 1rem;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md, 0.5rem);
             background: var(--color-accent);
             color: var(--color-accent-contrast) !important;
             box-shadow: var(--shadow-1);
-            font-size: 0.86rem;
-            font-weight: 700;
+            font-size: 0.875rem;
+            font-weight: 600;
             line-height: 1;
             white-space: nowrap;
             text-decoration: none !important;
             cursor: pointer;
-            transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+            transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease;
         }
-        .contest-my-submissions {
+        .contest-my-submissions,
+        .contest-btn--secondary {
             background: var(--color-surface-raised);
             color: var(--color-text) !important;
             border: 1px solid var(--color-border);
         }
+        .contest-download-data,
+        .contest-btn--primary {
+            background: var(--color-accent);
+            border: 1px solid transparent;
+            color: var(--color-accent-contrast) !important;
+        }
+        .contest-download-data:hover,
+        .contest-download-data:focus-visible,
+        .contest-download-data:active,
+        .contest-btn--primary:hover,
+        .contest-btn--primary:focus-visible,
+        .contest-btn--primary:active,
         .contest-quick-submit:hover,
-        .contest-quick-submit:focus-visible {
+        .contest-quick-submit:focus-visible,
+        .contest-quick-submit:active {
             background: var(--color-accent-hover);
             box-shadow: var(--shadow-2);
             transform: translateY(-1px);
             outline: none;
+            text-decoration: none !important;
         }
         .contest-my-submissions:hover,
-        .contest-my-submissions:focus-visible {
+        .contest-my-submissions:focus-visible,
+        .contest-my-submissions:active,
+        .contest-btn--secondary:hover,
+        .contest-btn--secondary:focus-visible,
+        .contest-btn--secondary:active {
             background: var(--color-surface-alt);
             border-color: var(--color-border-strong);
             box-shadow: var(--shadow-2);
             transform: translateY(-1px);
             outline: none;
+            text-decoration: none !important;
         }
         .contest-submit-heading {
             width: 6.1rem;

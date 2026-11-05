@@ -316,7 +316,7 @@
         <hr>
 
         {% if no_judges %}
-            <span style="color: red">{{ _('No judge is available for this problem.') }}</span>
+            <span style="color: var(--color-danger, #e7796e); font-weight: var(--weight-semibold, 600);">{{ _('No judge is available for this problem.') }}</span>
         {% else %}
             <div class="submit-bar">
                 {{ form.judge }}

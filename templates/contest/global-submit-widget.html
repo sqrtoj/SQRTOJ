@@ -712,12 +712,857 @@ html.sqrtoj-cw-popup #sqrtoj-contest-widget .sqrtoj-cw-panel {
 <div class="sqrtoj-cw-body" id="sqrtoj-cw-body"><div class="sqrtoj-cw-view" id="sqrtoj-cw-recent-view"><div class="sqrtoj-cw-toolbar"><span style="flex:1;font-weight:800">Bài nộp gần đây</span><button type="button" class="sqrtoj-cw-refresh" id="sqrtoj-cw-refresh" title="Làm mới"><i class="fa fa-refresh"></i></button></div><div class="sqrtoj-cw-list" id="sqrtoj-cw-submissions"><div class="sqrtoj-cw-loading">Bấm “Làm mới” để tải bài nộp.</div></div></div><div class="sqrtoj-cw-view" id="sqrtoj-cw-submit-view" hidden><div class="sqrtoj-cw-toolbar"><input class="sqrtoj-cw-search" id="sqrtoj-cw-search" type="search" placeholder="Tìm bài…" aria-label="Tìm bài"></div><div class="sqrtoj-cw-list" id="sqrtoj-cw-list"></div></div></div>
 </section></div>
 <script id="sqrtoj-contest-widget-js">
-(function(){'use strict';if(location.search.indexOf('sqrtoj_submit_window=1')>=0)document.documentElement.classList.add('sqrtoj-cw-popup');var PROFILE_DEFAULT={% if request.user.is_authenticated %}{% if request.profile.quick_submit_enabled %}true{% else %}false{% endif %}{% else %}true{% endif %},KEY='sqrtoj_active_contest_widget_v1',USER=(window.user&&window.user.name)||'',SUB_URL='/submissions/user/'+encodeURIComponent(USER)+'/',root=document.getElementById('sqrtoj-contest-widget');if(!root)return;var WIDGET_DISABLED=true;if(WIDGET_DISABLED){root.hidden=true;try{if(window.documentPictureInPicture&&window.documentPictureInPicture.window)window.documentPictureInPicture.window.close()}catch(e){}if(location.search.indexOf('sqrtoj_submit_window=1')>=0){try{window.close()}catch(e){}}return}var launcher=document.getElementById('sqrtoj-cw-launcher'),panel=document.getElementById('sqrtoj-cw-panel'),body=document.getElementById('sqrtoj-cw-body'),list=document.getElementById('sqrtoj-cw-list'),search=document.getElementById('sqrtoj-cw-search'),subList=document.getElementById('sqrtoj-cw-submissions'),nameEl=document.getElementById('sqrtoj-cw-contest-name'),subCount=document.getElementById('sqrtoj-cw-sub-count'),toggleEl=document.getElementById('sqrtoj-cw-popup-toggle'),pinBtn=document.getElementById('sqrtoj-cw-pin'),toggleLabel=document.querySelector('.sqrtoj-cw-toggle-label'),refreshBtn=document.getElementById('sqrtoj-cw-refresh'),tabs=[].slice.call(document.querySelectorAll('[data-cw-tab]')),views={recent:document.getElementById('sqrtoj-cw-recent-view'),submit:document.getElementById('sqrtoj-cw-submit-view')};var HOST_IS_SQRTOJ=/^(?:www\.)?sqrtoj\.edu\.vn$/.test(location.hostname)||location.hostname==='163.61.72.194',data=null,pipWindow=null,pipPlaceholder=null,lastSubmissions=[],submissionPoll=null,POPUP_KEY='sqrtoj_popup_enabled_v1',POPUP_CONTEST_KEY='sqrtoj_popup_contest_key_v1',CLOSE_KEY='sqrtoj_popup_force_close_v1',JOIN_KEY='sqrtoj_popup_join_navigation_v1',popupEnabled=PROFILE_DEFAULT;
-function read(){try{var x=JSON.parse(localStorage.getItem(KEY)||'null');return x&&Array.isArray(x.problems)&&x.problems.length?x:null}catch(e){return null}}function applyContestPopupPreference(){if(!data)return;var k=String(data.key||'');try{var prior=localStorage.getItem(POPUP_CONTEST_KEY);if(!k||prior!==k){popupEnabled=PROFILE_DEFAULT;localStorage.setItem(POPUP_KEY,popupEnabled?'1':'0');if(k)localStorage.setItem(POPUP_CONTEST_KEY,k)}else{popupEnabled=localStorage.getItem(POPUP_KEY)!=='0'}}catch(e){popupEnabled=PROFILE_DEFAULT}syncPopupToggle()}function show(){root.hidden=false;if(IS_POPUP&&!docPipWindow){panel.hidden=true;launcher.hidden=true;return}panel.hidden=false;launcher.hidden=true}function hide(){panel.hidden=true;launcher.hidden=true;root.hidden=false}function syncPopupToggle(){if(!toggleEl)return;toggleEl.checked=popupEnabled;if(toggleLabel)toggleLabel.textContent=popupEnabled?'Bật':'Tắt'}function setPopupEnabled(enabled){popupEnabled=!!enabled;try{localStorage.setItem(POPUP_KEY,popupEnabled?'1':'0')}catch(e){}syncPopupToggle();if(!popupEnabled&&pipWindow){pipWindow.close();restoreFromPip()}}function renderProblemList(){var q=(search.value||'').toLowerCase().trim();list.innerHTML='';var n=0;data.problems.forEach(function(p,i){var hay=(p.label+' '+p.code+' '+p.name).toLowerCase();if(q&&hay.indexOf(q)<0)return;var b=document.createElement('button');b.type='button';b.className='sqrtoj-cw-problem';b.innerHTML='<span class="sqrtoj-cw-letter">'+(p.label||String.fromCharCode(65+i))+'</span><span class="sqrtoj-cw-problem-copy"><span class="sqrtoj-cw-problem-name"></span><span class="sqrtoj-cw-problem-meta">Chọn bài để mở khung nộp code</span></span>';b.querySelector('.sqrtoj-cw-problem-name').textContent=p.name||p.code;b.onclick=function(){selectProblem(p)};list.appendChild(b);n++});if(!n){var e=document.createElement('div');e.className='sqrtoj-cw-loading';e.textContent='Không tìm thấy bài phù hợp.';list.appendChild(e)}}
-var submitView=views.submit,submitHomeMarkup=submitView.innerHTML;function setTab(tab){tabs.forEach(function(b){b.classList.toggle('is-active',b.getAttribute('data-cw-tab')===tab)});Object.keys(views).forEach(function(k){views[k].hidden=k!==tab});if(tab==='submit')renderProblemList()}
-function loadSubmissions(){if(!USER||USER==='AnonymousUser'){subList.innerHTML='<div class="sqrtoj-cw-error">Bạn cần đăng nhập để xem bài nộp.</div>';return}subList.innerHTML='<div class="sqrtoj-cw-loading">Đang tải bài nộp…</div>';fetch(SUB_URL+'?quick=1&_='+Date.now(),{credentials:'same-origin',cache:'no-store',headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){if(!r.ok)throw Error(r.status);return r.text()}).then(function(html){var doc=new DOMParser().parseFromString(html,'text/html'),rows=[].slice.call(doc.querySelectorAll('.submission-row')).slice(0,12);lastSubmissions=rows.map(function(row){var id=row.id||'',name=(row.querySelector('.sub-main .name a')||{}).textContent||'Bài nộp #'+id,status=(row.querySelector('.sub-result .status')||{}).textContent||'—',language=(row.querySelector('.sub-result .language')||{}).textContent||'',time=(row.querySelector('.sub-info .time')||{}).textContent||'';return{id:id,name:name.trim(),status:status.trim(),language:language.trim(),time:time.trim()}});subCount.textContent=String(lastSubmissions.length);subList.innerHTML='';if(!lastSubmissions.length){subList.innerHTML='<div class="sqrtoj-cw-loading">Chưa có bài nộp gần đây.</div>';return}lastSubmissions.forEach(function(s){var a=document.createElement('a');a.className='sqrtoj-cw-submission';a.href='/submission/'+encodeURIComponent(s.id);a.target='_blank';a.rel='noopener';var cls=/^AC$/i.test(s.status)?'ac':/^WA$/i.test(s.status)?'wa':/queue|run|pend|test/i.test(s.status)?'queued':'';a.innerHTML='<span class="sqrtoj-cw-verdict '+cls+'"></span><span class="sqrtoj-cw-sub-copy"><span class="sqrtoj-cw-sub-name"></span><span class="sqrtoj-cw-sub-meta"></span></span>';a.querySelector('.sqrtoj-cw-verdict').textContent=s.status;a.querySelector('.sqrtoj-cw-sub-name').textContent=s.name;a.querySelector('.sqrtoj-cw-sub-meta').textContent=[s.language,s.time].filter(Boolean).join(' · ');subList.appendChild(a)})}).catch(function(){subList.innerHTML='<div class="sqrtoj-cw-error">Không tải được bài nộp. Hãy bấm làm mới.</div>'})}
-function startSubmissionPolling(){}var docPipWindow=null,pinHomeParent=null,pinHomeNext=null,pipRequestPending=false,PIP_ACTIVE_KEY='sqrtoj_doc_pip_active_v1';function pinToast(message){var t=document.createElement('div');t.className='sqrtoj-cw-toast';t.textContent=message;document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove()},3500)}function copyPipStyles(w){[].slice.call(document.querySelectorAll('link[rel="stylesheet"]')).forEach(function(node){try{var l=w.document.createElement('link');l.rel='stylesheet';l.href=new URL(node.getAttribute('href')||node.href,location.href).href;w.document.head.appendChild(l)}catch(e){}});[].slice.call(document.querySelectorAll('style')).forEach(function(node){try{var st=w.document.createElement('style');st.textContent=node.textContent||'';w.document.head.appendChild(st)}catch(e){}});var s=w.document.createElement('style');s.textContent='html,body{margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important}';w.document.head.appendChild(s)}async function pinWidget(){if(!IS_POPUP||!('documentPictureInPicture' in window)){pinToast('Trình duyệt này không hỗ trợ ghim cửa sổ PiP.');return}if(window.documentPictureInPicture.window){try{window.documentPictureInPicture.window.focus()}catch(e){}return}try{pinHomeParent=root.parentNode;pinHomeNext=root.nextSibling;docPipWindow=await window.documentPictureInPicture.requestWindow({width:350,height:480,disallowReturnToOpener:true});try{localStorage.setItem(PIP_ACTIVE_KEY,'1')}catch(e){}docPipWindow.document.documentElement.classList.add('sqrtoj-cw-popup');copyPipStyles(docPipWindow);docPipWindow.document.body.appendChild(root);show();docPipWindow.addEventListener('pagehide',function(){if(pinHomeParent){try{pinHomeParent.insertBefore(root,pinHomeNext)}catch(e){pinHomeParent.appendChild(root)}}docPipWindow=null;try{localStorage.removeItem(PIP_ACTIVE_KEY)}catch(e){}});}catch(e){docPipWindow=null;pinToast('Không thể ghim cửa sổ trên trình duyệt này.')} }function selectProblem(p){setTab('submit');var view=document.createElement('div');view.className='sqrtoj-cw-form-view';var back=document.createElement('button');back.type='button';back.className='sqrtoj-cw-back';back.textContent='← Danh sách bài';back.onclick=function(){submitView.innerHTML=submitHomeMarkup;search=document.getElementById('sqrtoj-cw-search');list=document.getElementById('sqrtoj-cw-list');if(search)search.oninput=renderProblemList;renderProblemList();setTab('submit')};var title=document.createElement('div');title.className='sqrtoj-cw-problem-name';title.textContent=p.name||p.code;var hint=document.createElement('div');hint.className='sqrtoj-cw-problem-meta';hint.textContent='Bấm nút bên dưới để tải khung nộp bài.';var open=document.createElement('button');open.type='button';open.className='sqrtoj-cw-submit';open.innerHTML='<i class="fa fa-edit"></i><span>Mở khung nộp bài</span>';open.onclick=function(){loadForm(p)};view.appendChild(back);view.appendChild(title);view.appendChild(hint);view.appendChild(open);submitView.innerHTML='';submitView.appendChild(view)}function loadForm(p){setTab('submit');var view=document.createElement('div');view.className='sqrtoj-cw-form-view';var back=document.createElement('button');back.type='button';back.className='sqrtoj-cw-back';back.textContent='← Danh sách bài';back.onclick=function(){submitView.innerHTML=submitHomeMarkup;search=document.getElementById('sqrtoj-cw-search');list=document.getElementById('sqrtoj-cw-list');if(search)search.oninput=renderProblemList;renderProblemList();setTab('submit')};view.appendChild(back);var load=document.createElement('div');load.className='sqrtoj-cw-loading';load.textContent='Đang tải khung nộp bài…';view.appendChild(load);submitView.innerHTML='';submitView.appendChild(view);fetch(p.submitUrl,{credentials:'same-origin',headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){if(!r.ok)throw Error(r.status);return r.text()}).then(function(html){var doc=new DOMParser().parseFromString(html,'text/html'),form=doc.querySelector('#problem_submit');if(!form)throw Error('form');view.innerHTML='';view.appendChild(back);form.action=p.submitUrl;view.appendChild(document.importNode(form,true));decorateForm(view,view.querySelector('#problem_submit'),p)}).catch(function(){view.innerHTML='';view.appendChild(back);var er=document.createElement('div');er.className='sqrtoj-cw-error';er.textContent='Không tải được khung nộp bài.';view.appendChild(er)})}
-function decorateForm(view,form,p){var editor=form.querySelector('#editor'),src=form.querySelector('#id_source'),file=form.querySelector('#file-submit'),native=form.querySelector('input[type=submit]'),selects=form.querySelectorAll('select');if(editor)editor.classList.remove('hidden');if(file)file.style.display='none';if(src){src.hidden=false;src.style.display='block';src.placeholder='Dán code của bạn vào đây…'}if(native)native.style.display='none';for(var si=1;si<selects.length;si++){var holder=selects[si].closest('p,div,fieldset');if(holder)holder.style.display='none';else selects[si].style.display='none'}var submit=document.createElement('button');submit.type='submit';submit.className='sqrtoj-cw-submit';submit.innerHTML='<i class="fa fa-paper-plane"></i><span>Nộp bài</span>';form.appendChild(submit);form.addEventListener('submit',function(ev){ev.preventDefault();submit.disabled=true;submit.querySelector('span').textContent='Đang nộp…';fetch(form.action,{method:'POST',body:new FormData(form),credentials:'same-origin',redirect:'follow',headers:{'X-Requested-With':'XMLHttpRequest','X-CSRFToken':((document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)||[])[1]||'')}}).then(function(r){if(!r.ok)throw Error('HTTP '+r.status);if(/\/login(?:\/|$)/i.test(r.url))throw Error('Bạn chưa đăng nhập');return r}).then(function(){submit.querySelector('span').textContent='Đã nộp';var t=document.createElement('div');t.className='sqrtoj-cw-toast';t.textContent='Đã nộp bài '+(p.label||p.code)+' thành công. Đang chờ chấm…';view.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove()},5000);setTimeout(function(){setTab('recent')},1200)}).catch(function(err){submit.disabled=false;submit.querySelector('span').textContent='Nộp bài';var t=document.createElement('div');t.className='sqrtoj-cw-error';t.textContent='Nộp bài thất bại: '+(err&&err.message?err.message:'hãy thử lại');view.appendChild(t)})})}
-function isContestRoute(){return location.pathname.indexOf('/contest/')===0}function forceClosePopupOnContest(){}function openDocumentPipFromGesture(){if(IS_POPUP||joinGraceActive()||!HOST_IS_SQRTOJ||!popupEnabled||!data||!('documentPictureInPicture' in window))return null;if(window.documentPictureInPicture.window){try{window.documentPictureInPicture.window.focus()}catch(e){}return window.documentPictureInPicture.window}if(docPipWindow||pipRequestPending)return docPipWindow;var oldPopup=pipWindow;pipRequestPending=true;try{pinHomeParent=root.parentNode;pinHomeNext=root.nextSibling}catch(e){}return window.documentPictureInPicture.requestWindow({width:350,height:480,disallowReturnToOpener:true}).then(function(w){docPipWindow=w;pipWindow=w;if(oldPopup&&oldPopup!==w){try{oldPopup.close()}catch(e){}}try{localStorage.setItem(PIP_ACTIVE_KEY,'1')}catch(e){}w.document.documentElement.classList.add('sqrtoj-cw-popup');copyPipStyles(w);root.hidden=false;show();if(pinBtn)pinBtn.hidden=false;w.document.body.appendChild(root);w.addEventListener('pagehide',function(){if(pinHomeParent){try{pinHomeParent.insertBefore(root,pinHomeNext)}catch(e){try{pinHomeParent.appendChild(root)}catch(x){}}}docPipWindow=null;pipWindow=null;try{localStorage.removeItem(PIP_ACTIVE_KEY)}catch(e){}},{once:true});pipRequestPending=false;return w}).catch(function(e){pipRequestPending=false;return null})}function forceClosePopupOnContest(){}function restoreFromPip(){if(!pipWindow)return;try{if(!pipWindow.closed)pipWindow.focus()}catch(e){}}function openFloating(){if(joinGraceActive()||!HOST_IS_SQRTOJ||!popupEnabled)return null;var POPUP_VERSION='20260821_blank';if(pipWindow&&!pipWindow.closed){try{if(String(pipWindow.location.href).indexOf('v='+POPUP_VERSION)<0){pipWindow.close();pipWindow=null}}catch(e){}}try{if(localStorage.getItem(PIP_ACTIVE_KEY)==='1'){if('documentPictureInPicture' in window&&window.documentPictureInPicture.window)return window.documentPictureInPicture.window;localStorage.removeItem(PIP_ACTIVE_KEY)}}catch(e){}if(pipWindow&&!pipWindow.closed){try{if(pipWindow.resizeTo)pipWindow.resizeTo(360,520);if(pipWindow.moveTo)pipWindow.moveTo(Math.max(0,(screen.availWidth||800)-380),Math.max(0,(screen.availHeight||700)-560));pipWindow.focus()}catch(e){}return pipWindow}pipWindow=window.open(location.origin+'/?sqrtoj_submit_window=1&v=20260821_blank','sqrtoj-submit-window-v20260821','popup,width=360,height=520,resizable=yes,scrollbars=yes');return pipWindow}
-var IS_POPUP=location.search.indexOf('sqrtoj_submit_window=1')>=0,PATH_KEY='sqrtoj_widget_last_path_v1',LEFT_KEY='sqrtoj_widget_left_contest_v1',JOIN_GRACE_KEY='sqrtoj_popup_join_grace_v1',TAB_KEY='sqrtoj_sqrtoj_visible_tabs_v1',TAB_ID=Math.random().toString(36).slice(2)+'-'+Date.now(),tabBeat=null;function joinGraceActive(){try{var t=Number(sessionStorage.getItem(JOIN_GRACE_KEY)||0);return t>0&&Date.now()-t<30000}catch(e){return false}}function markJoinGrace(){try{sessionStorage.setItem(JOIN_GRACE_KEY,String(Date.now()))}catch(e){}try{if(typeof closePopupFromSqrtoj==='function')closePopupFromSqrtoj()}catch(e){}}function markContestBoundary(){if(IS_POPUP)return;try{var nowPath=location.pathname,prevPath=sessionStorage.getItem(PATH_KEY)||'';if(prevPath.indexOf('/contest/')===0&&nowPath.indexOf('/contest/')!==0)sessionStorage.setItem(LEFT_KEY,'1');if(nowPath.indexOf('/contest/')===0&&sessionStorage.getItem(LEFT_KEY)==='1'){sessionStorage.removeItem(LEFT_KEY);localStorage.setItem(POPUP_KEY,PROFILE_DEFAULT?'1':'0');localStorage.removeItem(POPUP_CONTEST_KEY);popupEnabled=PROFILE_DEFAULT}sessionStorage.setItem(PATH_KEY,nowPath)}catch(e){}}function visibleMap(){try{return JSON.parse(localStorage.getItem(TAB_KEY)||'{}')}catch(e){return{}}}function setTabVisible(visible){if(IS_POPUP)return;var m=visibleMap(),now=Date.now();Object.keys(m).forEach(function(k){if(now-m[k]>2500)delete m[k]});if(visible)m[TAB_ID]=now;else delete m[TAB_ID];try{localStorage.setItem(TAB_KEY,JSON.stringify(m))}catch(e){}}function otherSqrtojTabVisible(){var m=visibleMap(),now=Date.now();return Object.keys(m).some(function(k){return k!==TAB_ID&&now-m[k]<2500})}function refresh(){var next=read();if(!next)return;data=next;applyContestPopupPreference();if(!IS_POPUP&&HOST_IS_SQRTOJ){root.hidden=true;return}nameEl.textContent=data.name||'Contest';if(IS_POPUP){root.hidden=true;panel.hidden=true;launcher.hidden=true}else if(isContestRoute()){root.hidden=false;panel.hidden=true;launcher.hidden=true}else{root.hidden=true}renderProblemList();loadSubmissions()}function start(){if(pinBtn)pinBtn.hidden=!IS_POPUP;markContestBoundary();data=read();if(!data)return;applyContestPopupPreference();if(!IS_POPUP&&HOST_IS_SQRTOJ){root.hidden=true;return}nameEl.textContent=data.name||'Contest';if(IS_POPUP){root.hidden=true;panel.hidden=true;launcher.hidden=true}else if(isContestRoute()){root.hidden=false;panel.hidden=true;launcher.hidden=true;setTabVisible(true)}else{root.hidden=true;setTabVisible(true)}if(!IS_POPUP&&!tabBeat)tabBeat=setInterval(function(){if(document.visibilityState==='visible')setTabVisible(true)},700);renderProblemList()}launcher.onclick=function(){if(IS_POPUP){pinWidget();return}if(!IS_POPUP&&isContestRoute()){openDocumentPipFromGesture();return}show()};if(toggleEl)toggleEl.addEventListener('change',function(){setPopupEnabled(toggleEl.checked)});tabs.forEach(function(b){b.onclick=function(){setTab(b.getAttribute('data-cw-tab'))}});if(search)search.oninput=renderProblemList;if(refreshBtn)refreshBtn.onclick=loadSubmissions;if(pinBtn)pinBtn.addEventListener('click',function(){if(IS_POPUP)pinWidget();else openDocumentPipFromGesture()});document.addEventListener('submit',function(ev){var f=ev.target;if(f&&f.querySelector&&f.querySelector('.participate-button'))markJoinGrace()},true);document.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('.participate-button'):null;if(b)markJoinGrace()},true);document.addEventListener('click',function(ev){if(IS_POPUP||!data||!popupEnabled||!isContestRoute()||ev.defaultPrevented||ev.button!==0||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey)return;var a=ev.target&&ev.target.closest?ev.target.closest('a[href]'):null;if(!a||a.closest('#sqrtoj-contest-widget'))return;var u;try{u=new URL(a.href,location.href)}catch(e){return}if(u.origin===location.origin&&u.pathname.indexOf('/contest/')===0)return;var href=a.href,p=openDocumentPipFromGesture();if(p&&typeof p.then==='function'){ev.preventDefault();p.then(function(){location.href=href},function(){location.href=href})}},true);window.addEventListener('storage',function(e){if(e.key===KEY)refresh();if(e.key===POPUP_KEY){popupEnabled=e.newValue!=='0';syncPopupToggle()}if(e.key===TAB_KEY&&document.visibilityState==='visible')setTabVisible(true)});function keepPopupAlive(){if(IS_POPUP||!HOST_IS_SQRTOJ||document.visibilityState!=='hidden'||!popupEnabled||joinGraceActive())return;if(!data)data=read();if(!data)return;if(isContestRoute()&&(docPipWindow||pipRequestPending))return;try{if(localStorage.getItem(PIP_ACTIVE_KEY)==='1'){if('documentPictureInPicture' in window&&window.documentPictureInPicture.window)return;localStorage.removeItem(PIP_ACTIVE_KEY)}}catch(e){}if(!pipWindow||pipWindow.closed)openFloating();}function closePopupFromSqrtoj(){var w=pipWindow||docPipWindow;try{if(!w&&window.documentPictureInPicture)w=window.documentPictureInPicture.window}catch(e){}if(w){try{if(!w.closed)w.close()}catch(e){}}pipWindow=null;docPipWindow=null;try{localStorage.removeItem(PIP_ACTIVE_KEY)}catch(e){}}document.addEventListener('visibilitychange',function(){if(IS_POPUP)return;if(document.visibilityState==='visible'){setTabVisible(true);closePopupFromSqrtoj()}else{if(joinGraceActive())return;if(isContestRoute()&&popupEnabled&&!docPipWindow&&!pipRequestPending)openDocumentPipFromGesture();keepPopupAlive();setTimeout(keepPopupAlive,60);setTimeout(keepPopupAlive,180)}});var popupKeepAlive=setInterval(keepPopupAlive,100);window.addEventListener('pagehide',function(){setTabVisible(false);if(tabBeat)clearInterval(tabBeat);if(popupKeepAlive)clearInterval(popupKeepAlive)});window.__SQRTOJ_OPEN_PIP=openFloating;syncPopupToggle();start();if(IS_POPUP)setTimeout(function(){if(!docPipWindow)pinWidget()},0);startSubmissionPolling()})();
+(function () {
+  "use strict";
+
+  if (location.search.indexOf("sqrtoj_submit_window=1") >= 0) {
+    document.documentElement.classList.add("sqrtoj-cw-popup");
+  }
+
+  var PROFILE_DEFAULT =
+    {% if request.user.is_authenticated and request.profile.quick_submit_enabled %}true{% else %}false{% endif %};
+  var KEY = "sqrtoj_active_contest_widget_v1";
+  var USER = (window.user && window.user.name) || "";
+  var SUB_URL = "/submissions/user/" + encodeURIComponent(USER) + "/";
+  var root = document.getElementById("sqrtoj-contest-widget");
+
+  if (!root) {
+    return;
+  }
+
+  var WIDGET_DISABLED = !PROFILE_DEFAULT;
+  if (WIDGET_DISABLED) {
+    root.hidden = true;
+    try {
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
+        window.documentPictureInPicture.window.close();
+      }
+    } catch (e) {}
+    if (location.search.indexOf("sqrtoj_submit_window=1") >= 0) {
+      try {
+        window.close();
+      } catch (e) {}
+    }
+    return;
+  }
+  var launcher = document.getElementById("sqrtoj-cw-launcher"),
+    panel = document.getElementById("sqrtoj-cw-panel"),
+    body = document.getElementById("sqrtoj-cw-body"),
+    list = document.getElementById("sqrtoj-cw-list"),
+    search = document.getElementById("sqrtoj-cw-search"),
+    subList = document.getElementById("sqrtoj-cw-submissions"),
+    nameEl = document.getElementById("sqrtoj-cw-contest-name"),
+    subCount = document.getElementById("sqrtoj-cw-sub-count"),
+    toggleEl = document.getElementById("sqrtoj-cw-popup-toggle"),
+    pinBtn = document.getElementById("sqrtoj-cw-pin"),
+    toggleLabel = document.querySelector(".sqrtoj-cw-toggle-label"),
+    refreshBtn = document.getElementById("sqrtoj-cw-refresh"),
+    tabs = [].slice.call(document.querySelectorAll("[data-cw-tab]")),
+    views = {
+      recent: document.getElementById("sqrtoj-cw-recent-view"),
+      submit: document.getElementById("sqrtoj-cw-submit-view"),
+    };
+  var HOST_IS_SQRTOJ =
+      /^(?:www\.)?sqrtoj\.edu\.vn$/.test(location.hostname) ||
+      location.hostname === "163.61.72.194",
+    data = null,
+    pipWindow = null,
+    pipPlaceholder = null,
+    lastSubmissions = [],
+    submissionPoll = null,
+    POPUP_KEY = "sqrtoj_popup_enabled_v1",
+    POPUP_CONTEST_KEY = "sqrtoj_popup_contest_key_v1",
+    CLOSE_KEY = "sqrtoj_popup_force_close_v1",
+    JOIN_KEY = "sqrtoj_popup_join_navigation_v1",
+    popupEnabled = PROFILE_DEFAULT;
+  function read() {
+    try {
+      var x = JSON.parse(localStorage.getItem(KEY) || "null");
+      return x && Array.isArray(x.problems) && x.problems.length ? x : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  function applyContestPopupPreference() {
+    if (!data) return;
+    var k = String(data.key || "");
+    try {
+      var prior = localStorage.getItem(POPUP_CONTEST_KEY);
+      if (!k || prior !== k) {
+        popupEnabled = PROFILE_DEFAULT;
+        localStorage.setItem(POPUP_KEY, popupEnabled ? "1" : "0");
+        if (k) localStorage.setItem(POPUP_CONTEST_KEY, k);
+      } else {
+        popupEnabled = localStorage.getItem(POPUP_KEY) !== "0";
+      }
+    } catch (e) {
+      popupEnabled = PROFILE_DEFAULT;
+    }
+    syncPopupToggle();
+  }
+  function show() {
+    root.hidden = false;
+    if (IS_POPUP && !docPipWindow) {
+      panel.hidden = true;
+      launcher.hidden = true;
+      return;
+    }
+    panel.hidden = false;
+    launcher.hidden = true;
+  }
+  function hide() {
+    panel.hidden = true;
+    launcher.hidden = true;
+    root.hidden = false;
+  }
+  function syncPopupToggle() {
+    if (!toggleEl) return;
+    toggleEl.checked = popupEnabled;
+    if (toggleLabel) toggleLabel.textContent = popupEnabled ? "Bật" : "Tắt";
+  }
+  function setPopupEnabled(enabled) {
+    popupEnabled = !!enabled;
+    try {
+      localStorage.setItem(POPUP_KEY, popupEnabled ? "1" : "0");
+    } catch (e) {}
+    syncPopupToggle();
+    if (!popupEnabled && pipWindow) {
+      pipWindow.close();
+      restoreFromPip();
+    }
+  }
+  function renderProblemList() {
+    var q = (search.value || "").toLowerCase().trim();
+    list.innerHTML = "";
+    var n = 0;
+    data.problems.forEach(function (p, i) {
+      var hay = (p.label + " " + p.code + " " + p.name).toLowerCase();
+      if (q && hay.indexOf(q) < 0) return;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "sqrtoj-cw-problem";
+      b.innerHTML =
+        '<span class="sqrtoj-cw-letter">' +
+        (p.label || String.fromCharCode(65 + i)) +
+        '</span><span class="sqrtoj-cw-problem-copy"><span class="sqrtoj-cw-problem-name"></span><span class="sqrtoj-cw-problem-meta">Chọn bài để mở khung nộp code</span></span>';
+      b.querySelector(".sqrtoj-cw-problem-name").textContent = p.name || p.code;
+      b.onclick = function () {
+        selectProblem(p);
+      };
+      list.appendChild(b);
+      n++;
+    });
+    if (!n) {
+      var e = document.createElement("div");
+      e.className = "sqrtoj-cw-loading";
+      e.textContent = "Không tìm thấy bài phù hợp.";
+      list.appendChild(e);
+    }
+  }
+  var submitView = views.submit,
+    submitHomeMarkup = submitView.innerHTML;
+  function setTab(tab) {
+    tabs.forEach(function (b) {
+      b.classList.toggle("is-active", b.getAttribute("data-cw-tab") === tab);
+    });
+    Object.keys(views).forEach(function (k) {
+      views[k].hidden = k !== tab;
+    });
+    if (tab === "submit") renderProblemList();
+  }
+  function loadSubmissions() {
+    if (!USER || USER === "AnonymousUser") {
+      subList.innerHTML = '<div class="sqrtoj-cw-error">Bạn cần đăng nhập để xem bài nộp.</div>';
+      return;
+    }
+    subList.innerHTML = '<div class="sqrtoj-cw-loading">Đang tải bài nộp…</div>';
+    fetch(SUB_URL + "?quick=1&_=" + Date.now(), {
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then(function (r) {
+        if (!r.ok) throw Error(r.status);
+        return r.text();
+      })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, "text/html"),
+          rows = [].slice.call(doc.querySelectorAll(".submission-row")).slice(0, 12);
+        lastSubmissions = rows.map(function (row) {
+          var id = row.id || "",
+            name = (row.querySelector(".sub-main .name a") || {}).textContent || "Bài nộp #" + id,
+            status = (row.querySelector(".sub-result .status") || {}).textContent || "—",
+            language = (row.querySelector(".sub-result .language") || {}).textContent || "",
+            time = (row.querySelector(".sub-info .time") || {}).textContent || "";
+          return {
+            id: id,
+            name: name.trim(),
+            status: status.trim(),
+            language: language.trim(),
+            time: time.trim(),
+          };
+        });
+        subCount.textContent = String(lastSubmissions.length);
+        subList.innerHTML = "";
+        if (!lastSubmissions.length) {
+          subList.innerHTML = '<div class="sqrtoj-cw-loading">Chưa có bài nộp gần đây.</div>';
+          return;
+        }
+        lastSubmissions.forEach(function (s) {
+          var a = document.createElement("a");
+          a.className = "sqrtoj-cw-submission";
+          a.href = "/submission/" + encodeURIComponent(s.id);
+          a.target = "_blank";
+          a.rel = "noopener";
+          var cls = /^AC$/i.test(s.status)
+            ? "ac"
+            : /^WA$/i.test(s.status)
+            ? "wa"
+            : /queue|run|pend|test/i.test(s.status)
+            ? "queued"
+            : "";
+          a.innerHTML =
+            '<span class="sqrtoj-cw-verdict ' +
+            cls +
+            '"></span><span class="sqrtoj-cw-sub-copy"><span class="sqrtoj-cw-sub-name"></span><span class="sqrtoj-cw-sub-meta"></span></span>';
+          a.querySelector(".sqrtoj-cw-verdict").textContent = s.status;
+          a.querySelector(".sqrtoj-cw-sub-name").textContent = s.name;
+          a.querySelector(".sqrtoj-cw-sub-meta").textContent = [s.language, s.time]
+            .filter(Boolean)
+            .join(" · ");
+          subList.appendChild(a);
+        });
+      })
+      .catch(function () {
+        subList.innerHTML =
+          '<div class="sqrtoj-cw-error">Không tải được bài nộp. Hãy bấm làm mới.</div>';
+      });
+  }
+  function startSubmissionPolling() {}
+  var docPipWindow = null,
+    pinHomeParent = null,
+    pinHomeNext = null,
+    pipRequestPending = false,
+    PIP_ACTIVE_KEY = "sqrtoj_doc_pip_active_v1";
+  function pinToast(message) {
+    var t = document.createElement("div");
+    t.className = "sqrtoj-cw-toast";
+    t.textContent = message;
+    document.body.appendChild(t);
+    setTimeout(function () {
+      if (t.parentNode) t.remove();
+    }, 3500);
+  }
+  function copyPipStyles(w) {
+    [].slice.call(document.querySelectorAll('link[rel="stylesheet"]')).forEach(function (node) {
+      try {
+        var l = w.document.createElement("link");
+        l.rel = "stylesheet";
+        l.href = new URL(node.getAttribute("href") || node.href, location.href).href;
+        w.document.head.appendChild(l);
+      } catch (e) {}
+    });
+    [].slice.call(document.querySelectorAll("style")).forEach(function (node) {
+      try {
+        var st = w.document.createElement("style");
+        st.textContent = node.textContent || "";
+        w.document.head.appendChild(st);
+      } catch (e) {}
+    });
+    var s = w.document.createElement("style");
+    s.textContent =
+      "html,body{margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important}";
+    w.document.head.appendChild(s);
+  }
+  async function pinWidget() {
+    if (!IS_POPUP || !("documentPictureInPicture" in window)) {
+      pinToast("Trình duyệt này không hỗ trợ ghim cửa sổ PiP.");
+      return;
+    }
+    if (window.documentPictureInPicture.window) {
+      try {
+        window.documentPictureInPicture.window.focus();
+      } catch (e) {}
+      return;
+    }
+    try {
+      pinHomeParent = root.parentNode;
+      pinHomeNext = root.nextSibling;
+      docPipWindow = await window.documentPictureInPicture.requestWindow({
+        width: 350,
+        height: 480,
+        disallowReturnToOpener: true,
+      });
+      try {
+        localStorage.setItem(PIP_ACTIVE_KEY, "1");
+      } catch (e) {}
+      docPipWindow.document.documentElement.classList.add("sqrtoj-cw-popup");
+      copyPipStyles(docPipWindow);
+      docPipWindow.document.body.appendChild(root);
+      show();
+      docPipWindow.addEventListener("pagehide", function () {
+        if (pinHomeParent) {
+          try {
+            pinHomeParent.insertBefore(root, pinHomeNext);
+          } catch (e) {
+            pinHomeParent.appendChild(root);
+          }
+        }
+        docPipWindow = null;
+        try {
+          localStorage.removeItem(PIP_ACTIVE_KEY);
+        } catch (e) {}
+      });
+    } catch (e) {
+      docPipWindow = null;
+      pinToast("Không thể ghim cửa sổ trên trình duyệt này.");
+    }
+  }
+  function selectProblem(p) {
+    setTab("submit");
+    var view = document.createElement("div");
+    view.className = "sqrtoj-cw-form-view";
+    var back = document.createElement("button");
+    back.type = "button";
+    back.className = "sqrtoj-cw-back";
+    back.textContent = "← Danh sách bài";
+    back.onclick = function () {
+      submitView.innerHTML = submitHomeMarkup;
+      search = document.getElementById("sqrtoj-cw-search");
+      list = document.getElementById("sqrtoj-cw-list");
+      if (search) search.oninput = renderProblemList;
+      renderProblemList();
+      setTab("submit");
+    };
+    var title = document.createElement("div");
+    title.className = "sqrtoj-cw-problem-name";
+    title.textContent = p.name || p.code;
+    var hint = document.createElement("div");
+    hint.className = "sqrtoj-cw-problem-meta";
+    hint.textContent = "Bấm nút bên dưới để tải khung nộp bài.";
+    var open = document.createElement("button");
+    open.type = "button";
+    open.className = "sqrtoj-cw-submit";
+    open.innerHTML = '<i class="fa fa-edit"></i><span>Mở khung nộp bài</span>';
+    open.onclick = function () {
+      loadForm(p);
+    };
+    view.appendChild(back);
+    view.appendChild(title);
+    view.appendChild(hint);
+    view.appendChild(open);
+    submitView.innerHTML = "";
+    submitView.appendChild(view);
+  }
+  function loadForm(p) {
+    setTab("submit");
+    var view = document.createElement("div");
+    view.className = "sqrtoj-cw-form-view";
+    var back = document.createElement("button");
+    back.type = "button";
+    back.className = "sqrtoj-cw-back";
+    back.textContent = "← Danh sách bài";
+    back.onclick = function () {
+      submitView.innerHTML = submitHomeMarkup;
+      search = document.getElementById("sqrtoj-cw-search");
+      list = document.getElementById("sqrtoj-cw-list");
+      if (search) search.oninput = renderProblemList;
+      renderProblemList();
+      setTab("submit");
+    };
+    view.appendChild(back);
+    var load = document.createElement("div");
+    load.className = "sqrtoj-cw-loading";
+    load.textContent = "Đang tải khung nộp bài…";
+    view.appendChild(load);
+    submitView.innerHTML = "";
+    submitView.appendChild(view);
+    fetch(p.submitUrl, {
+      credentials: "same-origin",
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then(function (r) {
+        if (!r.ok) throw Error(r.status);
+        return r.text();
+      })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, "text/html"),
+          form = doc.querySelector("#problem_submit");
+        if (!form) throw Error("form");
+        view.innerHTML = "";
+        view.appendChild(back);
+        form.action = p.submitUrl;
+        view.appendChild(document.importNode(form, true));
+        decorateForm(view, view.querySelector("#problem_submit"), p);
+      })
+      .catch(function () {
+        view.innerHTML = "";
+        view.appendChild(back);
+        var er = document.createElement("div");
+        er.className = "sqrtoj-cw-error";
+        er.textContent = "Không tải được khung nộp bài.";
+        view.appendChild(er);
+      });
+  }
+  function decorateForm(view, form, p) {
+    var editor = form.querySelector("#editor"),
+      src = form.querySelector("#id_source"),
+      file = form.querySelector("#file-submit"),
+      native = form.querySelector("input[type=submit]"),
+      selects = form.querySelectorAll("select");
+    if (editor) editor.classList.remove("hidden");
+    if (file) file.style.display = "none";
+    if (src) {
+      src.hidden = false;
+      src.style.display = "block";
+      src.placeholder = "Dán code của bạn vào đây…";
+    }
+    if (native) native.style.display = "none";
+    for (var si = 1; si < selects.length; si++) {
+      var holder = selects[si].closest("p,div,fieldset");
+      if (holder) holder.style.display = "none";
+      else selects[si].style.display = "none";
+    }
+    var submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "sqrtoj-cw-submit";
+    submit.innerHTML = '<i class="fa fa-paper-plane"></i><span>Nộp bài</span>';
+    form.appendChild(submit);
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      submit.disabled = true;
+      submit.querySelector("span").textContent = "Đang nộp…";
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        credentials: "same-origin",
+        redirect: "follow",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": (document.cookie.match(/(?:^|; )csrftoken=([^;]+)/) || [])[1] || "",
+        },
+      })
+        .then(function (r) {
+          if (!r.ok) throw Error("HTTP " + r.status);
+          if (/\/login(?:\/|$)/i.test(r.url)) throw Error("Bạn chưa đăng nhập");
+          return r;
+        })
+        .then(function () {
+          submit.querySelector("span").textContent = "Đã nộp";
+          var t = document.createElement("div");
+          t.className = "sqrtoj-cw-toast";
+          t.textContent = "Đã nộp bài " + (p.label || p.code) + " thành công. Đang chờ chấm…";
+          view.appendChild(t);
+          setTimeout(function () {
+            if (t.parentNode) t.remove();
+          }, 5000);
+          setTimeout(function () {
+            setTab("recent");
+          }, 1200);
+        })
+        .catch(function (err) {
+          submit.disabled = false;
+          submit.querySelector("span").textContent = "Nộp bài";
+          var t = document.createElement("div");
+          t.className = "sqrtoj-cw-error";
+          t.textContent = "Nộp bài thất bại: " + (err && err.message ? err.message : "hãy thử lại");
+          view.appendChild(t);
+        });
+    });
+  }
+  function isContestRoute() {
+    return location.pathname.indexOf("/contest/") === 0;
+  }
+  function forceClosePopupOnContest() {}
+  function openDocumentPipFromGesture() {
+    if (
+      IS_POPUP ||
+      joinGraceActive() ||
+      !HOST_IS_SQRTOJ ||
+      !popupEnabled ||
+      !data ||
+      !("documentPictureInPicture" in window)
+    )
+      return null;
+    if (window.documentPictureInPicture.window) {
+      try {
+        window.documentPictureInPicture.window.focus();
+      } catch (e) {}
+      return window.documentPictureInPicture.window;
+    }
+    if (docPipWindow || pipRequestPending) return docPipWindow;
+    var oldPopup = pipWindow;
+    pipRequestPending = true;
+    try {
+      pinHomeParent = root.parentNode;
+      pinHomeNext = root.nextSibling;
+    } catch (e) {}
+    return window.documentPictureInPicture
+      .requestWindow({ width: 350, height: 480, disallowReturnToOpener: true })
+      .then(function (w) {
+        docPipWindow = w;
+        pipWindow = w;
+        if (oldPopup && oldPopup !== w) {
+          try {
+            oldPopup.close();
+          } catch (e) {}
+        }
+        try {
+          localStorage.setItem(PIP_ACTIVE_KEY, "1");
+        } catch (e) {}
+        w.document.documentElement.classList.add("sqrtoj-cw-popup");
+        copyPipStyles(w);
+        root.hidden = false;
+        show();
+        if (pinBtn) pinBtn.hidden = false;
+        w.document.body.appendChild(root);
+        w.addEventListener(
+          "pagehide",
+          function () {
+            if (pinHomeParent) {
+              try {
+                pinHomeParent.insertBefore(root, pinHomeNext);
+              } catch (e) {
+                try {
+                  pinHomeParent.appendChild(root);
+                } catch (x) {}
+              }
+            }
+            docPipWindow = null;
+            pipWindow = null;
+            try {
+              localStorage.removeItem(PIP_ACTIVE_KEY);
+            } catch (e) {}
+          },
+          { once: true },
+        );
+        pipRequestPending = false;
+        return w;
+      })
+      .catch(function (e) {
+        pipRequestPending = false;
+        return null;
+      });
+  }
+  function forceClosePopupOnContest() {}
+  function restoreFromPip() {
+    if (!pipWindow) return;
+    try {
+      if (!pipWindow.closed) pipWindow.focus();
+    } catch (e) {}
+  }
+  function openFloating() {
+    if (joinGraceActive() || !HOST_IS_SQRTOJ || !popupEnabled) return null;
+    var POPUP_VERSION = "20260821_blank";
+    if (pipWindow && !pipWindow.closed) {
+      try {
+        if (String(pipWindow.location.href).indexOf("v=" + POPUP_VERSION) < 0) {
+          pipWindow.close();
+          pipWindow = null;
+        }
+      } catch (e) {}
+    }
+    try {
+      if (localStorage.getItem(PIP_ACTIVE_KEY) === "1") {
+        if ("documentPictureInPicture" in window && window.documentPictureInPicture.window)
+          return window.documentPictureInPicture.window;
+        localStorage.removeItem(PIP_ACTIVE_KEY);
+      }
+    } catch (e) {}
+    if (pipWindow && !pipWindow.closed) {
+      try {
+        if (pipWindow.resizeTo) pipWindow.resizeTo(360, 520);
+        if (pipWindow.moveTo)
+          pipWindow.moveTo(
+            Math.max(0, (screen.availWidth || 800) - 380),
+            Math.max(0, (screen.availHeight || 700) - 560),
+          );
+        pipWindow.focus();
+      } catch (e) {}
+      return pipWindow;
+    }
+    pipWindow = window.open(
+      location.origin + "/?sqrtoj_submit_window=1&v=20260821_blank",
+      "sqrtoj-submit-window-v20260821",
+      "popup,width=360,height=520,resizable=yes,scrollbars=yes",
+    );
+    return pipWindow;
+  }
+  var IS_POPUP = location.search.indexOf("sqrtoj_submit_window=1") >= 0,
+    PATH_KEY = "sqrtoj_widget_last_path_v1",
+    LEFT_KEY = "sqrtoj_widget_left_contest_v1",
+    JOIN_GRACE_KEY = "sqrtoj_popup_join_grace_v1",
+    TAB_KEY = "sqrtoj_sqrtoj_visible_tabs_v1",
+    TAB_ID = Math.random().toString(36).slice(2) + "-" + Date.now(),
+    tabBeat = null;
+  function joinGraceActive() {
+    try {
+      var t = Number(sessionStorage.getItem(JOIN_GRACE_KEY) || 0);
+      return t > 0 && Date.now() - t < 30000;
+    } catch (e) {
+      return false;
+    }
+  }
+  function markJoinGrace() {
+    try {
+      sessionStorage.setItem(JOIN_GRACE_KEY, String(Date.now()));
+    } catch (e) {}
+    try {
+      if (typeof closePopupFromSqrtoj === "function") closePopupFromSqrtoj();
+    } catch (e) {}
+  }
+  function markContestBoundary() {
+    if (IS_POPUP) return;
+    try {
+      var nowPath = location.pathname,
+        prevPath = sessionStorage.getItem(PATH_KEY) || "";
+      if (prevPath.indexOf("/contest/") === 0 && nowPath.indexOf("/contest/") !== 0)
+        sessionStorage.setItem(LEFT_KEY, "1");
+      if (nowPath.indexOf("/contest/") === 0 && sessionStorage.getItem(LEFT_KEY) === "1") {
+        sessionStorage.removeItem(LEFT_KEY);
+        localStorage.setItem(POPUP_KEY, PROFILE_DEFAULT ? "1" : "0");
+        localStorage.removeItem(POPUP_CONTEST_KEY);
+        popupEnabled = PROFILE_DEFAULT;
+      }
+      sessionStorage.setItem(PATH_KEY, nowPath);
+    } catch (e) {}
+  }
+  function visibleMap() {
+    try {
+      return JSON.parse(localStorage.getItem(TAB_KEY) || "{}");
+    } catch (e) {
+      return {};
+    }
+  }
+  function setTabVisible(visible) {
+    if (IS_POPUP) return;
+    var m = visibleMap(),
+      now = Date.now();
+    Object.keys(m).forEach(function (k) {
+      if (now - m[k] > 2500) delete m[k];
+    });
+    if (visible) m[TAB_ID] = now;
+    else delete m[TAB_ID];
+    try {
+      localStorage.setItem(TAB_KEY, JSON.stringify(m));
+    } catch (e) {}
+  }
+  function otherSqrtojTabVisible() {
+    var m = visibleMap(),
+      now = Date.now();
+    return Object.keys(m).some(function (k) {
+      return k !== TAB_ID && now - m[k] < 2500;
+    });
+  }
+  function refresh() {
+    var next = read();
+    if (!next) return;
+    data = next;
+    applyContestPopupPreference();
+    if (!IS_POPUP && HOST_IS_SQRTOJ) {
+      root.hidden = true;
+      return;
+    }
+    nameEl.textContent = data.name || "Contest";
+    if (IS_POPUP) {
+      root.hidden = true;
+      panel.hidden = true;
+      launcher.hidden = true;
+    } else if (isContestRoute()) {
+      root.hidden = false;
+      panel.hidden = true;
+      launcher.hidden = true;
+    } else {
+      root.hidden = true;
+    }
+    renderProblemList();
+    loadSubmissions();
+  }
+  function start() {
+    if (pinBtn) pinBtn.hidden = !IS_POPUP;
+    markContestBoundary();
+    data = read();
+    if (!data) return;
+    applyContestPopupPreference();
+    if (!IS_POPUP && HOST_IS_SQRTOJ) {
+      root.hidden = true;
+      return;
+    }
+    nameEl.textContent = data.name || "Contest";
+    if (IS_POPUP) {
+      root.hidden = true;
+      panel.hidden = true;
+      launcher.hidden = true;
+    } else if (isContestRoute()) {
+      root.hidden = false;
+      panel.hidden = true;
+      launcher.hidden = true;
+      setTabVisible(true);
+    } else {
+      root.hidden = true;
+      setTabVisible(true);
+    }
+    if (!IS_POPUP && !tabBeat)
+      tabBeat = setInterval(function () {
+        if (document.visibilityState === "visible") setTabVisible(true);
+      }, 700);
+    renderProblemList();
+  }
+  launcher.onclick = function () {
+    if (IS_POPUP) {
+      pinWidget();
+      return;
+    }
+    if (!IS_POPUP && isContestRoute()) {
+      openDocumentPipFromGesture();
+      return;
+    }
+    show();
+  };
+  if (toggleEl)
+    toggleEl.addEventListener("change", function () {
+      setPopupEnabled(toggleEl.checked);
+    });
+  tabs.forEach(function (b) {
+    b.onclick = function () {
+      setTab(b.getAttribute("data-cw-tab"));
+    };
+  });
+  if (search) search.oninput = renderProblemList;
+  if (refreshBtn) refreshBtn.onclick = loadSubmissions;
+  if (pinBtn)
+    pinBtn.addEventListener("click", function () {
+      if (IS_POPUP) pinWidget();
+      else openDocumentPipFromGesture();
+    });
+  document.addEventListener(
+    "submit",
+    function (ev) {
+      var f = ev.target;
+      if (f && f.querySelector && f.querySelector(".participate-button")) markJoinGrace();
+    },
+    true,
+  );
+  document.addEventListener(
+    "click",
+    function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest(".participate-button") : null;
+      if (b) markJoinGrace();
+    },
+    true,
+  );
+  document.addEventListener(
+    "click",
+    function (ev) {
+      if (
+        IS_POPUP ||
+        !data ||
+        !popupEnabled ||
+        !isContestRoute() ||
+        ev.defaultPrevented ||
+        ev.button !== 0 ||
+        ev.metaKey ||
+        ev.ctrlKey ||
+        ev.shiftKey ||
+        ev.altKey
+      )
+        return;
+      var a = ev.target && ev.target.closest ? ev.target.closest("a[href]") : null;
+      if (!a || a.closest("#sqrtoj-contest-widget")) return;
+      var u;
+      try {
+        u = new URL(a.href, location.href);
+      } catch (e) {
+        return;
+      }
+      if (u.origin === location.origin && u.pathname.indexOf("/contest/") === 0) return;
+      var href = a.href,
+        p = openDocumentPipFromGesture();
+      if (p && typeof p.then === "function") {
+        ev.preventDefault();
+        p.then(
+          function () {
+            location.href = href;
+          },
+          function () {
+            location.href = href;
+          },
+        );
+      }
+    },
+    true,
+  );
+  window.addEventListener("storage", function (e) {
+    if (e.key === KEY) refresh();
+    if (e.key === POPUP_KEY) {
+      popupEnabled = e.newValue !== "0";
+      syncPopupToggle();
+    }
+    if (e.key === TAB_KEY && document.visibilityState === "visible") setTabVisible(true);
+  });
+  function keepPopupAlive() {
+    if (
+      IS_POPUP ||
+      !HOST_IS_SQRTOJ ||
+      document.visibilityState !== "hidden" ||
+      !popupEnabled ||
+      joinGraceActive()
+    )
+      return;
+    if (!data) data = read();
+    if (!data) return;
+    if (isContestRoute() && (docPipWindow || pipRequestPending)) return;
+    try {
+      if (localStorage.getItem(PIP_ACTIVE_KEY) === "1") {
+        if ("documentPictureInPicture" in window && window.documentPictureInPicture.window) return;
+        localStorage.removeItem(PIP_ACTIVE_KEY);
+      }
+    } catch (e) {}
+    if (!pipWindow || pipWindow.closed) openFloating();
+  }
+  function closePopupFromSqrtoj() {
+    var w = pipWindow || docPipWindow;
+    try {
+      if (!w && window.documentPictureInPicture) w = window.documentPictureInPicture.window;
+    } catch (e) {}
+    if (w) {
+      try {
+        if (!w.closed) w.close();
+      } catch (e) {}
+    }
+    pipWindow = null;
+    docPipWindow = null;
+    try {
+      localStorage.removeItem(PIP_ACTIVE_KEY);
+    } catch (e) {}
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (IS_POPUP) return;
+    if (document.visibilityState === "visible") {
+      setTabVisible(true);
+      closePopupFromSqrtoj();
+    } else {
+      if (joinGraceActive()) return;
+      if (isContestRoute() && popupEnabled && !docPipWindow && !pipRequestPending)
+        openDocumentPipFromGesture();
+      keepPopupAlive();
+      setTimeout(keepPopupAlive, 60);
+      setTimeout(keepPopupAlive, 180);
+    }
+  });
+  var popupKeepAlive = setInterval(keepPopupAlive, 100);
+  window.addEventListener("pagehide", function () {
+    setTabVisible(false);
+    if (tabBeat) clearInterval(tabBeat);
+    if (popupKeepAlive) clearInterval(popupKeepAlive);
+  });
+  window.__SQRTOJ_OPEN_PIP = openFloating;
+  syncPopupToggle();
+  start();
+  if (IS_POPUP)
+    setTimeout(function () {
+      if (!docPipWindow) pinWidget();
+    }, 0);
+  startSubmissionPolling();
+})();
 </script>
