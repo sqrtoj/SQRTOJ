@@ -141,6 +141,8 @@ $is_light_theme: true !default;
     .contest-countdown {
         position: relative;
         overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
         border-radius: var(--radius-lg);
         padding: clamp(var(--space-4), 4vw, var(--space-6)) var(--space-5);
         background:
@@ -159,6 +161,8 @@ $is_light_theme: true !default;
         letter-spacing: -0.02em;
         color: var(--color-accent-contrast);
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        overflow-wrap: anywhere;
+        word-break: break-word;
 
         &:hover {
             color: var(--color-accent-contrast);
@@ -444,13 +448,12 @@ form.contest-join-pseudotab {
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 960px) {
     .contest-tab-actions {
         flex-basis: 100%;
         justify-content: flex-end;
         margin: var(--space-2) 0 0;
     }
-
 }
 
 // Register pseudo-tab: use the brand accent instead of the legacy green gradient

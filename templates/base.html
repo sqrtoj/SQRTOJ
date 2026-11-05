@@ -67,9 +67,9 @@
     <link rel="canonical"
         href="{{ DMOJ_SCHEME }}://{% if DMOJ_CANONICAL %}{{ DMOJ_CANONICAL }}{% else %}{{ site.domain }}{% endif %}{{ request.path }}">
     <style>
-        #page-container { min-height: calc(100vh - var(--nav-height)); display: flex; flex-direction: column; }
-        #content { flex: 1 0 auto; margin-top: 20px; }
-        #navigation { position: sticky; top: 0; z-index: 1000; width: 100%; height: var(--nav-height); }
+        #page-container { min-height: calc(100vh - var(--nav-height)); display: flex; flex-direction: column; width: 100%; max-width: 100%; box-sizing: border-box; }
+        #content { flex: 1 0 auto; margin-top: 20px; width: 100%; max-width: 100%; box-sizing: border-box; }
+        #navigation { position: sticky; top: 0; left: 0; right: 0; z-index: 1000; width: 100%; height: var(--nav-height); }
         footer { content-visibility: auto; contain-intrinsic-size: auto 420px; }
         @media (min-width: 961px) { #nav-list > li.mobile-nav-language { display: none !important; } }
     </style>

@@ -310,6 +310,9 @@ textarea:focus {
     border-bottom: 1px solid var(--color-border);
     margin: 0 0 8px;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -341,6 +344,9 @@ textarea:focus {
 
     h2 {
         color: var(--color-text);
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
     }
 
     > ul {

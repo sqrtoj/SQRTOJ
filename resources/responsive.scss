@@ -4,11 +4,14 @@
 // constraints reliably override legacy page-specific fixed widths.
 html,
 body {
+    width: 100%;
     max-width: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 body {
-    overflow-x: hidden;
+    position: relative;
 }
 
 #page-container,
@@ -18,6 +21,8 @@ body {
 #content-left,
 #content-right {
     min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 #content-body {
@@ -47,7 +52,10 @@ button {
 }
 
 .h-scrollable-table {
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
+    box-sizing: border-box;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
