@@ -325,31 +325,29 @@
                             {{ _('This contest will **not** be rated.')|markdown('default') }}
                         {% endif %}
                     </li>
-                    <li>
-                        <ul>
-                            <li>
-                                {% if metadata.has_partials %}
-                                    {{ _('**Partial scoring is enabled** for some or all of these problems.')|markdown('default') }}
-                                {% else %}
-                                    {{ _('This contest **will not use partial scoring**.')|markdown('default') }}
-                                {% endif %}
-                            </li>
-                            <li>
-                                {% if metadata.has_pretests %}
-                                    {{ _('The pretest system **will be used** for some or all of these problems.')|markdown('default') }}
-                                {% else %}
-                                    {{ _('The pretest system **will not be used** for this contest.')|markdown('default') }}
-                                {% endif %}
-                            </li>
-                            <li>
-                                {% if metadata.has_submission_cap %}
-                                    {{ _('Some or all of these problems **have a submission limit**.')|markdown('default') }}
-                                {% else %}
-                                    {{ _('There is **no submission limit** for any of these problems.')|markdown('default') }}
-                                {% endif %}
-                            </li>
-                        </ul>
-                    </li>
+                    {% if metadata.problem_count %}
+                        <li>
+                            {% if metadata.has_partials %}
+                                {{ _('**Partial scoring is enabled** for some or all of these problems.')|markdown('default') }}
+                            {% else %}
+                                {{ _('This contest **will not use partial scoring**.')|markdown('default') }}
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if metadata.has_pretests %}
+                                {{ _('The pretest system **will be used** for some or all of these problems.')|markdown('default') }}
+                            {% else %}
+                                {{ _('The pretest system **will not be used** for this contest.')|markdown('default') }}
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if metadata.has_submission_cap %}
+                                {{ _('Some or all of these problems **have a submission limit**.')|markdown('default') }}
+                            {% else %}
+                                {{ _('There is **no submission limit** for any of these problems.')|markdown('default') }}
+                            {% endif %}
+                        </li>
+                    {% endif %}
                     <li>
                         {{ _('The contest format is **%(format)s**.', format=contest.format.name)|markdown('default') }}
                         <ul>
@@ -358,15 +356,23 @@
                             {% endfor %}
                         </ul>
                     </li>
-                    <li>
-                        {% if contest.scoreboard_visibility == contest.SCOREBOARD_VISIBLE %}
+                    {% if contest.scoreboard_visibility == contest.SCOREBOARD_VISIBLE %}
+                        <li>
                             {{ _('The scoreboard will be **visible** for the duration of the contest.')|markdown('default') }}
-                        {% elif contest.scoreboard_visibility == contest.SCOREBOARD_AFTER_PARTICIPATION %}
+                        </li>
+                    {% elif contest.scoreboard_visibility == contest.SCOREBOARD_AFTER_PARTICIPATION %}
+                        <li>
                             {{ _('The scoreboard will be **hidden** until your window is over.')|markdown('default') }}
-                        {% elif contest.scoreboard_visibility == contest.SCOREBOARD_AFTER_CONTEST %}
+                        </li>
+                    {% elif contest.scoreboard_visibility == contest.SCOREBOARD_AFTER_CONTEST %}
+                        <li>
                             {{ _('The scoreboard will be **hidden** for the entire duration of the contest.')|markdown('default') }}
-                        {% endif %}
-                    </li>
+                        </li>
+                    {% elif contest.scoreboard_visibility == contest.SCOREBOARD_HIDDEN %}
+                        <li>
+                            {{ _('The scoreboard will be **hidden**, even after the contest is over.')|markdown('default') }}
+                        </li>
+                    {% endif %}
                     {% if contest.access_code %}
                         <li>
                             {{ _('An **access code is required** to join the contest.')|markdown('default') }}
