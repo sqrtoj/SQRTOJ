@@ -1,941 +1,941 @@
-/**
- * Name         : Martor v1.4.9
- * Created by   : Agus Makmun (Summon Agus)
- * Release date : 18-Mar-2020
- * License      : GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
- * Repository   : https://github.com/agusmakmun/django-markdown-editor
-**/
+/*
+ * Martor markdown editor for SQRTOJ.
+ * Upstream: https://github.com/agusmakmun/django-markdown-editor (GPL-3.0)
+ */
 
 (function ($) {
-    if (!$) {
-        $ = django.jQuery;
+  "use strict";
+
+  if (!$) {
+    $ =
+      typeof window !== "undefined" && window.django && window.django.jQuery
+        ? window.django.jQuery
+        : typeof window !== "undefined" && window.jQuery
+        ? window.jQuery
+        : typeof jQuery !== "undefined"
+        ? jQuery
+        : null;
+  }
+
+  if (!$) {
+    if (typeof console !== "undefined" && console.warn) {
+      console.warn("[Martor] jQuery is not loaded. Martor initialization skipped.");
     }
-    $.fn.martor = function () {
-        $('.martor').trigger('martor.init');
+    return;
+  }
 
-        // CSRF code
-        var getCookie = function (name) {
-            var cookieValue = null;
-            var i = 0;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (i; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
+  const Martor = window.Martor || {
+    version: "1.4.9-sqrtoj",
+    debug: false,
+    instances: {},
+
+    get(fieldName) {
+      return this.instances[fieldName] || null;
+    },
+
+    getAll() {
+      return Object.values(this.instances);
+    },
+
+    refreshAll() {
+      this.getAll().forEach((instance) => instance.refreshPreview());
+    },
+  };
+  window.Martor = Martor;
+
+  const MartorLogger = {
+    _log(level, fieldName, message, extra) {
+      if (level === "debug" && !Martor.debug) {
+        return;
+      }
+      const prefix = `[Martor${fieldName ? ":" + fieldName : ""}]`;
+      const logFn = console[level] || console.log;
+      if (extra !== undefined) {
+        logFn(prefix, message, extra);
+      } else {
+        logFn(prefix, message);
+      }
+    },
+    debug(fieldName, msg, extra) {
+      this._log("debug", fieldName, msg, extra);
+    },
+    info(fieldName, msg, extra) {
+      this._log("info", fieldName, msg, extra);
+    },
+    warn(fieldName, msg, extra) {
+      this._log("warn", fieldName, msg, extra);
+    },
+    error(fieldName, msg, extra) {
+      this._log("error", fieldName, msg, extra);
+    },
+  };
+
+  const CookieHelper = {
+    getCookie(name) {
+      if (!document.cookie) {
+        return null;
+      }
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          return decodeURIComponent(cookie.substring(name.length + 1));
+        }
+      }
+      return null;
+    },
+    getCsrfToken() {
+      return this.getCookie("csrftoken") || "";
+    },
+  };
+
+  const ThemeManager = {
+    getThemePreference() {
+      const theme = ($("body").attr("data-theme") || "").toLowerCase();
+      return ["dark", "light", "auto"].includes(theme) ? theme : "";
+    },
+
+    hasDarkStylesheet() {
+      const links = document.querySelectorAll('link[rel="stylesheet"][href]');
+      for (let i = 0; i < links.length; i++) {
+        const link = links[i];
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href.indexOf("/dark/style") === -1) {
+          continue;
+        }
+        const media = link.media || "";
+        if (!media || !window.matchMedia || window.matchMedia(media).matches) {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    isDarkMode() {
+      const preference = this.getThemePreference();
+      if (preference === "dark") {
+        return true;
+      }
+      if (preference === "light") {
+        return false;
+      }
+      if (!this.hasDarkStylesheet()) {
+        return false;
+      }
+      return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    },
+
+    applyTheme($container, editor) {
+      if (this.isDarkMode()) {
+        $container.addClass("martor-theme-dark");
+        $container.find(".ui").addClass("inverted");
+        editor.setTheme("ace/theme/twilight");
+      } else {
+        $container.removeClass("martor-theme-dark");
+        $container.find(".ui").removeClass("inverted");
+        editor.setTheme("ace/theme/github");
+      }
+    },
+
+    bindAutoThemeListener(callback) {
+      if (this.getThemePreference() === "auto" && window.matchMedia) {
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", callback);
+      }
+    },
+  };
+
+  const ConfigParser = {
+    parse($textarea) {
+      const defaults = {
+        imgur: "true",
+        mention: "false",
+        living: "false",
+        hljs: "true",
+      };
+      const rawConfig = $textarea.data("enable-configs");
+      if (!rawConfig) {
+        return defaults;
+      }
+      if (typeof rawConfig === "object") {
+        return { ...defaults, ...rawConfig };
+      }
+      try {
+        const parsed = JSON.parse(String(rawConfig).replace(/'/g, '"'));
+        return { ...defaults, ...parsed };
+      } catch (error) {
+        MartorLogger.warn("", "Failed to parse data-enable-configs JSON, using defaults:", error);
+        return defaults;
+      }
+    },
+  };
+
+  const MarkdownFormatter = {
+    wrapInline(editor, { emptyText, emptyCursorColOffset, openTag, closeTag }) {
+      const originalRange = editor.getSelectionRange();
+      if (editor.selection.isEmpty()) {
+        const curpos = editor.getCursorPosition();
+        editor.session.insert(curpos, emptyText);
+        editor.focus();
+        editor.selection.moveTo(curpos.row, curpos.column + emptyCursorColOffset);
+      } else {
+        const selectedText = editor.session.getTextRange(originalRange);
+        editor.session.replace(originalRange, openTag + selectedText + closeTag);
+        originalRange.end.column += openTag.length + closeTag.length;
+        editor.focus();
+        editor.selection.setSelectionRange(originalRange);
+      }
+    },
+
+    insertBlock(editor, { emptyText, emptyCursorOffset, wrapText, moveCursorOffset }) {
+      const originalRange = editor.getSelectionRange();
+      if (editor.selection.isEmpty()) {
+        const curpos = editor.getCursorPosition();
+        editor.session.insert(curpos, emptyText);
+        editor.focus();
+        editor.selection.moveTo(
+          curpos.row + emptyCursorOffset.row,
+          curpos.column + emptyCursorOffset.col,
+        );
+      } else {
+        const selectedText = editor.session.getTextRange(originalRange);
+        editor.session.replace(originalRange, wrapText(selectedText));
+        editor.focus();
+        editor.selection.moveTo(
+          originalRange.end.row + moveCursorOffset.row,
+          originalRange.end.column + moveCursorOffset.col,
+        );
+      }
+    },
+
+    bold(editor) {
+      this.wrapInline(editor, {
+        emptyText: " **** ",
+        emptyCursorColOffset: 3,
+        openTag: "**",
+        closeTag: "**",
+      });
+    },
+
+    italic(editor) {
+      this.wrapInline(editor, {
+        emptyText: " ** ",
+        emptyCursorColOffset: 2,
+        openTag: "*",
+        closeTag: "*",
+      });
+    },
+
+    strikethrough(editor) {
+      this.wrapInline(editor, {
+        emptyText: " ~~~~ ",
+        emptyCursorColOffset: 3,
+        openTag: "~~",
+        closeTag: "~~",
+      });
+    },
+
+    code(editor) {
+      this.wrapInline(editor, {
+        emptyText: " `` ",
+        emptyCursorColOffset: 2,
+        openTag: "`",
+        closeTag: "`",
+      });
+    },
+
+    inlineMath(editor) {
+      this.wrapInline(editor, {
+        emptyText: "~~",
+        emptyCursorColOffset: 1,
+        openTag: "~",
+        closeTag: "~",
+      });
+    },
+
+    displayMath(editor) {
+      this.wrapInline(editor, {
+        emptyText: "$$$$",
+        emptyCursorColOffset: 2,
+        openTag: "$$",
+        closeTag: "$$",
+      });
+    },
+
+    horizontal(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n----------\n\n",
+        emptyCursorOffset: { row: 4, col: 10 },
+        wrapText: (text) => "\n\n----------\n\n" + text,
+        moveCursorOffset: { row: 4, col: 10 },
+      });
+    },
+
+    h1(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n# ",
+        emptyCursorOffset: { row: 2, col: 2 },
+        wrapText: (text) => "\n\n# " + text + "\n",
+        moveCursorOffset: { row: 2, col: 2 },
+      });
+    },
+
+    h2(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n## ",
+        emptyCursorOffset: { row: 2, col: 3 },
+        wrapText: (text) => "\n\n## " + text + "\n",
+        moveCursorOffset: { row: 2, col: 3 },
+      });
+    },
+
+    h3(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n### ",
+        emptyCursorOffset: { row: 2, col: 4 },
+        wrapText: (text) => "\n\n### " + text + "\n",
+        moveCursorOffset: { row: 2, col: 4 },
+      });
+    },
+
+    pre(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n```\n\n```\n",
+        emptyCursorOffset: { row: 3, col: 0 },
+        wrapText: (text) => "\n\n```\n" + text + "\n```\n",
+        moveCursorOffset: { row: 3, col: 3 },
+      });
+    },
+
+    latex(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n<latex>\n\n</latex>\n",
+        emptyCursorOffset: { row: 3, col: 7 },
+        wrapText: (text) => "\n\n<latex>\n" + text + "\n</latex>\n",
+        moveCursorOffset: { row: 3, col: 6 },
+      });
+    },
+
+    blockquote(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n> \n",
+        emptyCursorOffset: { row: 2, col: 2 },
+        wrapText: (text) => "\n\n> " + text + "\n",
+        moveCursorOffset: { row: 2, col: 2 },
+      });
+    },
+
+    unorderedList(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n* ",
+        emptyCursorOffset: { row: 2, col: 2 },
+        wrapText: (text) => "\n\n* " + text,
+        moveCursorOffset: { row: 2, col: 2 },
+      });
+    },
+
+    orderedList(editor) {
+      this.insertBlock(editor, {
+        emptyText: "\n\n1. ",
+        emptyCursorOffset: { row: 2, col: 3 },
+        wrapText: (text) => "\n\n1. " + text,
+        moveCursorOffset: { row: 2, col: 3 },
+      });
+    },
+
+    link(editor) {
+      const originalRange = editor.getSelectionRange();
+      if (editor.selection.isEmpty()) {
+        const curpos = editor.getCursorPosition();
+        editor.session.insert(curpos, " [](https://) ");
+        editor.focus();
+        editor.selection.moveTo(curpos.row, curpos.column + 2);
+      } else {
+        const selectedText = editor.session.getTextRange(originalRange);
+        editor.session.replace(originalRange, "[" + selectedText + "](https://) ");
+        editor.focus();
+        editor.selection.moveTo(originalRange.end.row, originalRange.end.column + 10);
+      }
+    },
+
+    imageLink(editor, imageData) {
+      if (typeof imageData === "undefined") {
+        const originalRange = editor.getSelectionRange();
+        if (editor.selection.isEmpty()) {
+          const curpos = editor.getCursorPosition();
+          editor.session.insert(curpos, " ![](https://)");
+          editor.focus();
+          editor.selection.moveTo(curpos.row, curpos.column + 3);
+        } else {
+          const selectedText = editor.session.getTextRange(originalRange);
+          editor.session.replace(originalRange, "![" + selectedText + "](https://)");
+          editor.focus();
+          editor.selection.moveTo(originalRange.end.row, originalRange.end.column + 11);
+        }
+      } else {
+        const curpos = editor.getCursorPosition();
+        editor.session.insert(curpos, "![" + imageData.name + "](" + imageData.link + ")");
+        editor.focus();
+        editor.selection.moveTo(curpos.row, curpos.column + imageData.name.length + 2);
+      }
+    },
+
+    mention(editor) {
+      const originalRange = editor.getSelectionRange();
+      if (editor.selection.isEmpty()) {
+        const curpos = editor.getCursorPosition();
+        editor.session.insert(curpos, " [user:]");
+        editor.focus();
+        editor.selection.moveTo(curpos.row, curpos.column + 7);
+      } else {
+        const selectedText = editor.session.getTextRange(originalRange);
+        editor.session.replace(originalRange, "[user:" + selectedText + "]");
+        editor.focus();
+        editor.selection.moveTo(originalRange.end.row, originalRange.end.column + 6);
+      }
+    },
+  };
+
+  const COMMAND_DEFINITIONS = [
+    {
+      name: "markdownToBold",
+      bindKey: { win: "Ctrl-B", mac: "Command-B" },
+      selector: ".markdown-bold",
+      action: (editor) => MarkdownFormatter.bold(editor),
+    },
+    {
+      name: "markdownToItalic",
+      bindKey: { win: "Ctrl-I", mac: "Command-I" },
+      selector: ".markdown-italic",
+      action: (editor) => MarkdownFormatter.italic(editor),
+    },
+    {
+      name: "markdownToStrikethrough",
+      bindKey: { win: "Ctrl-Shift-S", mac: "Command-Option-S" },
+      selector: ".markdown-strikethrough",
+      action: (editor) => MarkdownFormatter.strikethrough(editor),
+    },
+    {
+      name: "markdownToHorizontal",
+      bindKey: { win: "Ctrl-H", mac: "Command-H" },
+      selector: ".markdown-horizontal",
+      action: (editor) => MarkdownFormatter.horizontal(editor),
+    },
+    {
+      name: "markdownToH1",
+      bindKey: { win: "Ctrl-Alt-1", mac: "Command-Option-1" },
+      selector: ".markdown-h1",
+      action: (editor) => MarkdownFormatter.h1(editor),
+    },
+    {
+      name: "markdownToH2",
+      bindKey: { win: "Ctrl-Alt-2", mac: "Command-Option-2" },
+      selector: ".markdown-h2",
+      action: (editor) => MarkdownFormatter.h2(editor),
+    },
+    {
+      name: "markdownToH3",
+      bindKey: { win: "Ctrl-Alt-3", mac: "Command-Option-3" },
+      selector: ".markdown-h3",
+      action: (editor) => MarkdownFormatter.h3(editor),
+    },
+    {
+      name: "markdownToPre",
+      bindKey: { win: "Ctrl-Alt-P", mac: "Command-Option-P" },
+      selector: ".markdown-pre",
+      action: (editor) => MarkdownFormatter.pre(editor),
+    },
+    {
+      name: "markdownToCode",
+      bindKey: { win: "Ctrl-Alt-C", mac: "Command-Option-C" },
+      selector: ".markdown-code",
+      action: (editor) => MarkdownFormatter.code(editor),
+    },
+    {
+      name: "markdownToInlineMath",
+      bindKey: { win: "Ctrl-Alt-I", mac: "Command-Option-I" },
+      selector: ".markdown-inline-math",
+      action: (editor) => MarkdownFormatter.inlineMath(editor),
+    },
+    {
+      name: "markdownToDisplayMath",
+      bindKey: { win: "Ctrl-Alt-D", mac: "Command-Option-D" },
+      selector: ".markdown-display-math",
+      action: (editor) => MarkdownFormatter.displayMath(editor),
+    },
+    {
+      name: "markdownToLatex",
+      bindKey: { win: "Ctrl-Alt-L", mac: "Command-Option-L" },
+      selector: ".markdown-latex",
+      action: (editor) => MarkdownFormatter.latex(editor),
+    },
+    {
+      name: "markdownToBlockQuote",
+      bindKey: { win: "Ctrl-Q", mac: "Command-Q" },
+      selector: ".markdown-blockquote",
+      action: (editor) => MarkdownFormatter.blockquote(editor),
+    },
+    {
+      name: "markdownToUnorderedList",
+      bindKey: { win: "Ctrl-U", mac: "Command-U" },
+      selector: ".markdown-unordered-list",
+      action: (editor) => MarkdownFormatter.unorderedList(editor),
+    },
+    {
+      name: "markdownToOrderedList",
+      bindKey: { win: "Ctrl-Shift+O", mac: "Command-Option-O" },
+      selector: ".markdown-ordered-list",
+      action: (editor) => MarkdownFormatter.orderedList(editor),
+    },
+    {
+      name: "markdownToLink",
+      bindKey: { win: "Ctrl-L", mac: "Command-L" },
+      selector: ".markdown-link",
+      action: (editor) => MarkdownFormatter.link(editor),
+    },
+    {
+      name: "markdownToImageLink",
+      bindKey: { win: "Ctrl-Shift-I", mac: "Command-Option-I" },
+      selector: ".markdown-image-link",
+      action: (editor, data) => MarkdownFormatter.imageLink(editor, data),
+    },
+  ];
+
+  const MENTION_COMMAND = {
+    name: "markdownToMention",
+    bindKey: { win: "Ctrl-M", mac: "Command-M" },
+    selector: ".markdown-direct-mention",
+    action: (editor) => MarkdownFormatter.mention(editor),
+  };
+
+  class MartorEditor {
+    constructor($container) {
+      this.$container = $container;
+      this.fieldName = $container.data("field-name");
+      this.$textarea = $("#id_" + this.fieldName);
+      this.editorId = "martor-" + this.fieldName;
+
+      if (!$("#" + this.editorId).length) {
+        MartorLogger.warn(this.fieldName, `Editor container #${this.editorId} not found.`);
+        return;
+      }
+
+      this.editor = ace.edit(this.editorId);
+      this.config = ConfigParser.parse(this.$textarea);
+
+      this.init();
+    }
+
+    init() {
+      this.initAceOptions();
+      this.initTheme();
+      this.initMentionCompleter();
+      this.initFieldAttributes();
+      this.initResize();
+      this.initContentSync();
+      this.initTabsAndPreview();
+      this.initCommandsAndToolbar();
+      this.initUploads();
+      this.initFullscreen();
+
+      const initialValue = this.$textarea.val();
+      if (initialValue) {
+        this.editor.setValue(initialValue, -1);
+      }
+
+      MartorLogger.debug(this.fieldName, "Initialized with config:", this.config);
+    }
+
+    initAceOptions() {
+      this.editor.getSession().setMode("ace/mode/markdown");
+      this.editor.getSession().setUseWrapMode(true);
+      this.editor.$blockScrolling = Infinity; // ace emits console warnings without this
+      this.editor.renderer.setScrollMargin(10, 10);
+      this.editor.setAutoScrollEditorIntoView(true);
+      this.editor.setShowPrintMargin(false);
+      this.editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        enableMultiselect: false,
+      });
+
+      if (this.config.living === "true") {
+        this.$container.addClass("enable-living");
+      }
+    }
+
+    initTheme() {
+      ThemeManager.applyTheme(this.$container, this.editor);
+      ThemeManager.bindAutoThemeListener(() => {
+        ThemeManager.applyTheme(this.$container, this.editor);
+      });
+    }
+
+    initMentionCompleter() {
+      if (this.config.mention !== "true") {
+        this.editor.completers = [];
+        return;
+      }
+
+      const searchUrl = this.$textarea.data("search-users-url");
+      const mentionWordCompleter = {
+        getCompletions: (editor, session, pos, prefix, callback) => {
+          const token = session.getTokenAt(pos.row, pos.column.count);
+          if (!token || !token.value) {
+            callback(null, []);
+            return;
+          }
+
+          const tokens = token.value.split(/\s+/);
+          const lastToken = tokens[tokens.length - 1];
+
+          if (lastToken && lastToken.startsWith("[user:")) {
+            // strip '[user:' and trailing ']'
+            const usernameQuery = lastToken.slice(6).replace(/\]$/, "");
+            if (!searchUrl) {
+              callback(null, []);
+              return;
             }
-            return cookieValue;
-        };
 
-        var getThemePreference = function () {
-            var theme = ($('body').attr('data-theme') || '').toLowerCase();
-            if (theme === 'dark' || theme === 'light' || theme === 'auto') {
-                return theme;
-            }
-            return '';
-        };
-
-        var hasDarkStylesheet = function () {
-            var links = document.querySelectorAll('link[rel="stylesheet"][href]');
-            for (var i = 0; i < links.length; i++) {
-                var link = links[i];
-                var href = (link.getAttribute('href') || '').toLowerCase();
-                if (href.indexOf('/dark/style') === -1) {
-                    continue;
-                }
-
-                var media = link.media || '';
-                if (!media || !window.matchMedia || window.matchMedia(media).matches) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        var isDarkMode = function () {
-            var theme = getThemePreference();
-            if (theme === 'dark') {
-                return true;
-            }
-            if (theme === 'light') {
-                return false;
-            }
-            if (!hasDarkStylesheet()) {
-                return false;
-            }
-            return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        };
-
-        // Each multiple editor fields
-        this.each(function (i, obj) {
-            var mainMartor   = $(obj);
-            var field_name   = mainMartor.data('field-name');
-            var textareaId   = $('#id_' + field_name);
-            var editorId     = 'martor-' + field_name;
-            var editor       = ace.edit(editorId);
-            var editorConfig = JSON.parse(textareaId.data('enable-configs').replace(/'/g, '"'));
-
-            var setupTheme = function () {
-                if (isDarkMode()) {
-                    mainMartor.addClass('martor-theme-dark');
-                    mainMartor.find('.ui').addClass('inverted');
-                    editor.setTheme('ace/theme/twilight');
-                }
-                else {
-                    mainMartor.removeClass('martor-theme-dark');
-                    mainMartor.find('.ui').removeClass('inverted');
-                    editor.setTheme('ace/theme/github');
-                }
-            }
-
-            setupTheme();
-            if (getThemePreference() === 'auto' && window.matchMedia) {
-                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-                    setupTheme();
-                });
-            }
-
-            editor.getSession().setMode('ace/mode/markdown');
-            editor.getSession().setUseWrapMode(true);
-            editor.$blockScrolling = Infinity; // prevents ace from logging annoying warnings
-            editor.renderer.setScrollMargin(10, 10); // set padding
-            editor.setAutoScrollEditorIntoView(true);
-            editor.setShowPrintMargin(false);
-            editor.setOptions({
-                enableBasicAutocompletion: true,
-                enableLiveAutocompletion: true,
-                enableMultiselect: false
-            });
-
-            if (editorConfig.living == 'true') {
-                $(obj).addClass('enable-living');
-            }
-
-            var handleContentPasteClick = function (event) {
-                var clipboardData = event.clipboardData;
-                if (!clipboardData || !clipboardData.items) {
-                    return;
-                }
-                var items = Object.values(clipboardData.items).filter(item => item.type.match(/^image\//));
-                if (items.length != 1) {
-                    return;
-                }
-                event.preventDefault();
-                markdownToUploadImage(editor, items[0].getAsFile());
-            };
-
-            obj.addEventListener('paste', handleContentPasteClick);
-
-            var mentionWordCompleter = {
-                getCompletions: function (editor, session, pos, prefix, callback) {
-                    var obj = editor.getSession().getTokenAt(pos.row, pos.column.count);
-                    var curTokens = obj.value.split(/\s+/);
-                    var lastToken = curTokens[curTokens.length - 1];
-
-                    var matches = true;
-                    var match_str = '[user:';
-                    for (var i = 0; i < match_str.length; i++) {
-                        matches &= match_str[i] == lastToken[i];
-                    }
-
-                    if (matches) {
-                        var username = lastToken.replace(/([\[user:/\]/])/g, '');
-                        $.ajax({
-                            url: textareaId.data('search-users-url'),
-                            data: {
-                                'username': username,
-                                'csrfmiddlewaretoken': getCookie('csrftoken')
-                            },
-                            success: function (data) {
-                                if (data['status'] == 200) {
-                                    var wordList = [];
-                                    for (var i = 0; i < data['data'].length; i++) {
-                                        wordList.push(data['data'][i].username)
-                                    }
-                                    callback(null, wordList.map(function (word) {
-                                        return {
-                                            caption: word,
-                                            value: word,
-                                            meta: 'username' // this should return as text only.
-                                        };
-                                    }));
-                                }
-                            }// end success
-                        });
-                    }
-                }
-            }
-            // Set autocomplete for ace editor
-            if (editorConfig.mention === 'true') {
-                editor.completers = [mentionWordCompleter]
-            } else {
-                editor.completers = []
-            }
-
-            // set css `display:none` fot this textarea.
-            textareaId.attr({ 'style': 'display:none' });
-
-            // assign all `field_name`, uses for a per-single editor.
-            $(obj).find('.martor-toolbar').find('.markdown-selector').attr({ 'data-field-name': field_name });
-            $(obj).find('.upload-progress').attr({ 'data-field-name': field_name });
-            $(obj).find('.modal-help-guide').attr({ 'data-field-name': field_name });
-
-            // Set if editor has changed.
-            editor.on('change', function (evt) {
-                var value = editor.getValue();
-                textareaId.val(value);
-            });
-
-            // resize the editor using `resizable.min.js`
-            $('#' + editorId).resizable({
-                direction: 'bottom',
-                stop: function () {
-                    editor.resize();
-                }
-            });
-
-            // update the preview if this menu is clicked
-            var currentTab = $('.tab.segment[data-tab=preview-tab-' + field_name + ']');
-            var previewTabButton = $('.item[data-tab=preview-tab-' + field_name + ']');
-            var refreshPreview = function () {
-                var value = textareaId.val();
-                var form = new FormData();
-                form.append('content', value);
-                form.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-                currentTab.addClass('martor-preview-stale');
-
-                $.ajax({
-                    url: textareaId.data('markdownfy-url'),
-                    type: 'POST',
-                    data: form,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        if (response) {
-                            currentTab.html(response).removeClass('martor-preview-stale');
-                            $(document).trigger('martor:preview', [currentTab]);
-
-                            if (editorConfig.hljs == 'true') {
-                                $('pre').each(function (i, block) {
-                                    hljs.highlightBlock(block);
-                                });
-                            }
-                        } else {
-                            currentTab.html('<p>Nothing to preview</p>');
-                        }
-                    },
-                    error: function (response) {
-                        console.log("error", response);
-                    }
-                });
-            };
-
-            // Refresh the preview unconditionally on first load.
-            refreshPreview();
-
-            if (editorConfig.living !== 'true') {
-                previewTabButton.click(function () {
-                    // hide the `.martor-toolbar` for this current editor if under preview.
-                    $(this).closest('.tab-martor-menu').find('.martor-toolbar').hide();
-                    refreshPreview();
-                });
-            } else {
-                editor.on('change', refreshPreview);
-            }
-
-            var editorTabButton = $('.item[data-tab=editor-tab-' + field_name + ']');
-            editorTabButton.click(function () {
-                // show the `.martor-toolbar` for this current editor if under preview.
-                $(this).closest('.tab-martor-menu').find('.martor-toolbar').show();
-            });
-
-            // win/linux: Ctrl+B, mac: Command+B
-            var markdownToBold = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, ' **** ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 3);
+            $.ajax({
+              url: searchUrl,
+              data: {
+                username: usernameQuery,
+                csrfmiddlewaretoken: CookieHelper.getCsrfToken(),
+              },
+              success: (response) => {
+                if (response && response.status === 200 && Array.isArray(response.data)) {
+                  const suggestions = response.data.map((user) => ({
+                    caption: user.username,
+                    value: user.username,
+                    meta: "username",
+                  }));
+                  callback(null, suggestions);
                 } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '**' + text + '**');
-                    originalRange.end.column += 4; // this because injected from 4 `*` characters.
-                    editor.focus();
-                    editor.selection.setSelectionRange(originalRange);
+                  callback(null, []);
                 }
-            };
-            // win/linux: Ctrl+I, mac: Command+I
-            var markdownToItalic = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, ' ** ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 2);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '*' + text + '*');
-                    originalRange.end.column += 2; // this because injected from 2 `*` characters.
-                    editor.focus();
-                    editor.selection.setSelectionRange(originalRange);
-                }
-            };
-            // win/linux: Ctrl+Shift+S
-            var markdownToStrikethrough = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, ' ~~~~ ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 3);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '~~' + text + '~~');
-                    originalRange.end.column += 4; // this because injected from 4 `*` characters.
-                    editor.focus();
-                    editor.selection.setSelectionRange(originalRange);
-                }
-            };
-            // win/linux: Ctrl+H, mac: Command+H
-            var markdownToHorizontal = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n----------\n\n');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 4, curpos.column + 10);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n----------\n\n' + text);
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 4,
-                        originalRange.end.column + 10
-                    );
-                }
-            };
-            // win/linux: Ctrl+Alt+1, mac: Command+Option+1
-            var markdownToH1 = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n# ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 2, curpos.column + 2);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n# ' + text + '\n');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 2,
-                        originalRange.end.column + 2
-                    );
-                }
-            };
-            // win/linux: Ctrl+Alt+2, mac: Command+Option+2
-            var markdownToH2 = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n## ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 2, curpos.column + 3);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n## ' + text + '\n');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 2,
-                        originalRange.end.column + 3
-                    );
-                }
-            };
-            // win/linux: Ctrl+Alt+3, mac: Command+Option+3
-            var markdownToH3 = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n### ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 2, curpos.column + 4);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n### ' + text + '\n');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 2,
-                        originalRange.end.column + 4
-                    );
-                }
-            };
-            // win/linux: Ctrl+Alt+P, mac: Command+Option+P
-            var markdownToPre = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n```\n\n```\n');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 3, curpos.column);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n```\n' + text + '\n```\n');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 3,
-                        originalRange.end.column + 3
-                    );
-                }
-            };
-            // win/linux: Ctrl+Alt+C, mac: Command+Option+C
-            var markdownToCode = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, ' `` ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 2);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '`' + text + '`');
-                    originalRange.end.column += 2; // this because injected from 2 `_` characters.
-                    editor.focus();
-                    editor.selection.setSelectionRange(originalRange);
-                }
-            };
-            // win/linux: Ctrl+Alt+I, mac: Command+Option+I
-            var markdownToInlineMath = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '~~');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 1);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '~' + text + '~');
-                    originalRange.end.column += 2;
-                    editor.focus();
-                    editor.selection.setSelectionRange(originalRange);
-                }
-            }
-            // win/linux: Ctrl+Alt+D, mac: Command+Option+D
-            var markdownToDisplayMath = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '$$$$');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 2);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '$$' + text + '$$');
-                    originalRange.end.column += 4;
-                    editor.focus();
-                    editor.selection.setSelectionRange(originalRange);
-                }
-            }
-            // win/linux: Ctrl+Alt+L, mac: Command+Option+L
-            var markdownToLatex = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n<latex>\n\n</latex>\n');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 3, curpos.column + 7);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n<latex>\n' + text + '\n</latex>\n');
-                    editor.selection.moveTo(
-                        originalRange.end.row + 3,
-                        originalRange.end.column + 6
-                    );
-                }
-            }
-            // win/linux: Ctrl+Q, mac: Command+Q
-            var markdownToBlockQuote = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n> \n');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 2, curpos.column + 2);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n> ' + text + '\n');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 2,
-                        originalRange.end.column + 2
-                    );
-                }
-            };
-            // win/linux: Ctrl+U, mac: Command+U
-            var markdownToUnorderedList = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n* ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 2, curpos.column + 2);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n* ' + text);
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 2,
-                        originalRange.end.column + 2
-                    );
-                }
-            };
-            // win/linux: Ctrl+Shift+O, mac: Command+Option+O
-            var markdownToOrderedList = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '\n\n1. ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row + 2, curpos.column + 3);
-                }
-                else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '\n\n1. ' + text);
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row + 2,
-                        originalRange.end.column + 3
-                    );
-                }
-            };
-            // win/linux: Ctrl+L, mac: Command+L
-            var markdownToLink = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, ' [](https://) ');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 2);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '[' + text + '](https://) ');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row,
-                        originalRange.end.column + 10
-                    );
-                }
-            };
-            // win/linux: Ctrl+Shift+I, mac: Command+Option+I
-            // or via upload: imageData={name:null, link:null}
-            var markdownToImageLink = function (editor, imageData) {
-                var originalRange = editor.getSelectionRange();
-                if (typeof (imageData) === 'undefined') {
-                    if (editor.selection.isEmpty()) {
-                        var curpos = editor.getCursorPosition();
-                        editor.session.insert(curpos, ' ![](https://)');
-                        editor.focus();
-                        editor.selection.moveTo(curpos.row, curpos.column + 3);
-                    } else {
-                        var range = editor.getSelectionRange();
-                        var text = editor.session.getTextRange(range);
-                        editor.session.replace(range, '![' + text + '](https://)');
-                        editor.focus();
-                        editor.selection.moveTo(
-                            originalRange.end.row,
-                            originalRange.end.column + 11
-                        );
-                    }
-                } else { // this if use image upload to imgur.
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, '![' + imageData.name + '](' + imageData.link + ')');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        curpos.row,
-                        curpos.column + imageData.name.length + 2
-                    );
-                }
-            };
-            // win/linux: Ctrl+M, mac: Command+M
-            var markdownToMention = function (editor) {
-                var originalRange = editor.getSelectionRange();
-                if (editor.selection.isEmpty()) {
-                    var curpos = editor.getCursorPosition();
-                    editor.session.insert(curpos, ' [user:]');
-                    editor.focus();
-                    editor.selection.moveTo(curpos.row, curpos.column + 7);
-                } else {
-                    var range = editor.getSelectionRange();
-                    var text = editor.session.getTextRange(range);
-                    editor.session.replace(range, '[user:' + text + ']');
-                    editor.focus();
-                    editor.selection.moveTo(
-                        originalRange.end.row,
-                        originalRange.end.column + 6
-                    )
-                }
-            };
-            // Markdown Image Uploader auto insert to editor.
-            // with special insert, eg: ![avatar.png](i.imgur.com/DytfpTz.png)
-            var markdownToUploadImage = function (editor, imageData) {
-                var firstForm = $('#' + editorId).closest('form').get(0);
-                var field_name = editor.container.id.replace('martor-', '');
-                var form = new FormData(firstForm);
-                if (imageData) {
-                    form.append('markdown-image-upload', imageData);
-                }
-                form.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+              },
+              error: (xhr, status, error) => {
+                MartorLogger.error(this.fieldName, "Mention search request failed:", error);
+                callback(null, []);
+              },
+            });
+          } else {
+            callback(null, []);
+          }
+        },
+      };
 
-                $.ajax({
-                    url: textareaId.data('upload-url'),
-                    type: 'POST',
-                    data: form,
-                    async: true,
-                    cache: false,
-                    contentType: false,
-                    enctype: 'multipart/form-data',
-                    processData: false,
-                    beforeSend: function () {
-                        console.log('Uploading...');
-                        $('.upload-progress[data-field-name=' + field_name + ']').show();
-                    },
-                    success: function (response) {
-                        $('.upload-progress[data-field-name=' + field_name + ']').hide();
-                        if (response.status == 200) {
-                            console.log(response);
-                            markdownToImageLink(editor, { name: response.name, link: response.link });
-                        } else {
-                            alert(response.error);
-                        }
-                    },
-                    error: function (response) {
-                        console.log("error", response);
-                        $('.upload-progress[data-field-name=' + field_name + ']').hide();
-                    }
-                });
-                return false;
-            };
+      this.editor.completers = [mentionWordCompleter];
+    }
 
-            // Trigger Keyboards
-            editor.commands.addCommand({
-                name: 'markdownToBold',
-                bindKey: { win: 'Ctrl-B', mac: 'Command-B' },
-                exec: function (editor) {
-                    markdownToBold(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToItalic',
-                bindKey: { win: 'Ctrl-I', mac: 'Command-I' },
-                exec: function (editor) {
-                    markdownToItalic(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToStrikethrough',
-                bindKey: { win: 'Ctrl-Shift-S', mac: 'Command-Option-S' },
-                exec: function (editor) {
-                    markdownToStrikethrough(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToHorizontal',
-                bindKey: { win: 'Ctrl-H', mac: 'Command-H' },
-                exec: function (editor) {
-                    markdownToHorizontal(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToH1',
-                bindKey: { win: 'Ctrl-Alt-1', mac: 'Command-Option-1' },
-                exec: function (editor) {
-                    markdownToH1(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToH2',
-                bindKey: { win: 'Ctrl-Alt-2', mac: 'Command-Option-2' },
-                exec: function (editor) {
-                    markdownToH2(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToH3',
-                bindKey: { win: 'Ctrl-Alt-3', mac: 'Command-Option-3' },
-                exec: function (editor) {
-                    markdownToH3(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToPre',
-                bindKey: { win: 'Ctrl-Alt-P', mac: 'Command-Option-P' },
-                exec: function (editor) {
-                    markdownToPre(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToCode',
-                bindKey: { win: 'Ctrl-Alt-C', mac: 'Command-Option-C' },
-                exec: function (editor) {
-                    markdownToCode(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToInlineMath',
-                bindKey: { win: 'Ctrl-Alt-I', mac: 'Command-Option-I' },
-                exec: function (editor) {
-                    markdownToInlineMath(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToDisplayMath',
-                bindKey: { win: 'Ctrl-Alt-D', mac: 'Command-Option-D' },
-                exec: function (editor) {
-                    markdownToDisplayMath(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToLatex',
-                bindKey: { win: 'Ctrl-Alt-L', mac: 'Command-Option-L' },
-                exec: function (editor) {
-                    markdownToLatex(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToBlockQuote',
-                bindKey: { win: 'Ctrl-Q', mac: 'Command-Q' },
-                exec: function (editor) {
-                    markdownToBlockQuote(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToUnorderedList',
-                bindKey: { win: 'Ctrl-U', mac: 'Command-U' },
-                exec: function (editor) {
-                    markdownToUnorderedList(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToOrderedList',
-                bindKey: { win: 'Ctrl-Shift+O', mac: 'Command-Option-O' },
-                exec: function (editor) {
-                    markdownToOrderedList(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToLink',
-                bindKey: { win: 'Ctrl-L', mac: 'Command-L' },
-                exec: function (editor) {
-                    markdownToLink(editor);
-                },
-                readOnly: true
-            });
-            editor.commands.addCommand({
-                name: 'markdownToImageLink',
-                bindKey: { win: 'Ctrl-Shift-I', mac: 'Command-Option-I' },
-                exec: function (editor) {
-                    markdownToImageLink(editor);
-                },
-                readOnly: true
-            });
-            if (editorConfig.mention === 'true') {
-                editor.commands.addCommand({
-                    name: 'markdownToMention',
-                    bindKey: { win: 'Ctrl-M', mac: 'Command-M' },
-                    exec: function (editor) {
-                        markdownToMention(editor);
-                    },
-                    readOnly: true
-                });
-            }
+    initFieldAttributes() {
+      this.$textarea.attr({ style: "display:none" });
+      this.$container
+        .find(".martor-toolbar .markdown-selector")
+        .attr({ "data-field-name": this.fieldName });
+      this.$container.find(".upload-progress").attr({ "data-field-name": this.fieldName });
+      this.$container.find(".modal-help-guide").attr({ "data-field-name": this.fieldName });
+    }
 
-            // Trigger Click
-            $('.markdown-bold[data-field-name=' + field_name + ']').click(function () {
-                markdownToBold(editor);
-            });
-            $('.markdown-italic[data-field-name=' + field_name + ']').click(function () {
-                markdownToItalic(editor);
-            });
-            $('.markdown-horizontal[data-field-name=' + field_name + ']').click(function () {
-                markdownToHorizontal(editor);
-            });
-            $('.markdown-h1[data-field-name=' + field_name + ']').click(function () {
-                markdownToH1(editor);
-            });
-            $('.markdown-h2[data-field-name=' + field_name + ']').click(function () {
-                markdownToH2(editor);
-            });
-            $('.markdown-h3[data-field-name=' + field_name + ']').click(function () {
-                markdownToH3(editor);
-            });
-            $('.markdown-pre[data-field-name=' + field_name + ']').click(function () {
-                markdownToPre(editor);
-            });
-            $('.markdown-code[data-field-name=' + field_name + ']').click(function () {
-                markdownToCode(editor);
-            });
-            $('.markdown-inline-math[data-field-name=' + field_name + ']').click(function () {
-                markdownToInlineMath(editor);
-            });
-            $('.markdown-display-math[data-field-name=' + field_name + ']').click(function () {
-                markdownToDisplayMath(editor);
-            });
-            $('.markdown-latex[data-field-name=' + field_name + ']').click(function () {
-                markdownToLatex(editor);
-            });
-            $('.markdown-blockquote[data-field-name=' + field_name + ']').click(function () {
-                markdownToBlockQuote(editor);
-            });
-            $('.markdown-unordered-list[data-field-name=' + field_name + ']').click(function () {
-                markdownToUnorderedList(editor);
-            });
-            $('.markdown-ordered-list[data-field-name=' + field_name + ']').click(function () {
-                markdownToOrderedList(editor);
-            });
-            $('.markdown-link[data-field-name=' + field_name + ']').click(function () {
-                markdownToLink(editor);
-            });
-            $('.markdown-image-link[data-field-name=' + field_name + ']').click(function () {
-                markdownToImageLink(editor);
-            });
-
-            // Custom decission for toolbar buttons.
-            var btnMention = $('.markdown-direct-mention[data-field-name=' + field_name + ']'); // To Direct Mention
-            var btnUpload = $('.markdown-image-upload[data-field-name=' + field_name + ']'); // To Upload Image
-            var handleUploadChange = function (evt) {
-                evt.preventDefault();
-                var fileInput = $(this).find('input[type=file]');
-                var file = fileInput.length && fileInput[0].files && fileInput[0].files[0] ? fileInput[0].files[0] : null;
-                markdownToUploadImage(editor, file);
-                if (fileInput.length) {
-                    fileInput.val('');
-                }
-            };
-            if (editorConfig.mention === 'true' && editorConfig.imgur === 'true') {
-                btnMention.click(function () {
-                    markdownToMention(editor);
-                });
-                btnUpload.on('change', handleUploadChange);
-            } else if (editorConfig.mention === 'true' && editorConfig.imgur === 'false') {
-                btnMention.click(function () {
-                    markdownToMention(editor);
-                });
-                btnUpload.remove();
-            } else if (editorConfig.mention === 'false' && editorConfig.imgur === 'true') {
-                btnMention.remove();
-                btnUpload.on('change', handleUploadChange);
-            }
-            else {
-                btnMention.remove();
-                btnUpload.remove();
-            }
-
-            // Handle tabs.
-            mainMartor.find('.ui.martor-toolbar .ui.dropdown').dropdown();
-            mainMartor.find('.ui.tab-martor-menu .item').tab();
-
-            // Toggle editor, preview, maximize
-            var martorField       = $('.martor-field-' + field_name);
-            var btnToggleMaximize = $('.markdown-toggle-maximize[data-field-name=' + field_name + ']');
-
-            // Toggle maximize and minimize
-            var handleToggleMinimize = function () {
-                $(document.body).removeClass('overflow');
-                $(this).attr({ 'title': 'Full Screen' });
-                $(this).find('.minimize.icon').removeClass('minimize').addClass('maximize');
-                $('.main-martor-fullscreen').find('.martor-preview').removeAttr('style');
-                mainMartor.removeClass('main-martor-fullscreen');
-                martorField.removeAttr('style');
-                editor.resize();
-            }
-            var handleToggleMaximize = function (selector) {
-                selector.attr({ 'title': 'Minimize' });
-                selector.find('.maximize.icon').removeClass('maximize').addClass('minimize');
-                mainMartor.addClass('main-martor-fullscreen');
-
-                var clientHeight = document.body.clientHeight - 90;
-                martorField.attr({ 'style': 'height:' + clientHeight + 'px' });
-
-                var preview = $('.main-martor-fullscreen').find('.martor-preview');
-                preview.attr({ 'style': 'overflow-y: auto;height:' + clientHeight + 'px' });
-
-                editor.resize();
-                selector.one('click', handleToggleMinimize);
-                $(document.body).addClass('overflow');
-            }
-            btnToggleMaximize.on('click', function () {
-                handleToggleMaximize($(this));
-            });
-
-            // Exit full screen when `ESC` is pressed.
-            $(document).keyup(function (e) {
-                if (e.keyCode == 27 && mainMartor.hasClass('main-martor-fullscreen')) {
-                    $('.minimize.icon').trigger('click');
-                }
-            });
-
-            // Set initial value if has the content before.
-            if (textareaId.val() != '') {
-                editor.setValue(textareaId.val(), -1);
-            }
-        });// end each `mainMartor`
-    };
-
-    $(function () {
-        $('.main-martor').not('[data-field-name*=-__prefix__-]').martor();
-    });
-
-    if ('django' in window && 'jQuery' in window.django)
-        django.jQuery(document).on('formset:added', function (event) {
-            $(event.target).find('.main-martor').each(function () {
-                var id = event.target.id;
-                id = id.substr(id.lastIndexOf('-') + 1);
-                // Notice here we are using our jQuery instead of Django's.
-                // This is because plugins are only loaded for ours.
-                var fixed = $(this.outerHTML.replace(/__prefix__/g, id));
-                $(this).replaceWith(fixed);
-                fixed.martor();
-            });
+    initResize() {
+      if ($.fn.resizable) {
+        $("#" + this.editorId).resizable({
+          direction: "bottom",
+          stop: () => {
+            this.editor.resize();
+          },
         });
-})(jQuery);
+      }
+    }
+
+    initContentSync() {
+      this.editor.on("change", () => {
+        this.$textarea.val(this.editor.getValue());
+      });
+    }
+
+    initTabsAndPreview() {
+      this.$container.find(".ui.martor-toolbar .ui.dropdown").dropdown();
+      this.$container.find(".ui.tab-martor-menu .item").tab();
+
+      const previewTabButton = this.$container.find(
+        '.item[data-tab="preview-tab-' + this.fieldName + '"]',
+      );
+      const editorTabButton = this.$container.find(
+        '.item[data-tab="editor-tab-' + this.fieldName + '"]',
+      );
+      const $toolbar = this.$container.find(".martor-toolbar");
+
+      this.refreshPreview();
+
+      if (this.config.living === "true") {
+        this.editor.on("change", () => this.refreshPreview());
+      } else {
+        previewTabButton.on("click", () => {
+          $toolbar.hide();
+          this.refreshPreview();
+        });
+      }
+
+      editorTabButton.on("click", () => {
+        $toolbar.show();
+      });
+    }
+
+    refreshPreview() {
+      const previewUrl =
+        this.$textarea.data("markdownfy-url") || this.$textarea.data("markdownify-url");
+      if (!previewUrl) {
+        MartorLogger.warn(this.fieldName, "Missing markdown preview URL configuration.");
+        return;
+      }
+
+      const currentTab = this.$container.find(
+        '.tab.segment[data-tab="preview-tab-' + this.fieldName + '"]',
+      );
+      const value = this.$textarea.val();
+      const form = new FormData();
+      form.append("content", value);
+      form.append("csrfmiddlewaretoken", CookieHelper.getCsrfToken());
+
+      currentTab.addClass("martor-preview-stale");
+
+      $.ajax({
+        url: previewUrl,
+        type: "POST",
+        data: form,
+        processData: false,
+        contentType: false,
+        success: (response) => {
+          if (response) {
+            currentTab.html(response).removeClass("martor-preview-stale");
+            // notify listeners (e.g. martor-mathjax.js)
+            $(document).trigger("martor:preview", [currentTab]);
+
+            if (this.config.hljs === "true" && typeof hljs !== "undefined") {
+              currentTab.find("pre").each((_, block) => {
+                hljs.highlightBlock(block);
+              });
+            }
+          } else {
+            currentTab.html("<p>Nothing to preview</p>").removeClass("martor-preview-stale");
+          }
+          MartorLogger.debug(this.fieldName, "Preview refreshed successfully.");
+        },
+        error: (xhr, status, error) => {
+          currentTab.removeClass("martor-preview-stale");
+          MartorLogger.error(this.fieldName, "Preview render failed:", { xhr, status, error });
+        },
+      });
+    }
+
+    initCommandsAndToolbar() {
+      const commands = [...COMMAND_DEFINITIONS];
+      if (this.config.mention === "true") {
+        commands.push(MENTION_COMMAND);
+      }
+
+      commands.forEach((cmd) => {
+        this.editor.commands.addCommand({
+          name: cmd.name,
+          bindKey: cmd.bindKey,
+          exec: (editor) => cmd.action(editor),
+          readOnly: true,
+        });
+
+        if (cmd.selector) {
+          this.$container
+            .find(`${cmd.selector}[data-field-name="${this.fieldName}"]`)
+            .on("click", () => {
+              cmd.action(this.editor);
+            });
+        }
+      });
+    }
+
+    initUploads() {
+      const hasUpload = this.config.imgur === "true";
+      const hasMention = this.config.mention === "true";
+
+      const $btnMention = this.$container.find(
+        `.markdown-direct-mention[data-field-name="${this.fieldName}"]`,
+      );
+      const $btnUpload = this.$container.find(
+        `.markdown-image-upload[data-field-name="${this.fieldName}"]`,
+      );
+
+      if (!hasMention) {
+        $btnMention.remove();
+      }
+      if (!hasUpload) {
+        $btnUpload.remove();
+      } else {
+        $btnUpload.on("change", (evt) => {
+          evt.preventDefault();
+          const fileInput = $btnUpload.find('input[type="file"]');
+          const file =
+            fileInput.length && fileInput[0].files && fileInput[0].files[0]
+              ? fileInput[0].files[0]
+              : null;
+          this.uploadImage(file);
+          if (fileInput.length) {
+            fileInput.val("");
+          }
+        });
+
+        this.$container.get(0).addEventListener("paste", (event) => {
+          const clipboardData = event.clipboardData;
+          if (!clipboardData || !clipboardData.items) {
+            return;
+          }
+          const imageItems = Object.values(clipboardData.items).filter(
+            (item) => item.type && item.type.match(/^image\//),
+          );
+          if (imageItems.length === 1) {
+            event.preventDefault();
+            this.uploadImage(imageItems[0].getAsFile());
+          }
+        });
+      }
+    }
+
+    uploadImage(imageFile) {
+      if (!imageFile) {
+        MartorLogger.warn(this.fieldName, "Upload aborted: No image file selected.");
+        return;
+      }
+
+      const uploadUrl = this.$textarea.data("upload-url");
+      if (!uploadUrl) {
+        MartorLogger.error(this.fieldName, "Upload aborted: Missing data-upload-url.");
+        return;
+      }
+
+      const firstForm = this.$container.closest("form").get(0);
+      const form = new FormData(firstForm);
+      form.append("markdown-image-upload", imageFile);
+      form.append("csrfmiddlewaretoken", CookieHelper.getCsrfToken());
+
+      const $progress = this.$container.find(
+        `.upload-progress[data-field-name="${this.fieldName}"]`,
+      );
+      $progress.removeAttr("hidden").show();
+
+      MartorLogger.info(
+        this.fieldName,
+        `Uploading image: ${imageFile.name} (${imageFile.size} bytes)...`,
+      );
+
+      $.ajax({
+        url: uploadUrl,
+        type: "POST",
+        data: form,
+        async: true,
+        cache: false,
+        contentType: false,
+        enctype: "multipart/form-data",
+        processData: false,
+        success: (response) => {
+          $progress.hide().attr("hidden", "");
+          if (response && response.status === 200) {
+            MartorLogger.info(this.fieldName, "Upload succeeded:", response);
+            MarkdownFormatter.imageLink(this.editor, { name: response.name, link: response.link });
+          } else {
+            const errorMsg = (response && response.error) || "Upload failed.";
+            MartorLogger.error(this.fieldName, "Upload rejected by server:", errorMsg);
+            alert(errorMsg);
+          }
+        },
+        error: (xhr, status, error) => {
+          $progress.hide().attr("hidden", "");
+          MartorLogger.error(this.fieldName, "Upload network error:", { xhr, status, error });
+          alert("Upload failed: " + (xhr.responseText || error || "Network error"));
+        },
+      });
+    }
+
+    initFullscreen() {
+      const $btnToggle = this.$container.find(
+        `.markdown-toggle-maximize[data-field-name="${this.fieldName}"]`,
+      );
+      const $field = this.$container.find(".martor-field-" + this.fieldName);
+      const $preview = this.$container.find(".martor-preview");
+
+      const toggleFullscreen = (enable) => {
+        const willBeFullscreen =
+          enable !== undefined ? enable : !this.$container.hasClass("main-martor-fullscreen");
+
+        if (willBeFullscreen) {
+          $(document.body).addClass("overflow");
+          this.$container.addClass("main-martor-fullscreen");
+          $btnToggle.attr("title", "Minimize");
+          $btnToggle.find(".maximize.icon").removeClass("maximize").addClass("minimize");
+
+          const clientHeight = document.body.clientHeight - 90;
+          $field.attr("style", "height:" + clientHeight + "px");
+          $preview.attr("style", "overflow-y: auto;height:" + clientHeight + "px");
+        } else {
+          $(document.body).removeClass("overflow");
+          this.$container.removeClass("main-martor-fullscreen");
+          $btnToggle.attr("title", "Full Screen");
+          $btnToggle.find(".minimize.icon").removeClass("minimize").addClass("maximize");
+
+          $field.removeAttr("style");
+          $preview.removeAttr("style");
+        }
+        this.editor.resize();
+      };
+
+      $btnToggle.on("click", () => toggleFullscreen());
+
+      // esc closes fullscreen
+      $(document).on("keyup.martor", (e) => {
+        if (e.keyCode === 27 && this.$container.hasClass("main-martor-fullscreen")) {
+          toggleFullscreen(false);
+        }
+      });
+    }
+  }
+
+  $.fn.martor = function () {
+    $(".martor").trigger("martor.init");
+
+    return this.each(function () {
+      const $container = $(this);
+      if ($container.data("martor")) {
+        return;
+      }
+
+      const editorInstance = new MartorEditor($container);
+      $container.data("martor", editorInstance);
+      if (editorInstance.fieldName) {
+        Martor.instances[editorInstance.fieldName] = editorInstance;
+      }
+    });
+  };
+
+  $(function () {
+    $(".main-martor").not("[data-field-name*=-__prefix__-]").martor();
+  });
+
+  // in django admin dynamic inlines, clone template replacing __prefix__ with the inline index
+  if (window.django && window.django.jQuery) {
+    window.django.jQuery(document).on("formset:added", function (event) {
+      $(event.target)
+        .find(".main-martor")
+        .each(function () {
+          const targetId = event.target.id;
+          const indexId = targetId.substr(targetId.lastIndexOf("-") + 1);
+          const fixed = $(this.outerHTML.replace(/__prefix__/g, indexId));
+          $(this).replaceWith(fixed);
+          fixed.martor();
+        });
+    });
+  }
+})(
+  typeof window !== "undefined" && window.jQuery
+    ? window.jQuery
+    : typeof jQuery !== "undefined"
+    ? jQuery
+    : null,
+);

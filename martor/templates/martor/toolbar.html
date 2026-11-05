@@ -1,72 +1,76 @@
 {% load i18n %}
-<div class="ui right floated item martor-toolbar">
+<div class="ui right floated item martor-toolbar" role="toolbar" aria-label="{% trans 'Markdown toolbar' %}">
   <div class="ui basic tiny icon buttons no-border">
-    <div class="ui icon button no-border markdown-selector markdown-bold" title="{% trans 'Bold' %} (Ctrl+B)">
-      <i class="bold icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-bold" role="button" tabindex="0" title="{% trans 'Bold' %} (Ctrl+B)" aria-label="{% trans 'Bold' %}">
+      <i class="bold icon" aria-hidden="true"></i>
     </div>
-    <div class="ui icon button no-border markdown-selector markdown-italic" title="{% trans 'Italic' %} (Ctrl+I)">
-      <i class="italic icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-italic" role="button" tabindex="0" title="{% trans 'Italic' %} (Ctrl+I)" aria-label="{% trans 'Italic' %}">
+      <i class="italic icon" aria-hidden="true"></i>
     </div>
-    <div class="ui icon button no-border markdown-selector markdown-horizontal" title="{% trans 'Horizontal Line' %} (Ctrl+H)">
-      <i class="minus icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-horizontal" role="button" tabindex="0" title="{% trans 'Horizontal Line' %} (Ctrl+H)" aria-label="{% trans 'Horizontal Line' %}">
+      <i class="minus icon" aria-hidden="true"></i>
     </div>
-    <div class="ui icon button top left pointing dropdown no-border" title="{% trans 'Heading' %}">
-      <i class="header icon"></i>
+
+    <div class="ui icon button top left pointing dropdown no-border" role="button" tabindex="0" title="{% trans 'Heading' %}" aria-label="{% trans 'Heading' %}">
+      <i class="header icon" aria-hidden="true"></i>
       <div class="menu">
-        <div class="item markdown-selector markdown-h1" title="">{% trans 'Heading' %} 1 (Ctrl+Alt+1)</div>
-        <div class="item markdown-selector markdown-h2" title="">{% trans 'Heading' %} 2 (Ctrl+Alt+2)</div>
-        <div class="item markdown-selector markdown-h3" title="">{% trans 'Heading' %} 3 (Ctrl+Alt+3)</div>
+        <div class="item markdown-selector markdown-h1" role="button" tabindex="0">{% trans 'Heading' %} 1 (Ctrl+Alt+1)</div>
+        <div class="item markdown-selector markdown-h2" role="button" tabindex="0">{% trans 'Heading' %} 2 (Ctrl+Alt+2)</div>
+        <div class="item markdown-selector markdown-h3" role="button" tabindex="0">{% trans 'Heading' %} 3 (Ctrl+Alt+3)</div>
       </div>
     </div>
 
-    <div class="ui icon button top left pointing dropdown no-border" title="{% trans 'Pre or Code' %}">
-      <i class="code icon"></i>
+    <div class="ui icon button top left pointing dropdown no-border" role="button" tabindex="0" title="{% trans 'Pre or Code' %}" aria-label="{% trans 'Code formatting' %}">
+      <i class="code icon" aria-hidden="true"></i>
       <div class="menu">
-        <div class="item markdown-selector markdown-pre" title="">{% trans 'Pre' %} (Ctrl+Alt+P)</div>
-        <div class="item markdown-selector markdown-code" title="">{% trans 'Code' %} (Ctrl+Alt+C)</div>
+        <div class="item markdown-selector markdown-pre" role="button" tabindex="0">{% trans 'Pre' %} (Ctrl+Alt+P)</div>
+        <div class="item markdown-selector markdown-code" role="button" tabindex="0">{% trans 'Code' %} (Ctrl+Alt+C)</div>
       </div>
     </div>
 
-    <div class="ui icon button top left pointing dropdown no-border" title="{% trans 'Math' %}">
-      <i class="superscript icon"></i>
+    <div class="ui icon button top left pointing dropdown no-border" role="button" tabindex="0" title="{% trans 'Math' %}" aria-label="{% trans 'Math formulas' %}">
+      <i class="superscript icon" aria-hidden="true"></i>
       <div class="menu">
-        <div class="item markdown-selector markdown-inline-math" title="">{% trans 'Inline Math' %} (Ctrl+Alt+I)</div>
-        <div class="item markdown-selector markdown-display-math" title="">{% trans 'Display Math' %} (Ctrl+Alt+D)</div>
-        <div class="item markdown-selector markdown-latex" title="">{% trans 'LaTeX' %} (Ctrl+Alt+L)</div>
+        <div class="item markdown-selector markdown-inline-math" role="button" tabindex="0">{% trans 'Inline Math' %} (Ctrl+Alt+I)</div>
+        <div class="item markdown-selector markdown-display-math" role="button" tabindex="0">{% trans 'Display Math' %} (Ctrl+Alt+D)</div>
+        <div class="item markdown-selector markdown-latex" role="button" tabindex="0">{% trans 'LaTeX' %} (Ctrl+Alt+L)</div>
       </div>
     </div>
 
-    <div class="ui icon button no-border markdown-selector markdown-blockquote" title="{% trans 'Quote' %} (Ctrl+Q)">
-      <i class="quote left icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-blockquote" role="button" tabindex="0" title="{% trans 'Quote' %} (Ctrl+Q)" aria-label="{% trans 'Quote' %}">
+      <i class="quote left icon" aria-hidden="true"></i>
     </div>
-    <div class="ui icon button no-border markdown-selector markdown-unordered-list" title="{% trans 'Unordered List' %} (Ctrl+U)">
-      <i class="unordered list icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-unordered-list" role="button" tabindex="0" title="{% trans 'Unordered List' %} (Ctrl+U)" aria-label="{% trans 'Unordered List' %}">
+      <i class="unordered list icon" aria-hidden="true"></i>
     </div>
-    <div class="ui icon button no-border markdown-selector markdown-ordered-list" title="{% trans 'Ordered List' %} (Ctrl+Shift+O)">
-      <i class="ordered list icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-ordered-list" role="button" tabindex="0" title="{% trans 'Ordered List' %} (Ctrl+Shift+O)" aria-label="{% trans 'Ordered List' %}">
+      <i class="ordered list icon" aria-hidden="true"></i>
     </div>
 
-    <div class="ui icon button no-border markdown-selector markdown-link" title="{% trans 'URL/Link' %} (Ctrl+L)">
-      <i class="linkify icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-link" role="button" tabindex="0" title="{% trans 'URL/Link' %} (Ctrl+L)" aria-label="{% trans 'Link' %}">
+      <i class="linkify icon" aria-hidden="true"></i>
     </div>
-    <div class="ui icon button no-border markdown-selector markdown-image-link" title="{% trans 'Insert Image Link' %} (Ctrl+Shift+I)">
-      <i class="image icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-image-link" role="button" tabindex="0" title="{% trans 'Insert Image Link' %} (Ctrl+Shift+I)" aria-label="{% trans 'Insert Image Link' %}">
+      <i class="image icon" aria-hidden="true"></i>
     </div>
+
     {% if uploads_enabled %}
-      <div class="ui icon button no-border markdown-selector markdown-image-upload" title="{% trans 'Upload an Image' %}">
-        <i class="upload icon"></i>
-        <input name="markdown-image-upload" class="button" type="file" accept="image/*" title="{% trans 'Upload an Image' %}">
+      <div class="ui icon button no-border markdown-selector markdown-image-upload" role="button" tabindex="0" title="{% trans 'Upload an Image' %}" aria-label="{% trans 'Upload an Image' %}">
+        <i class="upload icon" aria-hidden="true"></i>
+        <input name="markdown-image-upload" class="button" type="file" accept="image/*" aria-label="{% trans 'Upload an Image' %}">
       </div>
     {% endif %}
-    <div class="ui icon button no-border markdown-selector markdown-direct-mention" title="{% trans 'Direct Mention a User' %} (Ctrl+M)">
-      <i class="at icon"></i>
+
+    <div class="ui icon button no-border markdown-selector markdown-direct-mention" role="button" tabindex="0" title="{% trans 'Direct Mention a User' %} (Ctrl+M)" aria-label="{% trans 'Mention user' %}">
+      <i class="at icon" aria-hidden="true"></i>
     </div>
 
-    <div class="ui icon button no-border markdown-selector markdown-toggle-maximize" title="{% trans 'Full Screen' %}">
-      <i class="window maximize outline icon"></i>
+    <div class="ui icon button no-border markdown-selector markdown-toggle-maximize" role="button" tabindex="0" title="{% trans 'Full Screen' %}" aria-label="{% trans 'Full Screen' %}">
+      <i class="window maximize outline icon" aria-hidden="true"></i>
     </div>
-    <a class="ui icon button no-border markdown-selector markdown-help" title="{% trans 'Markdown Guide (Help)' %}" data-featherlight=".modal-help-guide[data-field-name={{ field_name }}]" href="javascript:void(0)">
-      <i class="question circle icon"></i>
+
+    <a class="ui icon button no-border markdown-selector markdown-help" role="button" title="{% trans 'Markdown Guide (Help)' %}" aria-label="{% trans 'Markdown Guide' %}" data-featherlight=".modal-help-guide[data-field-name={{ field_name }}]" href="#">
+      <i class="question circle icon" aria-hidden="true"></i>
     </a>
   </div>
 </div>
