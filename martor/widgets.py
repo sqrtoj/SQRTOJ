@@ -11,38 +11,34 @@ from .settings import (
 
 
 class MartorWidget(forms.Textarea):
+    """Markdown editor widget powered by Ace."""
+
     UPLOADS_ENABLED = False
 
     def render(self, name, value, attrs=None, renderer=None, **kwargs):
-        # Make the settings the default attributes to pass
-        attributes_to_pass = {
+        passed_attrs = attrs.copy() if attrs else {}
+
+        default_attrs = {
             'data-enable-configs': MARTOR_ENABLE_CONFIGS,
             'data-upload-url': MARTOR_UPLOAD_URL,
             'data-markdownfy-url': MARTOR_MARKDOWNIFY_URL,
+            'data-markdownify-url': MARTOR_MARKDOWNIFY_URL,
             'data-search-users-url': MARTOR_SEARCH_USERS_URL,
         }
 
-        # Make sure that the martor value is in the class attr passed in
-        if 'class' in attrs:
-            attrs['class'] += ' martor'
-        else:
-            attrs['class'] = 'martor'
+        current_classes = passed_attrs.get('class', '').split()
+        if 'martor' not in current_classes:
+            current_classes.append('martor')
+        passed_attrs['class'] = ' '.join(current_classes)
 
-        # Update and overwrite with the attributes passed in
-        attributes_to_pass.update(attrs)
-
-        # Update and overwrite with any attributes that are on the widget
-        # itself. This is also the only way we can push something in without
-        # being part of the render chain.
-        attributes_to_pass.update(self.attrs)
-
-        widget = super(MartorWidget, self).render(name, value, attributes_to_pass)
+        attributes_to_pass = {**default_attrs, **passed_attrs, **self.attrs}
+        widget_html = super().render(name, value, attributes_to_pass, renderer=renderer, **kwargs)
 
         template = get_template('martor/editor.html')
         mentions_enabled = MARTOR_ENABLE_CONFIGS.get('mention') == 'true'
 
         return template.render({
-            'martor': widget,
+            'martor': widget_html,
             'field_name': name,
             'mentions_enabled': mentions_enabled,
             'uploads_enabled': self.UPLOADS_ENABLED,
@@ -70,4 +66,6 @@ class MartorWidget(forms.Textarea):
 
 
 class AdminMartorWidget(MartorWidget, widgets.AdminTextareaWidget):
+    """Admin textarea variant for Martor."""
+
     pass
