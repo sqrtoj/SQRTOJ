@@ -11,7 +11,7 @@
       {% include "martor/toolbar.html" %}
     </div>
     <div id="editor-tab-panel-{{ field_name }}" class="ui bottom attached tab segment active" data-tab="editor-tab-{{ field_name }}" role="tabpanel">
-      <div class="ui active dimmer upload-progress" hidden>
+      <div class="ui dimmer upload-progress" data-field-name="{{ field_name }}" hidden style="display: none;">
         <div class="ui text loader">{% trans "Uploading... please wait..." %}</div>
       </div>
       <div id="martor-{{ field_name }}" class="martor-field martor-field-{{ field_name }}"></div>

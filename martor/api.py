@@ -11,6 +11,13 @@ logger = logging.getLogger(__name__)
 
 def imgur_uploader(image) -> str:
     """Upload an image file to Imgur and return the result as a JSON string."""
+    if not MARTOR_IMGUR_CLIENT_ID:
+        logger.warning('Imgur upload attempted but MARTOR_IMGUR_CLIENT_ID is not configured')
+        return json.dumps({
+            'status': 400,
+            'error': 'Imgur client ID is not configured.',
+        })
+
     upload_url = 'https://api.imgur.com/3/upload.json'
     headers = {'Authorization': f'Client-ID {MARTOR_IMGUR_CLIENT_ID}'}
 

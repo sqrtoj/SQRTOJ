@@ -91,7 +91,11 @@
 
   const ThemeManager = {
     getThemePreference() {
-      const theme = ($("body").attr("data-theme") || "").toLowerCase();
+      const theme = (
+        $("body").attr("data-theme") ||
+        $("html").attr("data-theme") ||
+        ""
+      ).toLowerCase();
       return ["dark", "light", "auto"].includes(theme) ? theme : "";
     },
 
@@ -100,7 +104,11 @@
       for (let i = 0; i < links.length; i++) {
         const link = links[i];
         const href = (link.getAttribute("href") || "").toLowerCase();
-        if (href.indexOf("/dark/style") === -1) {
+        if (
+          href.indexOf("/dark/style") === -1 &&
+          href.indexOf("dark/style") === -1 &&
+          href.indexOf("/dark/") === -1
+        ) {
           continue;
         }
         const media = link.media || "";
@@ -119,8 +127,24 @@
       if (preference === "light") {
         return false;
       }
-      if (!this.hasDarkStylesheet()) {
-        return false;
+      if (this.hasDarkStylesheet()) {
+        return true;
+      }
+      if (typeof window !== "undefined" && window.getComputedStyle) {
+        const root = window.getComputedStyle(document.documentElement);
+        const canvas = (root.getPropertyValue("--color-canvas") || "").trim().toLowerCase();
+        if (
+          canvas === "#140f0a" ||
+          canvas === "#222222" ||
+          canvas === "#111111" ||
+          canvas === "#211812"
+        ) {
+          return true;
+        }
+        const text = (root.getPropertyValue("--color-text") || "").trim().toLowerCase();
+        if (text === "#f4ebdd" || text === "#f8f8f8") {
+          return true;
+        }
       }
       return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     },
@@ -128,7 +152,7 @@
     applyTheme($container, editor) {
       if (this.isDarkMode()) {
         $container.addClass("martor-theme-dark");
-        $container.find(".ui").addClass("inverted");
+        $container.find(".ui").removeClass("inverted");
         editor.setTheme("ace/theme/twilight");
       } else {
         $container.removeClass("martor-theme-dark");
@@ -138,7 +162,7 @@
     },
 
     bindAutoThemeListener(callback) {
-      if (this.getThemePreference() === "auto" && window.matchMedia) {
+      if (window.matchMedia) {
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", callback);
       }
     },
@@ -811,15 +835,18 @@
         return;
       }
 
-      const firstForm = this.$container.closest("form").get(0);
-      const form = new FormData(firstForm);
+      const form = new FormData();
       form.append("markdown-image-upload", imageFile);
       form.append("csrfmiddlewaretoken", CookieHelper.getCsrfToken());
 
       const $progress = this.$container.find(
         `.upload-progress[data-field-name="${this.fieldName}"]`,
       );
-      $progress.removeAttr("hidden").show();
+      $progress.addClass("active").removeAttr("hidden").show();
+
+      const hideProgress = () => {
+        $progress.removeClass("active").attr("hidden", "").hide();
+      };
 
       MartorLogger.info(
         this.fieldName,
@@ -835,21 +862,47 @@
         contentType: false,
         enctype: "multipart/form-data",
         processData: false,
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
         success: (response) => {
-          $progress.hide().attr("hidden", "");
-          if (response && response.status === 200) {
+          hideProgress();
+          if (typeof response === "string") {
+            try {
+              response = JSON.parse(response);
+            } catch (err) {
+              MartorLogger.warn(this.fieldName, "Could not parse JSON response:", err);
+            }
+          }
+          if (response && (response.status === 200 || response.status === "200")) {
             MartorLogger.info(this.fieldName, "Upload succeeded:", response);
             MarkdownFormatter.imageLink(this.editor, { name: response.name, link: response.link });
           } else {
-            const errorMsg = (response && response.error) || "Upload failed.";
+            const errorMsg = (response && (response.error || response.reason)) || "Upload failed.";
             MartorLogger.error(this.fieldName, "Upload rejected by server:", errorMsg);
             alert(errorMsg);
           }
         },
         error: (xhr, status, error) => {
-          $progress.hide().attr("hidden", "");
+          hideProgress();
+          let errorMsg = error || "Network error";
+          if (xhr && xhr.responseText) {
+            try {
+              const parsed = JSON.parse(xhr.responseText);
+              if (parsed && (parsed.error || parsed.reason)) {
+                errorMsg = parsed.error || parsed.reason;
+              } else {
+                errorMsg = xhr.responseText;
+              }
+            } catch (e) {
+              errorMsg = xhr.responseText;
+            }
+          }
           MartorLogger.error(this.fieldName, "Upload network error:", { xhr, status, error });
-          alert("Upload failed: " + (xhr.responseText || error || "Network error"));
+          alert("Upload failed: " + errorMsg);
+        },
+        complete: () => {
+          hideProgress();
         },
       });
     }
