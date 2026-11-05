@@ -176,6 +176,12 @@
             line-height: 1.4;
             padding: 0.62rem 0.8rem;
         }
+        #contest-problems-table th {
+            color: var(--color-text-inverse);
+        }
+        #contest-problems-table th abbr {
+            color: inherit;
+        }
         #contest-problems-table th:first-child,
         #contest-problems-table td:first-child,
         #contest-problems-table .contest-problem-number {
@@ -185,6 +191,9 @@
             text-align: center;
             padding-left: 0.6rem;
             padding-right: 0.6rem;
+        }
+        #contest-problems-table td.contest-problem-number,
+        #contest-problems-table td:first-child {
             font-weight: var(--weight-bold, 700);
             color: var(--color-text-secondary);
         }
@@ -227,9 +236,11 @@
             white-space: nowrap;
             text-align: center;
             font-variant-numeric: tabular-nums;
-            color: var(--color-text-secondary);
             padding-left: 0.65rem;
             padding-right: 0.65rem;
+        }
+        #contest-problems-table td.contest-problem-limit {
+            color: var(--color-text-secondary);
         }
         #contest-problems-table .contest-problem-points {
             width: 11%;
@@ -237,10 +248,12 @@
             white-space: nowrap;
             text-align: center;
             font-variant-numeric: tabular-nums;
-            font-weight: var(--weight-semibold, 600);
-            color: var(--color-text);
             padding-left: 0.65rem;
             padding-right: 0.65rem;
+        }
+        #contest-problems-table td.contest-problem-points {
+            font-weight: var(--weight-semibold, 600);
+            color: var(--color-text);
         }
         #contest-problems-table .contest-problem-editorial {
             width: 11%;
