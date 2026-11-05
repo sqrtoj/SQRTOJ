@@ -90,6 +90,12 @@
             max-width: 100%;
             overflow-wrap: anywhere;
             word-break: break-word;
+            text-decoration: none !important;
+        }
+
+        #content > .tabs + .organization-tags .organization-tag a:hover,
+        #content > .tabs + .organization-tags .organization-tag a:focus {
+            text-decoration: none !important;
         }
 
         #content > .tabs + .organization-tags + hr {
@@ -167,46 +173,99 @@
         #contest-problems-table th,
         #contest-problems-table td {
             vertical-align: middle;
-            line-height: 1.35;
+            line-height: 1.4;
+            padding: 0.62rem 0.8rem;
         }
         #contest-problems-table th:first-child,
         #contest-problems-table td:first-child,
         #contest-problems-table .contest-problem-number {
-            width: 1%;
+            width: 4%;
+            min-width: 3.2rem;
             white-space: nowrap;
             text-align: center;
             padding-left: 0.6rem;
             padding-right: 0.6rem;
+            font-weight: var(--weight-bold, 700);
+            color: var(--color-text-secondary);
         }
         #contest-problems-table .contest-problem-status {
-            width: 1%;
+            width: 3.5%;
+            min-width: 2.8rem;
             white-space: nowrap;
             text-align: center;
             padding-left: 0.4rem;
             padding-right: 0.4rem;
         }
         #contest-problems-table .contest-problem-title {
-            width: auto;
+            width: 48%;
             text-align: left;
             padding-left: 1.25rem;
+            padding-right: 1.25rem;
             white-space: normal;
         }
+        #contest-problems-table a,
+        #contest-problems-table a:hover,
+        #contest-problems-table a:focus,
+        #contest-problems-table a:active {
+            text-decoration: none !important;
+        }
+        #contest-problems-table .contest-problem-title a {
+            font-weight: var(--weight-medium, 500);
+            color: var(--color-link);
+            text-decoration: none !important;
+            transition: color var(--motion-fast) var(--ease-standard);
+        }
+        #contest-problems-table .contest-problem-title a:hover,
+        #contest-problems-table .contest-problem-title a:focus,
+        #contest-problems-table .contest-problem-title a:active {
+            color: var(--color-link-hover);
+            text-decoration: none !important;
+        }
         #contest-problems-table .contest-problem-limit {
-            width: 1%;
+            width: 11%;
+            min-width: 5.5rem;
             white-space: nowrap;
             text-align: center;
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
+            font-variant-numeric: tabular-nums;
+            color: var(--color-text-secondary);
+            padding-left: 0.65rem;
+            padding-right: 0.65rem;
         }
-        @media (max-width: 480px) {
-            #contest-problems-table .contest-problem-limit {
-                display: none !important;
-            }
+        #contest-problems-table .contest-problem-points {
+            width: 11%;
+            min-width: 5rem;
+            white-space: nowrap;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            font-weight: var(--weight-semibold, 600);
+            color: var(--color-text);
+            padding-left: 0.65rem;
+            padding-right: 0.65rem;
         }
-        #contest-problems-table th,
-        #contest-problems-table td {
-            padding-top: 0.55rem;
-            padding-bottom: 0.55rem;
+        #contest-problems-table .contest-problem-editorial {
+            width: 11%;
+            min-width: 5.5rem;
+            white-space: nowrap;
+            text-align: center;
+            padding-left: 0.65rem;
+            padding-right: 0.65rem;
+        }
+        #contest-problems-table .contest-problem-editorial a {
+            color: var(--color-link);
+            text-decoration: none !important;
+        }
+        #contest-problems-table .contest-problem-editorial a:hover,
+        #contest-problems-table .contest-problem-editorial a:focus,
+        #contest-problems-table .contest-problem-editorial a:active {
+            color: var(--color-link-hover);
+            text-decoration: none !important;
+        }
+        #contest-problems-table .contest-submit-heading,
+        #contest-problems-table .contest-submit-cell {
+            width: 12%;
+            min-width: 6.5rem;
+            white-space: nowrap;
+            text-align: center;
         }
         @media (max-width: 700px) {
             #banner #time {
@@ -219,10 +278,17 @@
             }
             #contest-problems-table th,
             #contest-problems-table td {
-                padding: 0.42rem 0.35rem;
+                padding: 0.45rem 0.35rem;
             }
             #contest-problems-table .contest-problem-title {
                 padding-left: 0.75rem;
+                padding-right: 0.5rem;
+                width: auto;
+            }
+        }
+        @media (max-width: 480px) {
+            #contest-problems-table .contest-problem-limit {
+                display: none !important;
             }
         }
 
@@ -391,16 +457,18 @@
         <div class="contest-problems">
             <div class="contest-section-head">
                 <h2><i class="fa fa-fw fa-list-ol"></i> {{ _('Problems') }}</h2>
-                {% if request.user.is_authenticated %}
-                    <div class="contest-section-actions">
-                        <a class="contest-my-submissions" href="{{ url('all_user_submissions', request.user.username) }}">
-                            <i class="fa fa-list-alt"></i> {{ _('My submissions') }}
+                <div class="contest-section-actions">
+                    {% if request.user.is_authenticated %}
+                        <a class="contest-btn contest-btn--secondary contest-my-submissions" href="{{ url('all_user_submissions', request.user.username) }}">
+                            <i class="fa fa-list-alt" aria-hidden="true"></i> {{ _('My submissions') }}
                         </a>
-                    </div>
-                {% endif %}
-                {% if can_edit and can_download_data %}
-                    <a class="button" href="{{ url('contest_prepare_data', contest.key) }}">{{ _('Download data') }}</a>
-                {% endif %}
+                    {% endif %}
+                    {% if can_edit and can_download_data %}
+                        <a class="contest-btn contest-btn--primary contest-download-data" href="{{ url('contest_prepare_data', contest.key) }}">
+                            <i class="fa fa-download" aria-hidden="true"></i> {{ _('Download data') }}
+                        </a>
+                    {% endif %}
+                </div>
             </div>
             <div class="h-scrollable-table">
             <table id="contest-problems-table" class="table striped">
@@ -414,10 +482,10 @@
                     <th class="contest-problem-limit" title="{{ _('Time limit') }}"><abbr title="{{ _('Time limit') }}">{{ _('TL') }}</abbr></th>
                     <th class="contest-problem-limit" title="{{ _('Memory limit') }}"><abbr title="{{ _('Memory limit') }}">{{ _('ML') }}</abbr></th>
                     {% if not is_ICPC_format %}
-                        <th>{{ _('Points') }}</th>
+                        <th class="contest-problem-points">{{ _('Points') }}</th>
                     {% endif %}
                     {% if metadata.has_public_editorials %}
-                        <th>{{ _('Editorials') }}</th>
+                        <th class="contest-problem-editorial">{{ _('Editorials') }}</th>
                     {% endif %}
                     {% if request.user.is_authenticated and is_in_contest %}
                         <th class="contest-submit-heading">{{ _('Submit') }}</th>
@@ -469,10 +537,10 @@
                         <td class="contest-problem-limit">{{ problem.time_limit }}s</td>
                         <td class="contest-problem-limit">{{ problem.memory_limit|kbsimpleformat }}</td>
                         {% if not is_ICPC_format %}
-                            <td>{{ problem.points|floatformat(-2) }}</td>
+                            <td class="contest-problem-points">{{ problem.points|floatformat(-2) }}</td>
                         {% endif %}
                         {% if metadata.has_public_editorials %}
-                            <td>
+                            <td class="contest-problem-editorial">
                                 {% if problem.is_public and problem.has_public_editorial %}
                                     <a href="{{ url('problem_editorial', problem.code) }}">{{ _('Editorial') }}</a>
                                 {% endif %}

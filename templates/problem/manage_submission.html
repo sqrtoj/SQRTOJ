@@ -12,19 +12,20 @@
         .pane {
             display: block;
             max-width: 20em;
-            border: 1px #ccc solid;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px;
+            border: 1px solid var(--color-border, #ccc);
+            border-radius: var(--radius-md, 5px);
+            background: var(--color-surface, #fff);
+            padding: var(--space-3, 10px);
+            margin: var(--space-3, 10px);
         }
 
         .pane h3 {
             display: block;
-            background: #3b3b3b;
+            background: var(--color-surface-raised, #3b3b3b);
             padding: 5px 10px 10px;
             margin: -10px -10px 10px;
-            border-radius: 5px 5px 0 0;
-            color: white;
+            border-radius: var(--radius-md, 5px) var(--radius-md, 5px) 0 0;
+            color: var(--color-text, white);
         }
 
         .control-group {
@@ -32,7 +33,7 @@
         }
 
         .control-group:not(:first-of-type) {
-            border-top: 1px solid #ccc;
+            border-top: 1px solid var(--color-border, #ccc);
             padding-top: 0.5em;
         }
 

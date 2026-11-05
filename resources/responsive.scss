@@ -16,6 +16,8 @@ body {
 
 #page-container {
     min-width: 0;
+    max-width: min(100em, 100%);
+    box-sizing: border-box;
 }
 
 #content,
@@ -47,11 +49,33 @@ video {
     height: auto;
 }
 
+table {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 input,
 select,
 textarea,
 button {
     max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 960px) {
+    #page-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    #content {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
 }
 
 .h-scrollable-table {

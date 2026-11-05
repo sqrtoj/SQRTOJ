@@ -152,11 +152,13 @@
     applyTheme($container, editor) {
       if (this.isDarkMode()) {
         $container.addClass("martor-theme-dark");
-        $container.find(".ui").removeClass("inverted");
+        $container.removeClass("inverted");
+        $container.find(".ui, .button, .buttons").removeClass("inverted");
         editor.setTheme("ace/theme/twilight");
       } else {
         $container.removeClass("martor-theme-dark");
-        $container.find(".ui").removeClass("inverted");
+        $container.removeClass("inverted");
+        $container.find(".ui, .button, .buttons").removeClass("inverted");
         editor.setTheme("ace/theme/github");
       }
     },
@@ -164,6 +166,28 @@
     bindAutoThemeListener(callback) {
       if (window.matchMedia) {
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", callback);
+      }
+      if (typeof MutationObserver !== "undefined") {
+        const observer = new MutationObserver((mutations) => {
+          for (let i = 0; i < mutations.length; i++) {
+            if (mutations[i].attributeName === "data-theme") {
+              callback();
+              break;
+            }
+          }
+        });
+        if (document.documentElement) {
+          observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["data-theme"],
+          });
+        }
+        if (document.body) {
+          observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ["data-theme"],
+          });
+        }
       }
     },
   };
@@ -396,10 +420,12 @@
           editor.selection.moveTo(originalRange.end.row, originalRange.end.column + 11);
         }
       } else {
+        const imageName = (imageData && typeof imageData.name === "string") ? imageData.name : "";
+        const imageLink = (imageData && imageData.link) || "";
         const curpos = editor.getCursorPosition();
-        editor.session.insert(curpos, "![" + imageData.name + "](" + imageData.link + ")");
+        editor.session.insert(curpos, "![" + imageName + "](" + imageLink + ")");
         editor.focus();
-        editor.selection.moveTo(curpos.row, curpos.column + imageData.name.length + 2);
+        editor.selection.moveTo(curpos.row, curpos.column + imageName.length + 2);
       }
     },
 

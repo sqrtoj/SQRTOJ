@@ -72,6 +72,10 @@
         #navigation { position: sticky; top: 0; left: 0; right: 0; z-index: 1000; width: 100%; height: var(--nav-height); }
         footer { content-visibility: auto; contain-intrinsic-size: auto 420px; }
         @media (min-width: 961px) { #nav-list > li.mobile-nav-language { display: none !important; } }
+        @media (max-width: 960px) {
+            #page-container { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+            #content { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+        }
     </style>
     {% if request.user.is_impersonate %}
         <style>
@@ -361,7 +365,7 @@
         </a>
         {% if current_contest.can_see_own_scoreboard(request.user) %}
         <a href="{{ url('contest_ranking', current_contest.key) }}"
-            style="text-align: center; font-size: 0.7em; color: #DCD427;">
+            style="text-align: center; font-size: 0.7em; color: var(--color-accent); font-weight: var(--weight-bold, 600);">
             {{ _('Go to Rankings') }}
         </a>
         {% endif %}

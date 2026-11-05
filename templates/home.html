@@ -108,13 +108,24 @@
                             <span class="spotlight-badge spotlight-badge--live">
                                 <span class="spotlight-badge__dot"></span> {{ _('Live') }}
                             </span>
+                            <span class="spotlight-card__spark" aria-hidden="true">
+                                <i class="fa fa-bolt"></i>
+                            </span>
                         </div>
-                        <div class="spotlight-card__name">{{ contest.name }}</div>
-                        <div class="spotlight-card__countdown">
-                            <i class="fa fa-hourglass-half" aria-hidden="true"></i>
-                            {{ _('Ends in %(countdown)s', countdown=as_countdown(contest.time_before_end)) }}
+                        <div class="spotlight-card__body">
+                            <div class="spotlight-card__name" title="{{ contest.name }}">{{ contest.name }}</div>
+                            <div class="spotlight-card__countdown">
+                                <i class="fa fa-hourglass-half" aria-hidden="true"></i>
+                                <span class="spotlight-card__countdown-text">
+                                    {{ _('Ends in %(countdown)s', countdown=as_countdown(contest.time_before_end)) }}
+                                </span>
+                            </div>
                         </div>
-                        <span class="spotlight-card__cta">{{ _('Enter') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                        <div class="spotlight-card__footer">
+                            <span class="spotlight-card__cta">
+                                {{ _('Enter') }} <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                            </span>
+                        </div>
                     </a>
                 {% endfor %}
                 {% for contest in future_contests %}
@@ -123,13 +134,24 @@
                             <span class="spotlight-badge spotlight-badge--upcoming">
                                 <i class="fa fa-calendar-o" aria-hidden="true"></i> {{ _('Upcoming') }}
                             </span>
+                            <span class="spotlight-card__spark" aria-hidden="true">
+                                <i class="fa fa-clock-o"></i>
+                            </span>
                         </div>
-                        <div class="spotlight-card__name">{{ contest.name }}</div>
-                        <div class="spotlight-card__countdown">
-                            <i class="fa fa-clock-o" aria-hidden="true"></i>
-                            {{ _('Starts in %(countdown)s', countdown=as_countdown(contest.time_before_start)) }}
+                        <div class="spotlight-card__body">
+                            <div class="spotlight-card__name" title="{{ contest.name }}">{{ contest.name }}</div>
+                            <div class="spotlight-card__countdown">
+                                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                <span class="spotlight-card__countdown-text">
+                                    {{ _('Starts in %(countdown)s', countdown=as_countdown(contest.time_before_start)) }}
+                                </span>
+                            </div>
                         </div>
-                        <span class="spotlight-card__cta">{{ _('Details') }} <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
+                        <div class="spotlight-card__footer">
+                            <span class="spotlight-card__cta">
+                                {{ _('Details') }} <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                            </span>
+                        </div>
                     </a>
                 {% endfor %}
             </div>

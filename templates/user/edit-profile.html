@@ -87,6 +87,29 @@
             padding-top: 5px;
             font-size: 12px;
         }
+
+        .profile-name-badge-table {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .profile-name-badge-table td {
+            vertical-align: top;
+            box-sizing: border-box;
+            padding-right: 0.8em;
+        }
+
+        .profile-name-badge-table td:last-child {
+            padding-right: 0;
+        }
+
+        .profile-name-badge-table input,
+        .profile-name-badge-table select {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
     </style>
 {% endblock %}
 
@@ -284,7 +307,7 @@
             {% endif %}
             {% csrf_token %}
             {% if form_user.first_name %}
-                <table>
+                <table class="profile-name-badge-table">
                     <tr>
                         <td><div class="block-header grayed">{{ _('Full name') }}:</div></td>
                         {% if form.display_badge %}
@@ -325,7 +348,7 @@
                         <tr>
                             <td colspan="2">
                                 {{ form.quick_submit_enabled }}
-                                <label for="id_quick_submit_enabled" class="inline-header grayed">
+                                <label for="id_quick_submit_enabled" style="float: unset" class="inline-header grayed">
                                     {{ _('Enable quick submit') }}
                                 </label>
                             </td>

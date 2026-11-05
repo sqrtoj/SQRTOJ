@@ -22,15 +22,22 @@ def imgur_uploader(image) -> str:
     headers = {'Authorization': f'Client-ID {MARTOR_IMGUR_CLIENT_ID}'}
 
     try:
+        if hasattr(image, 'seek') and callable(image.seek):
+            image.seek(0)
+        image_content = image.read()
+        image_name = getattr(image, 'name', '') or ''
+        post_data = {
+            'image': base64.b64encode(image_content).decode('ascii'),
+            'type': 'base64',
+            'name': image_name,
+        }
+        if MARTOR_IMGUR_API_KEY:
+            post_data['key'] = MARTOR_IMGUR_API_KEY
+
         response = requests.post(
             upload_url,
             headers=headers,
-            data={
-                'key': MARTOR_IMGUR_API_KEY,
-                'image': base64.b64encode(image.read()),
-                'type': 'base64',
-                'name': image.name,
-            },
+            data=post_data,
             timeout=30,
         )
     except requests.RequestException as exc:
@@ -47,7 +54,7 @@ def imgur_uploader(image) -> str:
             return json.dumps({
                 'status': payload.get('status', 200),
                 'link': data.get('link', ''),
-                'name': data.get('name', image.name),
+                'name': data.get('name', image_name),
             })
         except ValueError:
             logger.exception('Failed to parse Imgur response JSON')
@@ -62,7 +69,23 @@ def imgur_uploader(image) -> str:
             'error': response.reason or 'Unsupported file type.',
         })
 
-    error_detail = response.content.decode('utf-8', errors='replace')
+    error_detail = ''
+    try:
+        error_payload = response.json()
+        error_data = error_payload.get('data')
+        if isinstance(error_data, dict):
+            error_detail = error_data.get('error')
+        elif isinstance(error_data, str):
+            error_detail = error_data
+        if not error_detail:
+            error_detail = error_payload.get('error')
+    except (ValueError, TypeError):
+        pass
+
+    if not error_detail:
+        raw_content = response.content.decode('utf-8', errors='replace').strip()
+        error_detail = raw_content or response.reason or 'Upload failed'
+
     logger.warning('Imgur upload failed with HTTP %d: %s', response.status_code, error_detail)
     return json.dumps({
         'status': response.status_code,
