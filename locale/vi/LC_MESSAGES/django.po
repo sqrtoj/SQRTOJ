@@ -6082,6 +6082,9 @@ msgid ""
 "The scoreboard will be **hidden** for the entire duration of the contest."
 msgstr "Bảng điểm sẽ bị ẩn trong toàn bộ kỳ thi."
 
+msgid "The scoreboard will be **hidden**, even after the contest is over."
+msgstr "Bảng điểm sẽ bị ẩn ngay cả khi kỳ thi đã kết thúc."
+
 #: templates/contest/contest.html:181
 msgid "An **access code is required** to join the contest."
 msgstr "Kỳ thi này yêu cầu bạn phải có **mã truy cập** để tham gia."
