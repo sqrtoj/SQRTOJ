@@ -4,6 +4,10 @@
 $is_light_theme: true !default;
 
 .h-scrollable-table {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
     overflow-x: auto;
 }
 

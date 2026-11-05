@@ -664,7 +664,9 @@ noscript #noscript {
     margin: 0 auto;
     border: none !important;
     box-shadow: none !important;
+    width: 100%;
     max-width: 100em;
+    box-sizing: border-box;
 }
 
 // border-bottom: 1px solid rgb(204, 204, 204)
