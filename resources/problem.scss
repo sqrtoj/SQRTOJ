@@ -380,9 +380,9 @@ ul.problem-list {
 }
 
 .clarify {
-    float: right;
-    margin-top: var(--space-2);
-    margin-bottom: var(--space-4);
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
 }
 
 .content-description {
@@ -394,7 +394,6 @@ ul.problem-list {
 }
 
 #comments.comment-area {
-    clear: both;
     margin-top: var(--space-4);
 }
 

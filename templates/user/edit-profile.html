@@ -87,7 +87,7 @@
             padding-top: 5px;
             font-size: 12px;
         }
-        /* SQRT-style Martor: dark toolbar, compact tabs, white code editor. */
+        /* SQRT-style Martor: white toolbar, compact tabs, white code editor. */
         #edit-form .main-martor,
         #edit-form .main-martor .section-martor {
             width: 100% !important;
@@ -97,10 +97,10 @@
         }
         #edit-form .main-martor .section-martor {
             overflow: visible !important;
-            border: 1px solid #263653 !important;
+            border: 1px solid var(--color-border, #d1d5db) !important;
             border-radius: 7px !important;
-            background: #0d1b35 !important;
-            box-shadow: 0 8px 24px rgba(5, 15, 35, .18) !important;
+            background: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06) !important;
         }
         #edit-form .main-martor .tab-martor-menu {
             display: flex !important;
@@ -110,9 +110,9 @@
             margin: 0 !important;
             padding: 0 10px !important;
             border: 0 !important;
-            border-bottom: 1px solid rgba(255,255,255,.12) !important;
+            border-bottom: 1px solid var(--color-border, #e5e7eb) !important;
             border-radius: 6px 6px 0 0 !important;
-            background: #0d1b35 !important;
+            background: #ffffff !important;
             overflow: visible !important;
         }
         #edit-form .main-martor .tab-martor-menu > a.item {
@@ -123,18 +123,18 @@
             margin: 0 !important;
             padding: 0 14px !important;
             border: 0 !important;
-            color: #8fa6cd !important;
+            color: #4b5563 !important;
             background: transparent !important;
             font-size: 14px !important;
             font-weight: 700 !important;
         }
         #edit-form .main-martor .tab-martor-menu > a.item.active {
-            color: #eef5ff !important;
+            color: #111827 !important;
             border-bottom: 3px solid #ff9b52 !important;
         }
         #edit-form .main-martor .tab-martor-menu > a.item:hover {
-            color: #ffffff !important;
-            background: rgba(255,255,255,.06) !important;
+            color: #111827 !important;
+            background: rgba(0, 0, 0, .04) !important;
         }
         #edit-form .main-martor .martor-toolbar {
             display: flex !important;
@@ -166,13 +166,11 @@
             padding: 0 !important;
             border: 0 !important;
             border-radius: 4px !important;
-            color: #b9c8e2 !important;
             background: transparent !important;
         }
         #edit-form .main-martor .martor-toolbar .ui.icon.button:hover,
         #edit-form .main-martor .martor-toolbar .ui.icon.button.active {
-            color: #ffffff !important;
-            background: rgba(255,255,255,.12) !important;
+            background: rgba(0, 0, 0, .06) !important;
         }
         #edit-form .main-martor .martor-toolbar .ui.dropdown {
             position: relative !important;
@@ -187,10 +185,10 @@
             min-width: 180px !important;
             margin: 0 !important;
             padding: 4px !important;
-            border: 1px solid #2d4266 !important;
+            border: 1px solid var(--color-border, #e5e7eb) !important;
             border-radius: 6px !important;
-            background: #132746 !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,.3) !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .12) !important;
         }
         #edit-form .main-martor .martor-toolbar .ui.dropdown.visible > .menu,
         #edit-form .main-martor .martor-toolbar .ui.dropdown.active > .menu,
@@ -200,13 +198,13 @@
         #edit-form .main-martor .martor-toolbar .ui.dropdown > .menu > .item {
             display: block !important;
             padding: 8px 10px !important;
-            color: #e7eefb !important;
+            color: #1f2937 !important;
             white-space: nowrap !important;
             text-align: left !important;
         }
         #edit-form .main-martor .martor-toolbar .ui.dropdown > .menu > .item:hover {
-            color: #ffffff !important;
-            background: #24508b !important;
+            color: #111827 !important;
+            background: #f3f4f6 !important;
         }
         #edit-form .main-martor .section-martor > .ui.bottom.attached.tab.segment {
             width: 100% !important;
