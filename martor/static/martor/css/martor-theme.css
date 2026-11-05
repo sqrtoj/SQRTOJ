@@ -1,15 +1,33 @@
 .main-martor .martor-toolbar .ui.basic.icon.button,
-.main-martor .martor-toolbar .ui.basic.icon.buttons .button {
+.main-martor .martor-toolbar .ui.basic.icon.buttons .button,
+.main-martor .martor-toolbar .ui.icon.button,
+.main-martor .martor-toolbar .button {
   color: var(--color-text-secondary, #111);
+  box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 .main-martor .martor-toolbar .ui.basic.icon.button > .icon,
-.main-martor .martor-toolbar .ui.basic.icon.buttons .button > .icon {
+.main-martor .martor-toolbar .ui.basic.icon.buttons .button > .icon,
+.main-martor .martor-toolbar .ui.icon.button > .icon,
+.main-martor .martor-toolbar .button > .icon {
   color: currentColor;
   opacity: 1;
 }
 
 .main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.button,
-.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.buttons .button {
-  color: var(--color-text, #fff);
+.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.buttons .button,
+.main-martor.martor-theme-dark .martor-toolbar .ui.icon.button,
+.main-martor.martor-theme-dark .martor-toolbar .button {
+  color: var(--color-text-secondary, #c9bbae);
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.button:hover,
+.main-martor.martor-theme-dark .martor-toolbar .ui.basic.icon.buttons .button:hover,
+.main-martor.martor-theme-dark .martor-toolbar .ui.icon.button:hover,
+.main-martor.martor-theme-dark .martor-toolbar .button:hover {
+  color: var(--color-accent, #f28b4a) !important;
+  background: var(--color-surface, #211812) !important;
 }

@@ -14,7 +14,10 @@ body {
     position: relative;
 }
 
-#page-container,
+#page-container {
+    min-width: 0;
+}
+
 #content,
 #content-body,
 #common-content,

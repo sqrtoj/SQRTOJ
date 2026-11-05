@@ -168,7 +168,9 @@ form .martor-preview-stale {
         }
 
         .ui.basic.icon.buttons .button,
-        .ui.basic.icon.button {
+        .ui.basic.icon.button,
+        .ui.icon.button,
+        .button {
             min-width: 32px;
             min-height: 32px;
             padding: var(--space-1) !important;
@@ -176,6 +178,8 @@ form .martor-preview-stale {
             border-radius: var(--radius-sm) !important;
             border-color: transparent !important;
             background: transparent !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
             color: var(--color-text-secondary) !important;
             transition: background-color var(--motion-fast) var(--ease-standard),
                 color var(--motion-fast) var(--ease-standard);
@@ -269,8 +273,17 @@ form .martor-preview-stale {
     }
 
     .upload-progress.ui.dimmer {
+        display: none !important;
         background: rgba(0, 0, 0, 0.65) !important;
         border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+
+        &.active:not([hidden]) {
+            display: flex !important;
+        }
+
+        &[hidden] {
+            display: none !important;
+        }
 
         .ui.loader {
             color: var(--color-text-inverse) !important;
@@ -353,6 +366,7 @@ form .martor-preview-stale {
 /* Help Guide Modal */
 .modal-help-guide {
     color: var(--color-text);
+    background: var(--color-surface, #ffffff);
 
     h2 {
         color: var(--color-text);
@@ -380,6 +394,33 @@ form .martor-preview-stale {
 
     table {
         margin-top: var(--space-3);
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--color-text);
+
+        th, td {
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--color-border);
+            text-align: left;
+        }
+
+        th {
+            background: var(--color-surface-alt);
+            color: var(--color-text);
+            font-weight: var(--weight-bold, 600);
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--color-surface-alt);
+        }
+
+        code, kbd {
+            background: var(--color-surface-raised);
+            color: var(--color-accent);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm, 4px);
+            padding: 2px 5px;
+        }
     }
 }
 

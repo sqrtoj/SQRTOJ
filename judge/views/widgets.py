@@ -78,8 +78,14 @@ def submission_uploader(submission_file, problem_code, user_id):
 
 @login_required
 def martor_image_uploader(request):
-    if request.method != 'POST' or not request.is_ajax() or 'markdown-image-upload' not in request.FILES:
-        return HttpResponseBadRequest('Invalid request')
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or (
+        callable(getattr(request, 'is_ajax', None)) and request.is_ajax()
+    )
+    if request.method != 'POST' or not is_ajax or 'markdown-image-upload' not in request.FILES:
+        return HttpResponseBadRequest(
+            json.dumps({'status': 400, 'error': 'Invalid request'}),
+            content_type='application/json',
+        )
 
     image = request.FILES['markdown-image-upload']
     try:
