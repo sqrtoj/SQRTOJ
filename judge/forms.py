@@ -24,7 +24,7 @@ from django_ace import AceWidget
 from judge.models import BlogPost, Contest, ContestAnnouncement, ContestProblem, Language, LanguageLimit, \
     Organization, Problem, Profile, Solution, Submission, Tag, WebAuthnCredential
 from judge.utils.subscription import newsletter_id
-from judge.utils.upload_security import validate_pdf_upload
+from judge.utils.upload_security import validate_pdf_upload, validate_zip_upload
 from judge.widgets import HeavySelect2MultipleWidget, HeavySelect2Widget, MartorWidget, \
     Select2MultipleWidget, Select2Widget
 
@@ -100,17 +100,23 @@ class ProfileForm(ModelForm):
         user = kwargs.pop('user', None)
         super(ProfileForm, self).__init__(*args, **kwargs)
 
-        self.fields['display_badge'].required = False
-        self.fields['display_badge'].queryset = self.instance.badges.all()
-        if not self.fields['display_badge'].queryset:
-            self.fields.pop('display_badge')
+        if 'display_badge' in self.fields:
+            self.fields['display_badge'].required = False
+            self.fields['display_badge'].queryset = self.instance.badges.all()
+            if not self.fields['display_badge'].queryset.exists():
+                self.fields.pop('display_badge')
 
-        if not user.has_perm('judge.edit_all_organization'):
-            self.fields['organizations'].queryset = Organization.objects.filter(
-                Q(is_open=True, is_unlisted=False) | Q(id__in=user.profile.organizations.all()),
-            )
-        if not self.fields['organizations'].queryset:
-            self.fields.pop('organizations')
+        if 'organizations' in self.fields:
+            if user is None and self.instance and getattr(self.instance, 'user', None):
+                user = self.instance.user
+
+            if not (user and user.has_perm('judge.edit_all_organization')):
+                org_filter = Q(is_open=True, is_unlisted=False)
+                if user and user.is_authenticated and hasattr(user, 'profile') and user.profile.pk:
+                    org_filter |= Q(id__in=user.profile.organizations.all())
+                self.fields['organizations'].queryset = Organization.objects.filter(org_filter)
+            if not self.fields['organizations'].queryset.exists():
+                self.fields.pop('organizations')
 
 
 class UserForm(ModelForm):
@@ -207,7 +213,7 @@ class ProblemEditForm(ModelForm):
     def clean_statement_file(self):
         content = self.files.get('statement_file', None)
         if content is not None:
-            if self.user and not self.user.has_perm('judge.upload_file_statement'):
+            if not (self.user and self.user.has_perm('judge.upload_file_statement')):
                 raise forms.ValidationError(_("You don't have permission to upload file-type statement."),
                                             'pdf_upload_permission_denined')
             validate_pdf_upload(content, user_id=self.user.pk if self.user else None)
@@ -270,6 +276,12 @@ class ProblemImportPolygonForm(Form):
                                                           label=_('Append main solution to tutorial'))
     main_tutorial_language = forms.CharField(required=False)
     do_update = forms.BooleanField(required=False, initial=False, disabled=True, widget=forms.HiddenInput())
+
+    def clean_package(self):
+        package = self.cleaned_data.get('package')
+        if package:
+            validate_zip_upload(package)
+        return package
 
     def __init__(self, code=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -686,10 +698,10 @@ class BlogPostForm(ModelForm):
         self.user = kwargs.pop('user', None)
         super(BlogPostForm, self).__init__(*args, **kwargs)
 
-        if not self.user.has_perm('judge.mark_global_post'):
-            self.fields.pop('global_post')
-        if not self.user.has_perm('judge.pin_post'):
-            self.fields.pop('sticky')
+        if not (self.user and self.user.has_perm('judge.mark_global_post')):
+            self.fields.pop('global_post', None)
+        if not (self.user and self.user.has_perm('judge.pin_post')):
+            self.fields.pop('sticky', None)
 
     class Meta:
         model = BlogPost

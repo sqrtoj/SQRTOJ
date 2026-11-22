@@ -32,9 +32,11 @@ class CustomRegistrationForm(RegistrationForm):
                            widget=Select2Widget(attrs={'style': 'width:100%'}))
     language = ModelChoiceField(queryset=Language.objects.all(), label=_('Preferred language'), empty_label=None,
                                 widget=Select2Widget(attrs={'style': 'width:100%'}))
-    organizations = SortedMultipleChoiceField(queryset=Organization.objects.filter(is_open=True),
-                                              label=_('Organizations'), required=False,
-                                              widget=Select2MultipleWidget(attrs={'style': 'width:100%'}))
+    organizations = SortedMultipleChoiceField(
+        queryset=Organization.objects.filter(is_open=True, is_unlisted=False),
+        label=_('Organizations'), required=False,
+        widget=Select2MultipleWidget(attrs={'style': 'width:100%'}),
+    )
 
     if newsletter_id is not None:
         newsletter = forms.BooleanField(label=_('Subscribe to newsletter?'), initial=True, required=False)

@@ -351,12 +351,14 @@ class APIContestParticipationList(APIListView):
         #   2. User is the organizer or curator of the contest
         #   3. User is specified to be able to "view contest scoreboard"
         if not self.request.user.has_perm('judge.see_private_contest'):
-            q = Q(end_time__lt=self._now)
+            q = Q(end_time__lt=self._now) & ~Q(scoreboard_visibility=Contest.SCOREBOARD_HIDDEN)
             if self.request.user.is_authenticated:
+                staff_q = Q()
                 if self.request.user.has_perm('judge.edit_own_contest'):
-                    q |= Q(authors=self.request.profile)
-                    q |= Q(curators=self.request.profile)
-                q |= Q(view_contest_scoreboard=self.request.profile)
+                    staff_q |= Q(authors=self.request.profile)
+                    staff_q |= Q(curators=self.request.profile)
+                staff_q |= Q(view_contest_scoreboard=self.request.profile)
+                q |= staff_q
             visible_contests = visible_contests.filter(q)
 
         return (
@@ -582,6 +584,40 @@ class APISubmissionList(APIListView):
     @property
     def use_infinite_pagination(self):
         return not self.used_basic_filters
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        contest_key = self.request.GET.get('contest')
+        if contest_key:
+            try:
+                contest = Contest.objects.get(key=contest_key)
+            except Contest.DoesNotExist:
+                return queryset.none()
+            if not contest.is_accessible_by(self.request.user):
+                return queryset.none()
+            if not contest.can_see_full_submission_list(self.request.user):
+                if self.request.user.is_authenticated and hasattr(self.request, 'profile'):
+                    queryset = queryset.filter(user=self.request.profile)
+                else:
+                    return queryset.none()
+        elif not self.request.user.has_perm('judge.see_private_contest'):
+            contest_filter = Q(scoreboard_visibility=Contest.SCOREBOARD_VISIBLE) | Q(end_time__lt=timezone.now())
+            if self.request.user.is_authenticated:
+                user_id = self.request.user.id
+                contest_filter |= Q(authors__user_id=user_id) | Q(curators__user_id=user_id)
+                visible_contests = Contest.get_visible_contests(self.request.user).filter(contest_filter)
+                queryset = queryset.filter(
+                    Q(user=self.request.profile) |
+                    Q(contest_object__in=visible_contests) |
+                    Q(contest_object__isnull=True),
+                )
+            else:
+                visible_contests = Contest.get_visible_contests(self.request.user).filter(contest_filter)
+                queryset = queryset.filter(
+                    Q(contest_object__in=visible_contests) |
+                    Q(contest_object__isnull=True),
+                )
+        return queryset
 
     def get_unfiltered_queryset(self):
         queryset = Submission.objects.all()

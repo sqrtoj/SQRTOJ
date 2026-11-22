@@ -8,8 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, \
-    HttpResponseRedirect
+    HttpResponseRedirect, HttpResponseServerError
 from django.views.decorators.http import require_POST
+try:
+    from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
+except ImportError:
+    from django.utils.http import is_safe_url
 from martor.api import imgur_uploader
 
 from judge.models import Submission
@@ -35,12 +39,14 @@ def rejudge_submission(request):
     submission.judge(rejudge=True, rejudge_user=request.user)
 
     redirect = request.POST.get('path', None)
+    if redirect and is_safe_url(redirect, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+        return HttpResponseRedirect(redirect)
+    return HttpResponse('success', content_type='text/plain')
 
-    return HttpResponseRedirect(redirect) if redirect else HttpResponse('success', content_type='text/plain')
 
-
-def django_uploader(image, user_id=None):
-    validate_image_upload(image, user_id=user_id)
+def django_uploader(image, user_id=None, validate=True):
+    if validate:
+        validate_image_upload(image, user_id=user_id)
     ext = os.path.splitext(image.name)[1].lower()
     name = str(uuid.uuid4()) + ext
     default_storage.save(os.path.join(settings.MARTOR_UPLOAD_MEDIA_DIR, name), image)
@@ -99,12 +105,18 @@ def martor_image_uploader(request):
     try:
         validate_image_upload(image, user_id=request.user.pk)
         if request.user.is_staff or request.user.has_perm('judge.can_upload_image'):
-            data = django_uploader(image, user_id=request.user.pk)
+            data = django_uploader(image, user_id=request.user.pk, validate=False)
         else:
             data = imgur_uploader(image)
     except ValidationError as error:
+        error_msg = error.messages[0] if getattr(error, 'messages', None) else str(error)
         return HttpResponseBadRequest(
-            json.dumps({'status': 400, 'error': error.messages[0]}),
+            json.dumps({'status': 400, 'error': error_msg}),
+            content_type='application/json',
+        )
+    except Exception as error:
+        return HttpResponseServerError(
+            json.dumps({'status': 500, 'error': str(error) or 'Upload failed'}),
             content_type='application/json',
         )
 

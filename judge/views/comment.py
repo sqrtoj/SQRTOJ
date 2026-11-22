@@ -46,7 +46,7 @@ def vote_comment(request, delta):
 
     try:
         comment_id = int(request.POST['id'])
-    except ValueError:
+    except (KeyError, ValueError):
         return HttpResponseBadRequest()
 
     comment = Comment.objects.filter(id=comment_id, hidden=False).first()
@@ -170,6 +170,12 @@ class CommentEdit(TitleMixin, CommentEditAjax):
 class CommentContent(CommentMixin, DetailView):
     template_name = 'comments/content.html'
 
+    def get_object(self, queryset=None):
+        comment = super().get_object(queryset)
+        if comment.hidden and not self.request.user.has_perm('judge.change_comment'):
+            raise Http404()
+        return comment
+
 
 class CommentVotesAjax(PermissionRequiredMixin, CommentMixin, DetailView):
     template_name = 'comments/votes.html'
@@ -193,7 +199,7 @@ def comment_hide(request):
         raise PermissionDenied()
     try:
         comment_id = int(request.POST['id'])
-    except ValueError:
+    except (KeyError, ValueError):
         return HttpResponseBadRequest()
 
     comment = get_object_or_404(Comment, id=comment_id)

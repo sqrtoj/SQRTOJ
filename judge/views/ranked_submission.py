@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.urls import reverse
 from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
@@ -79,6 +80,11 @@ class RankedSubmissions(ProblemSubmissions):
 
 
 class ContestRankedSubmission(ForceContestMixin, RankedSubmissions):
+    def access_check(self, request):
+        super().access_check(request)
+        if not self.contest.can_see_full_scoreboard(request.user):
+            raise Http404()
+
     def get_title(self):
         if self.problem.is_accessible_by(self.request.user):
             return _('Best solutions for %(problem)s in %(contest)s') % {

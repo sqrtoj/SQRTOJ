@@ -1,4 +1,5 @@
 import functools
+import hashlib
 import json
 import os
 import time
@@ -64,7 +65,9 @@ class SubmissionMixin(object):
 
 class SubmissionDetailBase(LoginRequiredMixin, TitleMixin, SubmissionMixin, DetailView):
     def get_queryset(self):
-        return super().get_queryset().select_related('problem', 'language', 'judged_on')
+        return super().get_queryset().select_related(
+            'problem', 'language', 'judged_on', 'user__user', 'user__display_badge',
+        )
 
     def get_object(self, queryset=None):
         submission = super(SubmissionDetailBase, self).get_object(queryset)
@@ -143,8 +146,11 @@ def SubmissionSourceDiff(request):
     if 'first_id' not in request.GET or 'second_id' not in request.GET:
         raise Http404()
 
-    first_id = request.GET['first_id']
-    second_id = request.GET['second_id']
+    try:
+        first_id = int(request.GET['first_id'])
+        second_id = int(request.GET['second_id'])
+    except ValueError:
+        raise Http404()
 
     first_sub = get_object_or_404(Submission, id=first_id, language__file_only=False)
     second_sub = get_object_or_404(Submission, id=second_id, language__file_only=False)
@@ -322,7 +328,7 @@ class SubmissionSourceDownload(SubmissionDetailBase):
             add_file_response(request, response, url_path, file_path)
 
             return response
-        except PermissionDenied:
+        except (PermissionDenied, OSError, IOError):
             return HttpResponseNotFound()
 
 
@@ -352,7 +358,7 @@ def _get_cached_visible_problem_ids(user_id, time_block):
     q = Q(is_public=True, is_organization_private=False)
     if user_id is not None:
         q = q | Q(authors__user_id=user_id) | Q(curators__user_id=user_id) | Q(testers__user_id=user_id)
-    return list(Problem.objects.filter(q).values_list('id', flat=True))
+    return list(Problem.objects.filter(q).values_list('id', flat=True).distinct())
 
 
 @functools.lru_cache(maxsize=256)
@@ -360,7 +366,7 @@ def _get_cached_visible_contest_ids(user_id, time_block):
     contest_filter = Q(scoreboard_visibility=Contest.SCOREBOARD_VISIBLE) | Q(end_time__lt=timezone.now())
     if user_id is not None:
         contest_filter |= Q(authors__user_id=user_id) | Q(curators__user_id=user_id)
-    return list(Contest.objects.filter(contest_filter).values_list('id', flat=True))
+    return list(Contest.objects.filter(contest_filter).values_list('id', flat=True).distinct())
 
 
 def _get_visible_problem_filter(user):
@@ -383,6 +389,7 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
     template_name = 'submission/list.html'
     context_object_name = 'submissions'
     first_page_href = None
+    stats_update_interval = 60
 
     def get_result_data(self):
         result = self._get_result_data()
@@ -390,36 +397,81 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
             category['name'] = _(category['name'])
         return result
 
+    def _get_result_data_cache_key(self):
+        if self.in_contest and self.contest:
+            can_see_full = self.contest.can_see_full_submission_list(self.request.user)
+            user_scope = 'contest_full' if can_see_full else (
+                f'u:{self.request.profile.id}' if getattr(self.request, 'profile', None) else 'anon'
+            )
+        elif self.request.user.is_superuser:
+            user_scope = 'super'
+        elif self.request.user.is_authenticated:
+            user_scope = f'u:{self.request.user.id}'
+        else:
+            user_scope = 'anon'
+
+        parts = [
+            self.__class__.__name__,
+            user_scope,
+            str(self.contest.id) if (self.in_contest and self.contest) else '',
+            str(self.problem.id) if hasattr(self, 'problem') else '',
+            str(self.profile.id) if hasattr(self, 'profile') else '',
+            str(self.organization.id) if hasattr(self, 'organization') else '',
+            ','.join(sorted(self.selected_languages)),
+            ','.join(sorted(self.selected_statuses)),
+            str(self.selected_organization or ''),
+        ]
+        digest = hashlib.md5('|'.join(parts).encode('utf-8')).hexdigest()
+        return f'submission_result_data:{digest}'
+
     def _get_result_data(self, queryset=None):
-        if queryset is None:
-            # Use the base ID queryset (not the values_list one) for proper aggregation
-            queryset = self._get_base_id_queryset()
-        return get_result_data(queryset.order_by())
+        if queryset is not None:
+            return get_result_data(queryset.order_by())
+
+        cache_key = self._get_result_data_cache_key()
+        result = cache.get(cache_key)
+        if result is not None:
+            return result
+
+        # Use the base ID queryset (not the values_list one) for proper aggregation
+        result = get_result_data(self._get_base_id_queryset().order_by())
+        cache.set(cache_key, result, self.stats_update_interval)
+        return result
 
     def access_check(self, request):
         pass
 
     @cached_property
     def in_contest(self):
-        return self.request.in_contest
+        return self.request.in_contest and self.contest is not None
 
     @cached_property
     def contest(self):
-        return self.request.profile.current_contest.contest
+        if self.request.participation:
+            return self.request.participation.contest
+        if getattr(self.request, 'profile', None) and self.request.profile.current_contest:
+            return self.request.profile.current_contest.contest
+        return None
 
     # _get_id_queryset removed — use _get_base_id_queryset instead (was duplicate code)
     # _get_queryset removed — dead code after two-step pagination refactor
+
+    def _apply_visible_problem_filter(self, queryset):
+        return queryset.filter(_get_visible_problem_filter(self.request.user))
 
     def _get_base_id_queryset(self):
         """Get a lightweight queryset for fetching submission IDs with minimal JOINs."""
         queryset = Submission.objects.order_by('-id')
 
-        if self.in_contest:
+        if self.in_contest and self.contest:
             queryset = queryset.filter(contest_object=self.contest)
             if not self.contest.can_see_full_submission_list(self.request.user):
-                queryset = queryset.filter(user=self.request.profile)
+                if getattr(self.request, 'profile', None):
+                    queryset = queryset.filter(user=self.request.profile)
+                else:
+                    queryset = queryset.none()
         else:
-            queryset = queryset.filter(_get_visible_problem_filter(self.request.user))
+            queryset = self._apply_visible_problem_filter(queryset)
 
             if not self.request.user.has_perm('judge.see_private_contest'):
                 time_block = int(time.time()) // 300
@@ -472,7 +524,7 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
         return None
 
     def get_all_submissions_page(self):
-        if self.in_contest and hasattr(self, 'contest'):
+        if self.in_contest and self.contest:
             return reverse('contest_all_submissions', kwargs={'contest': self.contest.key})
         return reverse('all_submissions')
 
@@ -508,7 +560,7 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
         context = super(SubmissionsListBase, self).get_context_data(**kwargs)
         authenticated = self.request.user.is_authenticated
         context['dynamic_update'] = False
-        context['dynamic_contest_id'] = self.in_contest and self.contest.id
+        context['dynamic_contest_id'] = self.contest.id if (self.in_contest and self.contest) else None
         context['show_problem'] = self.show_problem
 
         profile = self.request.profile
@@ -533,6 +585,7 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
         context['my_submissions_link'] = self.get_my_submissions_page()
         context['all_submissions_link'] = self.get_all_submissions_page()
         context['tab'] = self.tab
+        context['stats_update_interval'] = self.stats_update_interval
         return context
 
     def get(self, request, *args, **kwargs):
@@ -617,10 +670,10 @@ class ProblemSubmissionsBase(SubmissionsListBase):
 
     @cached_property
     def in_contest(self):
+        if not self.contest:
+            return False
         if super(ProblemSubmissionsBase, self).in_contest:
             return True
-        if not hasattr(self, 'contest'):
-            return False
         # return true if user is accessing a problem inside a contest
         return self.contest.problems.filter(id=self.problem.id).exists()
 
@@ -628,6 +681,10 @@ class ProblemSubmissionsBase(SubmissionsListBase):
         if self.in_contest and not self.contest.contest_problems.filter(problem_id=self.problem.id).exists():
             raise Http404()
         return self._get_base_id_queryset().values_list('id', flat=True)
+
+    def _apply_visible_problem_filter(self, queryset):
+        # Problem accessibility is already verified in access_check and filtered by problem_id below.
+        return queryset
 
     def _get_base_id_queryset(self):
         queryset = super(ProblemSubmissionsBase, self)._get_base_id_queryset()
@@ -667,7 +724,7 @@ class ProblemSubmissionsBase(SubmissionsListBase):
         return super(ProblemSubmissionsBase, self).get(request, *args, **kwargs)
 
     def get_all_submissions_page(self):
-        if hasattr(self, 'contest'):
+        if self.in_contest and self.contest:
             return reverse('contest_all_submissions', kwargs={'contest': self.contest.key})
         return reverse('chronological_submissions', kwargs={'problem': self.problem.code})
 
@@ -676,7 +733,7 @@ class ProblemSubmissionsBase(SubmissionsListBase):
         if self.dynamic_update:
             context['dynamic_update'] = context['page_obj'].number == 1
             context['dynamic_problem_id'] = self.problem.id
-        if hasattr(self, 'contest'):
+        if self.in_contest and self.contest:
             context['best_submissions_link'] = reverse('contest_ranked_submissions',
                                                        kwargs={'problem': self.problem.code,
                                                                'contest': self.contest.key})
@@ -688,7 +745,7 @@ class ProblemSubmissionsBase(SubmissionsListBase):
 class ProblemSubmissions(ProblemSubmissionsBase):
     def get_my_submissions_page(self):
         if self.request.user.is_authenticated:
-            if hasattr(self, 'contest'):
+            if self.in_contest and self.contest:
                 return reverse('contest_user_submissions', kwargs={'problem': self.problem.code,
                                                                    'user': self.request.user.username,
                                                                    'contest': self.contest.key})
@@ -815,6 +872,9 @@ class ForceContestMixin(object):
     def access_check(self, request):
         super(ForceContestMixin, self).access_check(request)
 
+        if not self.contest.is_accessible_by(request.user):
+            raise Http404()
+
         if request.user.is_authenticated and (
             request.user.has_perm('judge.see_private_contest') or
             request.user.has_perm('judge.edit_all_contest') or
@@ -870,7 +930,7 @@ class UserAllContestSubmissions(ForceContestMixin, AllUserSubmissions):
 
     def access_check(self, request):
         super().access_check(request)
-        if not self.is_own and not self.contest.can_see_full_scoreboard(self.request.user):
+        if not self.is_own and not self.contest.can_see_full_submission_list(self.request.user):
             raise Http404()
 
     def get_content_title(self):
@@ -910,6 +970,8 @@ class UserContestSubmissions(ForceContestMixin, UserProblemSubmissions):
 
     def access_check(self, request):
         super(UserContestSubmissions, self).access_check(request)
+        if not self.is_own and not self.contest.can_see_full_submission_list(self.request.user):
+            raise Http404()
         if not self.contest.users.filter(user_id=self.profile.id).exists():
             raise Http404()
 

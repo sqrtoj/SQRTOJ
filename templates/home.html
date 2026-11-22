@@ -104,14 +104,6 @@
             <div class="home-spotlight__track" data-spotlight-track>
                 {% for contest in current_contests %}
                     <a class="spotlight-card spotlight-card--live" href="{{ url('contest_view', contest.key) }}">
-                        <div class="spotlight-card__top">
-                            <span class="spotlight-badge spotlight-badge--live">
-                                <span class="spotlight-badge__dot"></span> {{ _('Live') }}
-                            </span>
-                            <span class="spotlight-card__spark" aria-hidden="true">
-                                <i class="fa fa-bolt"></i>
-                            </span>
-                        </div>
                         <div class="spotlight-card__body">
                             <div class="spotlight-card__name" title="{{ contest.name }}">{{ contest.name }}</div>
                             <div class="spotlight-card__countdown">
@@ -133,9 +125,6 @@
                         <div class="spotlight-card__top">
                             <span class="spotlight-badge spotlight-badge--upcoming">
                                 <i class="fa fa-calendar-o" aria-hidden="true"></i> {{ _('Upcoming') }}
-                            </span>
-                            <span class="spotlight-card__spark" aria-hidden="true">
-                                <i class="fa fa-clock-o"></i>
                             </span>
                         </div>
                         <div class="spotlight-card__body">
