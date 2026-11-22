@@ -147,7 +147,6 @@ class Submission(models.Model):
         if not user.is_authenticated:
             return False
         profile = user.profile
-        source_visibility = self.problem.submission_source_visibility
         if self.problem.is_editable_by(user):
             return True
         elif user.has_perm('judge.view_all_submission'):
@@ -156,7 +155,21 @@ class Submission(models.Model):
             return True
         elif self.user_id == profile.id:
             return True
-        elif source_visibility == SubmissionSourceAccess.ALWAYS:
+
+        # If submission was made in a contest, only allow viewing if contest has ended or user is contest editor
+        if self.contest_object is not None:
+            if profile.id in self.contest_object.editor_ids:
+                return True
+            if not self.contest_object.is_accessible_by(user) or not self.contest_object.ended:
+                return False
+
+        # If user is currently in a contest that contains this problem, do not allow viewing other users' solutions
+        if profile.current_contest is not None and not profile.current_contest.ended:
+            if profile.current_contest.contest.problems.filter(id=self.problem_id).exists():
+                return False
+
+        source_visibility = self.problem.submission_source_visibility
+        if source_visibility == SubmissionSourceAccess.ALWAYS:
             return True
         elif source_visibility == SubmissionSourceAccess.SOLVED and \
                 (self.problem.is_public or self.problem.testers.filter(id=profile.id).exists()) and \
@@ -165,10 +178,6 @@ class Submission(models.Model):
             return True
         elif source_visibility == SubmissionSourceAccess.ONLY_OWN and \
                 self.problem.testers.filter(id=profile.id).exists():
-            return True
-
-        # If user is an author or curator of the contest the submission was made in
-        if self.contest_object is not None and user.profile.id in self.contest_object.editor_ids:
             return True
 
         return False
@@ -284,6 +293,12 @@ class Submission(models.Model):
 
             # For user_completed_ids
             models.Index(fields=['user', 'result']),
+
+            # B-Tree indexes for contest, user, and problem submission lists & charts
+            models.Index(fields=['contest_object', '-id'], name='judge_submi_contest_id_idx'),
+            models.Index(fields=['contest_object', 'result'], name='judge_submi_contest_res_idx'),
+            models.Index(fields=['user', '-id'], name='judge_submi_user_id_idx'),
+            models.Index(fields=['problem', '-id'], name='judge_submi_problem_id_idx'),
         ]
 
 

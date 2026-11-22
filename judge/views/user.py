@@ -83,6 +83,14 @@ class CustomUserMixin(object):
 class UserPage(TitleMixin, UserMixin, DetailView):
     template_name = 'user/user-base.html'
 
+    def get_queryset(self):
+        return Profile.objects.select_related('user', 'display_badge').prefetch_related(
+            Prefetch(
+                'organizations',
+                queryset=Organization.objects.filter(is_unlisted=False).only('name', 'id', 'slug'),
+            ),
+        )
+
     def get_object(self, queryset=None):
         if self.kwargs.get(self.slug_url_kwarg, None) is None:
             return self.request.profile

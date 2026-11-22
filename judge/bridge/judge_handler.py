@@ -685,9 +685,9 @@ class JudgeHandler(ZlibPacketHandler):
         return self._submission_cache
 
     def _post_update_submission(self, id, state, done=False):
+        data = self._get_submission_cache(id)
         if done:
             self._submission_cache_id = None
-        data = self._get_submission_cache(id)
         if data['problem__is_public']:
             event.post('submissions', {
                 'type': 'done-submission' if done else 'update-submission',

@@ -100,11 +100,15 @@ class SolvedProblemMixin(object):
 
     @cached_property
     def in_contest(self):
-        return self.profile is not None and self.profile.current_contest is not None
+        return self.contest is not None
 
     @cached_property
     def contest(self):
-        return self.request.profile.current_contest.contest
+        if getattr(self.request, 'participation', None):
+            return self.request.participation.contest
+        if self.profile is not None and self.profile.current_contest is not None:
+            return self.profile.current_contest.contest
+        return None
 
     @cached_property
     def profile(self):
@@ -177,6 +181,15 @@ class ProblemDetail(ProblemMixin, SolvedProblemMixin, CommentedDetailView):
     context_object_name = 'problem'
     template_name = 'problem/problem.html'
 
+    def get_queryset(self):
+        return Problem.objects.select_related('group').prefetch_related(
+            'organizations',
+            'authors__user', 'authors__display_badge',
+            'curators__user', 'curators__display_badge',
+            'testers__user', 'testers__display_badge',
+            'types',
+        )
+
     def get_object(self, queryset=None):
         problem = super(ProblemDetail, self).get_object(queryset)
 
@@ -205,9 +218,9 @@ class ProblemDetail(ProblemMixin, SolvedProblemMixin, CommentedDetailView):
                                                                           problem=self.object).exists()
         context['contest_problem'] = contest_problem
         if contest_problem:
-            clarifications = self.object.clarifications
-            context['has_clarifications'] = clarifications.count() > 0
-            context['clarifications'] = clarifications.order_by('-date')
+            clarifications = list(self.object.clarifications.order_by('-date'))
+            context['has_clarifications'] = bool(clarifications)
+            context['clarifications'] = clarifications
             context['submission_limit'] = contest_problem.max_submissions
             if contest_problem.max_submissions:
                 context['submissions_left'] = max(contest_problem.max_submissions -

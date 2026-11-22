@@ -5,8 +5,7 @@ import re
 import requests
 from django.conf import settings
 from django.core.cache import caches
-from django.utils.html import format_html
-from mistune import escape
+from django.utils.html import escape, format_html
 
 from judge.utils.file_cache import HashFileCache
 from judge.utils.unicode import utf8bytes, utf8text

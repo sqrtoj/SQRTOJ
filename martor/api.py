@@ -50,12 +50,15 @@ def imgur_uploader(image) -> str:
     if response.status_code == 200:
         try:
             payload = response.json()
-            data = payload.get('data', {})
-            return json.dumps({
-                'status': payload.get('status', 200),
-                'link': data.get('link', ''),
-                'name': data.get('name', image_name),
-            })
+            data = payload.get('data', {}) if isinstance(payload, dict) else {}
+            link = data.get('link', '') if isinstance(data, dict) else ''
+            success = payload.get('success', True) if isinstance(payload, dict) else False
+            if success and link:
+                return json.dumps({
+                    'status': 200,
+                    'link': link,
+                    'name': data.get('name', image_name) if isinstance(data, dict) else image_name,
+                })
         except ValueError:
             logger.exception('Failed to parse Imgur response JSON')
             return json.dumps({
@@ -87,7 +90,8 @@ def imgur_uploader(image) -> str:
         error_detail = raw_content or response.reason or 'Upload failed'
 
     logger.warning('Imgur upload failed with HTTP %d: %s', response.status_code, error_detail)
+    status_code = response.status_code if response.status_code != 200 else 400
     return json.dumps({
-        'status': response.status_code,
+        'status': status_code,
         'error': error_detail,
     })

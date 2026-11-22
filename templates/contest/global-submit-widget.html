@@ -130,25 +130,6 @@
   line-height: 1.2;
 }
 
-.sqrtoj-cw-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: 6px;
-  color: var(--cw-success);
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  vertical-align: middle;
-}
-
-.sqrtoj-cw-live i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--cw-success);
-}
-
 .sqrtoj-cw-head-actions,
 .sqrtoj-cw-tabs {
   display: flex;
@@ -707,7 +688,7 @@ html.sqrtoj-cw-popup #sqrtoj-contest-widget .sqrtoj-cw-panel {
 <div id="sqrtoj-contest-widget" hidden>
 <button type="button" class="sqrtoj-cw-launcher" id="sqrtoj-cw-launcher" hidden><i class="fa fa-thumb-tack"></i><span>PIN</span></button>
 <section class="sqrtoj-cw-panel" id="sqrtoj-cw-panel" hidden aria-label="Nộp bài nhanh">
-<header class="sqrtoj-cw-head"><div class="sqrtoj-cw-title"><i class="fa fa-bolt"></i><div><strong id="sqrtoj-cw-contest-name">Contest</strong><span class="sqrtoj-cw-live"><i></i> LIVE</span></div></div><div class="sqrtoj-cw-head-actions"><button type="button" class="sqrtoj-cw-icon-btn" id="sqrtoj-cw-pin" title="Ghim cửa sổ" aria-label="Ghim cửa sổ"><i class="fa fa-thumb-tack"></i></button><label class="sqrtoj-cw-toggle" title="Bật/tắt popup khi chuyển khỏi SQRTOJ"><input type="checkbox" id="sqrtoj-cw-popup-toggle" checked><span class="sqrtoj-cw-switch" aria-hidden="true"><i></i></span><span class="sqrtoj-cw-toggle-label">Popup</span></label></div></header>
+<header class="sqrtoj-cw-head"><div class="sqrtoj-cw-title"><div><strong id="sqrtoj-cw-contest-name">Contest</strong></div></div><div class="sqrtoj-cw-head-actions"><button type="button" class="sqrtoj-cw-icon-btn" id="sqrtoj-cw-pin" title="Ghim cửa sổ" aria-label="Ghim cửa sổ"><i class="fa fa-thumb-tack"></i></button><label class="sqrtoj-cw-toggle" title="Bật/tắt popup khi chuyển khỏi SQRTOJ"><input type="checkbox" id="sqrtoj-cw-popup-toggle" checked><span class="sqrtoj-cw-switch" aria-hidden="true"><i></i></span><span class="sqrtoj-cw-toggle-label">Popup</span></label></div></header>
 <nav class="sqrtoj-cw-tabs" aria-label="Quick submit tabs"><button type="button" class="sqrtoj-cw-tab is-active" data-cw-tab="recent"><i class="fa fa-list"></i><span>Bài nộp</span><span class="sqrtoj-cw-tab-count" id="sqrtoj-cw-sub-count">0</span></button><button type="button" class="sqrtoj-cw-tab" data-cw-tab="submit"><i class="fa fa-paper-plane"></i><span>Nộp bài</span></button></nav>
 <div class="sqrtoj-cw-body" id="sqrtoj-cw-body"><div class="sqrtoj-cw-view" id="sqrtoj-cw-recent-view"><div class="sqrtoj-cw-toolbar"><span style="flex:1;font-weight:800">Bài nộp gần đây</span><button type="button" class="sqrtoj-cw-refresh" id="sqrtoj-cw-refresh" title="Làm mới"><i class="fa fa-refresh"></i></button></div><div class="sqrtoj-cw-list" id="sqrtoj-cw-submissions"><div class="sqrtoj-cw-loading">Bấm “Làm mới” để tải bài nộp.</div></div></div><div class="sqrtoj-cw-view" id="sqrtoj-cw-submit-view" hidden><div class="sqrtoj-cw-toolbar"><input class="sqrtoj-cw-search" id="sqrtoj-cw-search" type="search" placeholder="Tìm bài…" aria-label="Tìm bài"></div><div class="sqrtoj-cw-list" id="sqrtoj-cw-list"></div></div></div>
 </section></div>
@@ -720,9 +701,9 @@ html.sqrtoj-cw-popup #sqrtoj-contest-widget .sqrtoj-cw-panel {
   }
 
   var PROFILE_DEFAULT =
-    {% if request.user.is_authenticated and request.profile.quick_submit_enabled %}true{% else %}false{% endif %};
+    {% if request.user.is_authenticated and request.profile and request.profile.quick_submit_enabled %}true{% else %}false{% endif %};
   var KEY = "sqrtoj_active_contest_widget_v1";
-  var USER = (window.user && window.user.name) || "";
+  var USER = (window.user && window.user.name) || "{% if request.user.is_authenticated %}{{ request.user.username|escapejs }}{% endif %}";
   var SUB_URL = "/submissions/user/" + encodeURIComponent(USER) + "/";
   var root = document.getElementById("sqrtoj-contest-widget");
 
@@ -764,7 +745,9 @@ html.sqrtoj-cw-popup #sqrtoj-contest-widget .sqrtoj-cw-panel {
     };
   var HOST_IS_SQRTOJ =
       /^(?:www\.)?sqrtoj\.edu\.vn$/.test(location.hostname) ||
-      location.hostname === "163.61.72.194",
+      location.hostname === "163.61.72.194" ||
+      location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1",
     data = null,
     pipWindow = null,
     pipPlaceholder = null,

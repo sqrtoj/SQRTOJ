@@ -1,12 +1,17 @@
-from operator import attrgetter
-
 from judge.models import SubmissionSourceAccess
 from . import registry
 
 
 # TODO: maybe refactor this?
 def get_editor_ids(contest):
-    return set(map(attrgetter('id'), contest.authors.all())) | set(map(attrgetter('id'), contest.curators.all()))
+    if not hasattr(contest, '_editor_ids_cache'):
+        if (hasattr(contest, '_prefetched_objects_cache') and
+                'authors' in contest._prefetched_objects_cache and
+                'curators' in contest._prefetched_objects_cache):
+            contest._editor_ids_cache = {a.id for a in contest.authors.all()} | {c.id for c in contest.curators.all()}
+        else:
+            contest._editor_ids_cache = set(contest.editor_ids)
+    return contest._editor_ids_cache
 
 
 @registry.function

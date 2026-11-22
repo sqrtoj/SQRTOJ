@@ -28,8 +28,12 @@ class MailgunActivationView(View):
 
             logger.debug('Received request: %s', params)
 
-            if signature != hmac.new(key=utf8bytes(settings.MAILGUN_ACCESS_KEY),
-                                     msg=utf8bytes('%s%s' % (timestamp, token)), digestmod=hashlib.sha256).hexdigest():
+            expected_signature = hmac.new(
+                key=utf8bytes(settings.MAILGUN_ACCESS_KEY),
+                msg=utf8bytes('%s%s' % (timestamp, token)),
+                digestmod=hashlib.sha256,
+            ).hexdigest()
+            if not hmac.compare_digest(signature, expected_signature):
                 logger.info('Rejected request: signature: %s, timestamp: %s, token: %s', signature, timestamp, token)
                 raise PermissionDenied()
             _, sender = parseaddr(params.get('from'))

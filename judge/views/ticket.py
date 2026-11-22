@@ -221,10 +221,14 @@ class TicketStatusChangeView(TicketMixin, SingleObjectMixin, View):
                 })
 
         if self.contributive is not None and ticket.is_contributive != self.contributive:
+            profile_id = self.request.profile.id
+            if not (self.request.user.has_perm('judge.change_ticket') or
+                    ticket.assignees.filter(id=profile_id).exists()):
+                raise PermissionDenied()
             with transaction.atomic():
                 ticket = Ticket.objects.select_for_update().select_related('user').get(pk=ticket.pk)
                 if ticket.is_contributive != self.contributive:
-                    if not request.user.has_perm('judge.change_ticket') and self.request.profile == ticket.user:
+                    if not self.request.user.has_perm('judge.change_ticket') and self.request.profile == ticket.user:
                         return HttpResponseBadRequest(_('You cannot vote your own ticket.'), content_type='text/plain')
                     delta = int(self.contributive) - int(ticket.is_contributive)
                     ticket.user.update_contribution_points(settings.VNOJ_CP_TICKET * delta)
@@ -241,6 +245,13 @@ class TicketNotesEditView(TicketMixin, SingleObjectFormView):
     template_name = 'ticket/edit-notes.html'
     form_class = TicketNotesForm
     context_object_name = 'ticket'
+
+    def get_object(self, queryset=None):
+        ticket = super().get_object(queryset)
+        profile_id = self.request.profile.id
+        if not (self.request.user.has_perm('judge.change_ticket') or ticket.assignees.filter(id=profile_id).exists()):
+            raise PermissionDenied()
+        return ticket
 
     def get_initial(self):
         return {'notes': self.get_object().notes}

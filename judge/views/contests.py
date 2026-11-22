@@ -144,7 +144,8 @@ class ContestList(QueryStringSortMixin, DiggPaginatorMixin, TitleMixin, ContestL
             for participation in ContestParticipation.objects.filter(virtual=0, user=self.request.profile,
                                                                      contest_id__in=present) \
                     .select_related('contest') \
-                    .prefetch_related('contest__authors', 'contest__curators', 'contest__testers') \
+                    .prefetch_related('contest__authors', 'contest__curators', 'contest__testers',
+                                      'contest__tags', 'contest__organizations') \
                     .annotate(key=F('contest__key')):
                 if participation.ended:
                     finished.add(participation.contest.key)
@@ -164,8 +165,11 @@ class ContestList(QueryStringSortMixin, DiggPaginatorMixin, TitleMixin, ContestL
         context['page_suffix'] = '#past-contests'
         context['search_query'] = self.search_query
         context['tag_filter'] = self.tag_filter
+        visible_for_tags = Contest.get_visible_contests(self.request.user)
+        if self.hide_private_contests:
+            visible_for_tags = visible_for_tags.filter(is_organization_private=False)
         context['tag_filter_options'] = ContestTag.objects.filter(
-            contests__in=self._get_queryset(),
+            contests__in=visible_for_tags,
         ).distinct().order_by('name')
         context.update(self.get_sort_context())
         context.update(self.get_sort_paginate_context())
@@ -185,6 +189,14 @@ class ContestMixin(object):
     model = Contest
     slug_field = 'key'
     slug_url_kwarg = 'contest'
+
+    def get_queryset(self):
+        return Contest.objects.prefetch_related(
+            'organizations',
+            'authors__user', 'authors__display_badge',
+            'curators__user', 'curators__display_badge',
+            'testers__user', 'testers__display_badge',
+        )
 
     @cached_property
     def is_in_contest(self):
@@ -251,8 +263,10 @@ class ContestMixin(object):
         )
 
         context['logo_override_image'] = self.object.logo_override_image
-        if not context['logo_override_image'] and self.object.organizations.count() == 1:
-            context['logo_override_image'] = self.object.organizations.first().logo_override_image
+        if not context['logo_override_image']:
+            orgs = list(self.object.organizations.all()[:2])
+            if len(orgs) == 1:
+                context['logo_override_image'] = orgs[0].logo_override_image
         context['is_IOI_Format'] = (self.object.format.name == IOIContestFormat.name)
         context['is_ICPC_format'] = (self.object.format.name == ICPCContestFormat.name)
         context['can_access_resolver'] = self.can_access_resolver()
@@ -334,13 +348,12 @@ class ContestDetail(ContestMixin, TitleMixin, CommentedDetailView):
                 When(solution__is_public=True, solution__publish_on__lte=timezone.now(), then=True),
                 default=False,
                 output_field=BooleanField(),
-            )) \
+            ), contest_points=F('contests__points')) \
             .add_i18n_name(self.request.LANGUAGE_CODE)
 
         # convert to problem points in contest instead of actual points
-        points_list = list(self.object.contest_problems.values_list('points').order_by('order'))
-        for idx, p in enumerate(context['contest_problems']):
-            p.points = points_list[idx][0]
+        for p in context['contest_problems']:
+            p.points = p.contest_points
 
         context['metadata'] = {
             'has_public_editorials': any(
@@ -361,12 +374,16 @@ class ContestDetail(ContestMixin, TitleMixin, CommentedDetailView):
             ),
         )
 
-        clarifications = ProblemClarification.objects.filter(problem__in=self.object.problems.all())
-        context['has_clarifications'] = clarifications.count() > 0
-        context['clarifications'] = clarifications.order_by('-date')
-        announcements = ContestAnnouncement.objects.filter(contest=self.object)
-        context['has_announcements'] = announcements.count() > 0
-        context['announcements'] = announcements.order_by('-date')
+        clarifications = list(
+            ProblemClarification.objects.filter(problem__contests__contest=self.object)
+            .select_related('problem')
+            .order_by('-date'),
+        )
+        context['has_clarifications'] = bool(clarifications)
+        context['clarifications'] = clarifications
+        announcements = list(ContestAnnouncement.objects.filter(contest=self.object).order_by('-date'))
+        context['has_announcements'] = bool(announcements)
+        context['announcements'] = announcements
         context['can_announce'] = self.object.is_editable_by(self.request.user)
 
         authenticated = self.request.user.is_authenticated
@@ -1003,8 +1020,8 @@ def base_contest_ranking_list(
         for sub in submissions_qs:
             part_id = sub['participation_id']
             prob_id = sub['problem_id']
-            points = sub['points']
-            result = sub['submission__result'] or sub['submission__status']
+            points = sub['points'] if sub['points'] is not None else 0
+            result = sub['submission__result'] or sub['submission__status'] or ''
 
             existing = best_results[part_id].get(prob_id)
             if not existing or points >= existing['points']:
@@ -1331,11 +1348,13 @@ class CombinedContestRankingView(TitleMixin, DetailView):
 
         if show_penalty:
             rank_key = attrgetter('total_score', 'total_cumtime', 'total_tiebreaker')
-            rows.sort(key=lambda profile: (-profile.total_score, profile.total_cumtime, profile.total_tiebreaker))
+            rows.sort(key=lambda profile: (
+                -profile.total_score, profile.total_cumtime, profile.total_tiebreaker, profile.user.username,
+            ))
         else:
-            rank_key = attrgetter('total_score')
-            rows.sort(key=lambda profile: -profile.total_score)
-        rows = ranker(rows, key=rank_key)
+            rank_key = attrgetter('total_score', 'total_tiebreaker')
+            rows.sort(key=lambda profile: (-profile.total_score, profile.total_tiebreaker, profile.user.username))
+        rows = list(ranker(rows, key=rank_key))
         return contests, contest_problems, rows, show_penalty
 
     def get_context_data(self, **kwargs):

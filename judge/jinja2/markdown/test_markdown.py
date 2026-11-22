@@ -1,3 +1,4 @@
+from django.templatetags.static import static
 from django.test import SimpleTestCase
 from lxml import html
 
@@ -128,7 +129,7 @@ class TestMarkdown(SimpleTestCase):
     def test_post_process(self):
         self.assertHTMLEqual(markdown('<img src="test.png">', self.UNBLEACHED_STYLE, lazy_load=True),
                              '<p><noscript><img src="test.png"></noscript>'
-                             '<img src="/static/blank.gif" data-src="test.png" class="unveil"></p>')
+                             '<img src="%s" data-src="test.png" class="unveil"></p>' % static('blank.gif'))
 
     def test_math_delimiters(self):
         self.assertIn('$$a + b$$', markdown('$$a + b$$', self.BLEACHED_STYLE))
